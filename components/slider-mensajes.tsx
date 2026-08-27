@@ -14,6 +14,7 @@ const SLIDES = [
     texto: 'Rancherías, corregimientos y veredas que ningún operador grande quiso cablear. Ahí llevamos fibra y radio enlace.',
     cta: 'Consultar mi zona',
     href: '#cobertura',
+    imagen: '/cobertura-rural.webp',
   },
   {
     id: 'negocio',
@@ -22,6 +23,7 @@ const SLIDES = [
     texto: 'Enlaces dedicados con ancho de banda garantizado para tu datáfono, tu facturación y tus cámaras. Sin competir con el vecino.',
     cta: 'Ver planes comerciales',
     href: '#planes',
+    imagen: '/comercios-empresas.jpg',
   },
   {
     id: 'soporte',
@@ -30,6 +32,7 @@ const SLIDES = [
     texto: 'Nada de call centers a mil kilómetros. Nuestros técnicos viven acá y llegan a tu casa el mismo día.',
     cta: 'Hablar con soporte',
     href: '#contactos',
+    imagen: '/soporte-local.jpg',
   },
 ] as const
 
@@ -127,7 +130,6 @@ export function SliderMensajes() {
   }, [pausado])
 
   const slide = SLIDES[i]
-  const Arte = ARTES[slide.id]
 
   return (
     <section
@@ -170,8 +172,7 @@ export function SliderMensajes() {
               </clipPath>
             </defs>
             <g clipPath="url(#sliderRecorte)">
-              <rect width="580" height="420" className="arte-fondo" />
-              <Arte />
+              <image className="slider-foto" href={slide.imagen} x="0" y="0" width="580" height="420" preserveAspectRatio="xMidYMid slice" />
             </g>
           </svg>
         </div>

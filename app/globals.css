@@ -50,3 +50,64 @@ nav a, .pay-link, footer a { color: var(--navy); font-size: 14px; font-weight: 6
 .nav-dropdown { position: relative; }.nav-dropdown > button { align-items: center; background: transparent; border: 0; color: var(--navy); cursor: pointer; display: flex; font: inherit; gap: 5px; padding: 12px 0; }.nav-dropdown-menu { background: var(--card); border: 1px solid var(--border); box-shadow: 0 16px 35px #20202018; display: none; left: -18px; min-width: 220px; padding: 8px; position: absolute; top: 44px; z-index: 5; }.nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: grid; }.nav-dropdown-menu a { padding: 11px 12px; }.nav-dropdown-menu a:hover { background: #e9fbf0; color: var(--primary); }.news { background: #f7f9fc; }.news-grid { display: grid; gap: 18px; grid-template-columns: 1.5fr 1fr 1fr; }.news-feature, .news-card { background: var(--card); border: 1px solid var(--border); }.news-feature { display: grid; grid-template-columns: .85fr 1fr; }.news-image { align-items: center; background: var(--primary); color: white; display: flex; justify-content: center; min-height: 250px; }.news-body, .news-card { padding: 28px; }.news-feature span, .news-card span { color: var(--primary); font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }.news-feature h3, .news-card h3 { color: var(--navy); font-size: 23px; letter-spacing: -.04em; line-height: 1.12; margin: 14px 0 22px; }.news-feature p { color: var(--muted-foreground); font-size: 14px; line-height: 1.6; }.news-card { align-content: space-between; display: grid; min-height: 250px; }.yellow-card { background: var(--yellow); border-color: var(--yellow); }.yellow-card .text-link { color: var(--navy); }.legal-strip { background: var(--cyan); padding: 70px 0; }.legal-strip .container { align-items: center; display: flex; gap: 70px; justify-content: space-between; }.legal-strip h2 { color: var(--navy); font-size: clamp(38px, 5vw, 62px); letter-spacing: -.06em; margin: 12px 0 0; }.legal-links { display: grid; gap: 14px; min-width: 330px; }.legal-links a { align-items: center; border-bottom: 1px solid #20202040; color: var(--navy); display: flex; font-size: 14px; font-weight: 700; justify-content: space-between; padding: 12px 0; text-decoration: none; }.contact-details { background: var(--card); padding: 95px 0; }.contact-details-grid { align-items: center; display: grid; gap: 80px; grid-template-columns: 1fr 1fr; }.contact-details h2 { color: var(--navy); font-size: clamp(42px, 5vw, 68px); letter-spacing: -.06em; margin: 14px 0; }.contact-details p { color: var(--muted-foreground); line-height: 1.6; max-width: 380px; }.contact-options { display: grid; gap: 14px; }.contact-options a { align-items: center; border: 1px solid var(--border); color: var(--navy); display: flex; gap: 16px; padding: 20px; text-decoration: none; }.contact-options a:hover { border-color: var(--primary); box-shadow: 0 12px 25px #20202012; }.contact-options svg { color: var(--primary); }.contact-options span { display: grid; gap: 5px; }.contact-options small { color: var(--muted-foreground); font-size: 12px; }.contact-options strong { font-size: 16px; }
 .hero-new { background: var(--azul-fondo-2); min-height: 760px; padding: 0; position: relative; }.hero-grid-new { min-height: 760px; position: relative; }.hero-new .hero-copy { align-self: end; padding-bottom: 90px; position: relative; z-index: 2; }.hero-new .hero-copy .eyebrow { color: var(--yellow); }.hero-new .hero-copy h1, .hero-new .hero-copy p { color: white; }.hero-new .hero-copy h1 em { color: var(--yellow); }.hero-new .hero-proof p, .hero-new .hero-proof strong { color: #d7e4ff; }.hero-new .hero-visual-new { align-self: stretch; min-height: 760px; overflow: visible; }.hero-orbit-label { color: #d8e6ff; font-size: 13px; left: 0; letter-spacing: .06em; position: absolute; top: 28px; z-index: 2; }.hero-new .location-chip { z-index: 3; }.hero-new .hero-actions .text-link { color: #d9e7ff; }.hero-new .hero-actions .text-link:hover { color: var(--yellow); }
 @media (max-width: 800px) { .news-grid, .news-feature, .contact-details-grid { grid-template-columns: 1fr; }.legal-strip .container { align-items: flex-start; flex-direction: column; gap: 30px; }.legal-links { min-width: 100%; }.hero-new, .hero-grid-new { min-height: 0; }.hero-new .hero-visual-new { min-height: 640px; }.hero-new .hero-copy { align-self: start; padding: 46px 0 34px; }.hero-cue { display: none; }.hero-mano { left: -150px; top: 80px; width: 600px; }.router-orbita { height: 693px; left: -150px; top: 80px; width: 600px; }.router-cuerpo { transform: scale3d(.78, .78, .78); }.hud-estado { right: 0; top: 74px; }.hud-velocidad { right: 20px; top: 146px; }.hero-orbit-label { left: 16px; top: 22px; } }
+
+/* El video va unido a la navegación, sin el padding general de .hero */
+.hero-video-hero { background: #03192f; padding: 0 0 32px; }
+
+/* Ajuste responsive de la escena del Hero: la mano conserva su proporción y el lienzo evita cortes en teléfonos. */
+@media (max-width: 800px) {
+  .hero-new .hero-visual-new {
+    min-height: min(1000px, 170vw);
+    overflow: visible;
+  }
+
+  .hero-mano {
+    left: clamp(-125px, -17vw, -58px);
+    top: clamp(40px, 11vw, 92px);
+    width: min(760px, 128vw);
+  }
+
+  .router-orbita {
+    height: min(877px, 148vw);
+    left: clamp(-125px, -17vw, -58px);
+    top: clamp(40px, 11vw, 92px);
+    width: min(760px, 128vw);
+  }
+}
+
+@media (max-width: 460px) {
+  .hero-new .hero-copy {
+    padding-top: 38px;
+  }
+
+  .hero-new .hero-visual-new {
+    min-height: min(1000px, 170vw);
+  }
+
+  .hero-mano,
+  .router-orbita {
+    left: clamp(-82px, -17vw, -58px);
+  }
+
+  .hud-estado {
+    right: 0;
+    top: 26px;
+  }
+
+  .hud-velocidad {
+    right: 12px;
+    top: 98px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-mano,
+  .router-orbita {
+    transition: none;
+  }
+}
+
+/* Protección contra versiones anteriores en caché: WhatsApp no debe aparecer dentro del Hero. */
+.hero-visual-new .hero-whatsapp {
+  display: none !important;
+}

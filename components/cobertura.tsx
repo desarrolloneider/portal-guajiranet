@@ -1,11 +1,17 @@
 'use client'
 
-import { useMemo, useState } from 'react'
-import { ArrowRight, Check, MapPin, MessageCircle, Wifi } from 'lucide-react'
-import { MAP_HEIGHT, MAP_WIDTH, MUNICIPIOS, type Municipio } from '@/lib/guajira-map'
+import { useState } from 'react'
+import { ArrowRight, Check, MessageCircle, Wifi } from 'lucide-react'
+import { MUNICIPIOS, type Municipio } from '@/lib/guajira-map'
+import { MapaNacional } from '@/components/mapa-nacional'
+import { NODOS } from '@/lib/red-nacional'
+
+type Resultado = { name: string; active: true; nacional: boolean } | null | 'sin-datos'
 
 const ACTIVOS = MUNICIPIOS.filter((m) => m.active)
-const ORDEN_ALFABETICO = [...MUNICIPIOS].sort((a, b) => a.name.localeCompare(b.name, 'es'))
+const ORDEN_ALFABETICO = [...ACTIVOS].sort((a, b) => a.name.localeCompare(b.name, 'es'))
+
+const normalizar = (texto: string) => texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim()
 
 const whatsappHref = (municipio: string) =>
   `https://wa.me/573009139909?text=${encodeURIComponent(`Hola, quiero información sobre la cobertura de GuajiraNet en ${municipio}.`)}`
@@ -14,23 +20,39 @@ export function Cobertura() {
   const [consulta, setConsulta] = useState('')
   const [foco, setFoco] = useState<string | null>(null)
   const [elegido, setElegido] = useState<string | null>(null)
-  const [resultado, setResultado] = useState<Municipio | null | 'sin-datos'>(null)
+  const [resultado, setResultado] = useState<Resultado>(null)
 
   const resaltado = foco ?? elegido
-  const activo = useMemo(() => MUNICIPIOS.find((m) => m.code === resaltado) ?? null, [resaltado])
 
   const seleccionar = (m: Municipio) => {
     setElegido(m.code)
     setConsulta(m.name)
-    setResultado(m)
+    setResultado({ name: m.name, active: true, nacional: false })
   }
 
   const consultarCobertura = () => {
-    const texto = consulta.trim().toLowerCase()
+    const texto = normalizar(consulta)
     if (!texto) return
-    const encontrado = MUNICIPIOS.find((m) => texto.includes(m.name.toLowerCase()) || m.name.toLowerCase().includes(texto))
-    setResultado(encontrado ?? 'sin-datos')
-    setElegido(encontrado?.code ?? null)
+    const encontrado = ACTIVOS.find((m) => {
+      const nombre = normalizar(m.name)
+      return texto.includes(nombre) || nombre.includes(texto)
+    })
+    const ciudadNacional = NODOS.find((n) => {
+      const nombre = normalizar(n.nombre)
+      return texto.includes(nombre) || nombre.includes(texto)
+    })
+    if (encontrado) {
+      setResultado({ name: encontrado.name, active: true, nacional: false })
+      setElegido(encontrado.code)
+      return
+    }
+    if (ciudadNacional) {
+      setResultado({ name: ciudadNacional.nombre, active: true, nacional: true })
+      setElegido(null)
+      return
+    }
+    setResultado('sin-datos')
+    setElegido(null)
   }
 
   return (
@@ -50,7 +72,7 @@ export function Cobertura() {
           >
             <input
               aria-label="Municipio o dirección"
-              placeholder="Municipio o dirección"
+              placeholder="Municipio con cobertura"
               value={consulta}
               onChange={(e) => setConsulta(e.target.value)}
             />
@@ -60,36 +82,30 @@ export function Cobertura() {
           </form>
 
           {resultado === 'sin-datos' && (
-            <div className="coverage-result warn">No encontramos ese municipio en La Guajira. Revisa la escritura o escríbenos por WhatsApp.</div>
+            <div className="coverage-result warn">No encontramos una zona con cobertura activa. Revisa la escritura o escríbenos por WhatsApp.</div>
           )}
           {resultado && resultado !== 'sin-datos' && (
-            <div className={`coverage-result ${resultado.active ? 'ok' : 'soon'}`}>
-              {resultado.active ? <Check size={16} /> : <MapPin size={16} />}
+            <div className="coverage-result ok">
+              <Check size={16} />
               <span>
-                <strong>{resultado.name}</strong>
-                {resultado.active ? (
-                  ' tiene cobertura activa. Podemos agendar tu instalación.'
-                ) : (
-                  <>
-                    {' está en nuestro plan de expansión. Déjanos tus datos y te avisaremos cuando el servicio esté disponible.'}
-                    <a className="coverage-whatsapp" href={whatsappHref(resultado.name)} target="_blank" rel="noreferrer">
-                      <MessageCircle size={14} /> Escríbenos al WhatsApp <b>300 913 9909</b>
-                    </a>
-                  </>
-                )}
+                <strong>{resultado.name}</strong>{' '}
+                {resultado.nacional ? 'tiene cobertura nacional activa en nuestra red. Podemos ayudarte a validar la instalación.' : 'tiene cobertura activa en La Guajira. Podemos agendar tu instalación.'}
+                <a className="coverage-whatsapp" href={whatsappHref(resultado.name)} target="_blank" rel="noreferrer">
+                  <MessageCircle size={14} /> Escríbenos al WhatsApp <b>300 913 9909</b>
+                </a>
               </span>
             </div>
           )}
 
           <span className="form-note">Consulta gratis y sin compromiso.</span>
 
-          <div className="muni-chips" role="list" aria-label="Municipios de La Guajira">
+          <div className="muni-chips" role="list" aria-label="Municipios con cobertura activa en La Guajira">
             {ORDEN_ALFABETICO.map((m) => (
               <button
                 key={m.code}
                 type="button"
                 role="listitem"
-                className={`muni-chip ${m.active ? 'on' : 'off'} ${resaltado === m.code ? 'hl' : ''}`}
+                className={`muni-chip on ${resaltado === m.code ? 'hl' : ''}`}
                 onMouseEnter={() => setFoco(m.code)}
                 onMouseLeave={() => setFoco(null)}
                 onFocus={() => setFoco(m.code)}
@@ -102,91 +118,23 @@ export function Cobertura() {
           </div>
         </div>
 
-        <div className="map-panel">
+        <div className="map-panel map-panel-nivel-1 map-vista-nacional">
           <div className="map-topline">
-            <span><Wifi size={14} /> Red GuajiraNet</span>
-            <strong>{ACTIVOS.length} de {MUNICIPIOS.length} municipios conectados</strong>
+            <span><Wifi size={14} /> Red nacional conectada</span>
+            <strong>{NODOS.length} ciudades y nodos con cobertura</strong>
+          </div>
+          <div className="map-live-strip">
+            <span><i className="live-dot" /> Red operativa</span>
+            <strong>{NODOS.length} ciudades conectadas</strong>
+            <small>Actualizado hoy</small>
           </div>
 
-          <div className="map-canvas">
-            <svg viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`} role="img" aria-label="Mapa de cobertura de GuajiraNet por municipio en el departamento de La Guajira">
-              <defs>
-                <linearGradient id="muniOn" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#4fa3e8" />
-                  <stop offset="100%" stopColor="#0868c6" />
-                </linearGradient>
-                <linearGradient id="muniOff" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#0d4a8f" />
-                  <stop offset="100%" stopColor="#0a3768" />
-                </linearGradient>
-                <filter id="muniGlow" x="-40%" y="-40%" width="180%" height="180%">
-                  <feGaussianBlur stdDeviation="7" result="b" />
-                  <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
-                </filter>
-              </defs>
-
-              <g className="capa-municipios">
-                {MUNICIPIOS.map((m) => (
-                  <path
-                    key={m.code}
-                    d={m.d}
-                    className={`muni ${m.active ? 'on' : 'off'} ${resaltado === m.code ? 'hl' : ''}`}
-                    fill={m.active ? 'url(#muniOn)' : 'url(#muniOff)'}
-                    onMouseEnter={() => setFoco(m.code)}
-                    onMouseLeave={() => setFoco(null)}
-                    onClick={() => seleccionar(m)}
-                    tabIndex={0}
-                    role="button"
-                    aria-label={`${m.name}, ${m.active ? 'con cobertura' : 'próximamente'}`}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault()
-                        seleccionar(m)
-                      }
-                    }}
-                  />
-                ))}
-              </g>
-
-              <g className="capa-nodos">
-                {ACTIVOS.map((m) => (
-                  <g key={m.code} transform={`translate(${m.x} ${m.y})`}>
-                    <circle className="nodo-pulso" r="6" />
-                    <circle className="nodo" r="4.5" filter="url(#muniGlow)" />
-                  </g>
-                ))}
-              </g>
-
-              <g className="capa-etiquetas">
-                {MUNICIPIOS.map((m) => (
-                  <text
-                    key={m.code}
-                    x={m.x}
-                    y={m.y + (m.active ? -12 : 4)}
-                    textAnchor="middle"
-                    className={`muni-label ${m.active ? 'on' : 'off'} ${resaltado === m.code ? 'hl' : ''}`}
-                  >
-                    {m.name}
-                  </text>
-                ))}
-              </g>
-            </svg>
-
-            {activo && (
-              <div
-                className="map-tip"
-                style={{ left: `${(activo.x / MAP_WIDTH) * 100}%`, top: `${(activo.y / MAP_HEIGHT) * 100}%` }}
-              >
-                <strong>{activo.name}</strong>
-                <small>{activo.active ? 'Cobertura activa' : 'Próximamente'} · {activo.area.toLocaleString('es-CO')} km²</small>
-              </div>
-            )}
-          </div>
+          <MapaNacional />
 
           <div className="map-footer">
-            <span><i className="legend-dot active" /> Cobertura disponible</span>
-            <span><i className="legend-dot planned" /> Próximamente</span>
-            <span className="map-source">Límites: DANE — MGN</span>
+            <span><i className="legend-linea" /> Fibra terrestre</span>
+            <span><i className="legend-linea legend-linea-sub" /> Fibra submarina</span>
+            <span className="map-source">Trazado ilustrativo · verificar con planta externa</span>
           </div>
         </div>
       </div>

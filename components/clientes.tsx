@@ -6,16 +6,14 @@ type Cliente = {
   logo?: string
 }
 
-// Para usar los logos reales: guarda el PNG en public/clientes/ y agrega la ruta en "logo".
 const CLIENTES: Cliente[] = [
-  { nombre: 'Sevicol' },
-  { nombre: 'IMS' },
-  { nombre: 'JC Soluciones de Infraestructura' },
-  { nombre: 'Veolia' },
-  { nombre: 'Super GIROS' },
-  { nombre: 'Cliente 6' },
-  { nombre: 'Cliente 7' },
-  { nombre: 'Cliente 8' },
+  { nombre: 'Veolia', logo: '/clientes/Veolia_logo.svg.webp' },
+  { nombre: 'SuperGIROS', logo: '/clientes/supergiros.webp' },
+  { nombre: 'Sodexo', logo: '/clientes/Sodexo_logo.svg.webp' },
+  { nombre: 'Sevicol', logo: '/clientes/IMAGOTIPO+SEVICOL-01-403c6e59.png' },
+  { nombre: 'Colvatel', logo: '/clientes/Recurso-1logo_colvatel_nuevo.webp' },
+  { nombre: 'IMS', logo: '/clientes/ims.png' },
+  { nombre: 'JC Soluciones de Infraestructura', logo: '/clientes/jc-soluciones.png' },
 ]
 
 function Marca({ c }: { c: Cliente }) {

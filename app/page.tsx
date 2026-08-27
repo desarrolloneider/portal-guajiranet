@@ -1,14 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowRight, ChevronDown, ClipboardCheck, Clock, CreditCard, FileText, Gauge, Headphones, KeyRound, Mail, MapPin, Menu, MessageCircle, MousePointer2, Newspaper, Phone, ShieldCheck, Wifi, Wrench, X } from 'lucide-react'
+import { ArrowRight, ChevronDown, ClipboardCheck, Clock, CreditCard, FileText, Gauge, Headphones, KeyRound, Mail, MapPin, MessageCircle, MousePointer2, Newspaper, Phone, ShieldCheck, Wifi, Wrench } from 'lucide-react'
 import { Autogestion } from '@/components/autogestion'
 import { Clientes } from '@/components/clientes'
 import { Cobertura } from '@/components/cobertura'
 import { FibraBanner } from '@/components/fibra-banner'
-import { HeroEscena } from '@/components/hero-escena'
 import { Intro } from '@/components/intro'
 import { Metricas } from '@/components/metricas'
+import { Modal } from '@/components/modal'
+import { NavegacionPrincipal } from '@/components/navegacion-principal'
 import { PlanesCarrusel } from '@/components/planes-carrusel'
 import { Revelador } from '@/components/revelador'
 import { SliderMensajes } from '@/components/slider-mensajes'
@@ -60,9 +61,43 @@ const faqs = [
   ['¿El router está incluido en el plan?', 'Sí. Todos nuestros planes incluyen el router WiFi y la instalación, sin cobros escondidos.'],
 ]
 
+const noticias = [
+  {
+    id: 'expansion',
+    categoria: 'Comunidad',
+    fecha: '12 agosto 2026',
+    titulo: 'Seguimos expandiendo nuestra red por toda Colombia',
+    resumen: 'La Guajira es nuestro punto de partida y Colombia, el horizonte: conectamos nuevas comunidades con una red estable y cercana.',
+    imagen: '/noticias/expansion-red.webp',
+    detalle: 'Estamos llevando nuestra experiencia de conectividad local a nuevas regiones del país. Cada nueva zona comienza con escucha, planeación y una instalación pensada para las necesidades reales de la comunidad.',
+    consejos: ['Consulta tu municipio en el mapa de cobertura.', 'Déjanos tus datos si tu zona aparece como próxima.', 'Comparte la información con vecinos que también necesiten conectarse.'],
+  },
+  {
+    id: 'wifi',
+    categoria: 'Servicio',
+    fecha: '06 agosto 2026',
+    titulo: 'Consejos para disfrutar mejor tu WiFi en casa',
+    resumen: 'Pequeños cambios de ubicación y hábitos pueden ayudarte a aprovechar mejor la conexión.',
+    imagen: '/noticias/wifi-en-casa.jpg',
+    detalle: 'Una red WiFi estable empieza con una buena ubicación del router y continúa con hábitos sencillos de uso. Prueba estos consejos antes de solicitar soporte.',
+    consejos: ['Ubica el router en un lugar alto, abierto y central.', 'Evita esconderlo dentro de muebles o cerca de electrodomésticos.', 'Conecta por cable los equipos que necesitan máxima estabilidad.', 'Reinicia el router solo cuando sea necesario y revisa primero las luces indicadoras.'],
+  },
+  {
+    id: 'atencion',
+    categoria: 'GuajiraNet',
+    fecha: '28 julio 2026',
+    titulo: 'Atención local, tecnología para todos',
+    resumen: 'Estamos cerca para ayudarte con instalación, soporte, facturación y orientación.',
+    imagen: '/noticias/atencion-local.png',
+    detalle: 'Nuestra atención combina herramientas digitales con acompañamiento humano. Queremos que cada solicitud tenga una respuesta clara y un canal sencillo para continuar.',
+    consejos: ['Escríbenos por WhatsApp para una orientación rápida.', 'Ten a la mano tu número de contrato si necesitas soporte.', 'Consulta el portal de pagos para realizar tu trámite en línea.'],
+  },
+]
+
 export default function Page() {
-  const [menuOpen, setMenuOpen] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(0)
+  const [noticiaAbierta, setNoticiaAbierta] = useState<string | null>(null)
+  const noticiaActiva = noticias.find((noticia) => noticia.id === noticiaAbierta)
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -77,54 +112,13 @@ export default function Page() {
         </div>
       </div>
 
-      <header className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur">
-        <div className="container flex h-24 items-center justify-between">
-          <a href="#inicio" className="brand" aria-label="GuajiraNet inicio"><img src="/logo-guajiranet.png" alt="GuajiraNet Telecomunicaciones" width={1280} height={720} /></a>
-          <nav className="hidden items-center gap-8 md:flex" aria-label="Navegación principal">
-            <div className="nav-dropdown"><button type="button" aria-expanded="false">Marco Legal <ChevronDown size={15} /></button><div className="nav-dropdown-menu"><a href="#legal">Términos y condiciones</a><a href="#legal">Política de privacidad</a><a href="#legal">PQR y reclamos</a></div></div>
-            <a href="#noticias">Noticias</a>
-            <a href="#contactos">Contactos</a>
-            <a href="#correo">Correo</a>
-            <a href="#planes">Planes</a>
-          </nav>
-          <div className="hidden items-center gap-3 md:flex"><a className="button button-pay" href={PAGO} target="_blank" rel="noreferrer"><CreditCard size={17} /> Pagar factura</a><a className="button button-primary" href="#contacto">Quiero instalar</a></div>
-          <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}>{menuOpen ? <X /> : <Menu />}</button>
-        </div>
-        {menuOpen && <nav className="mobile-menu md:hidden"><a href="#planes" onClick={() => setMenuOpen(false)}>Planes</a><a href="#cobertura" onClick={() => setMenuOpen(false)}>Cobertura</a><a href="#beneficios" onClick={() => setMenuOpen(false)}>Beneficios</a><a href="#pago-factura" onClick={() => setMenuOpen(false)}>Pagar factura</a><a href="#contacto" onClick={() => setMenuOpen(false)}>Quiero instalar</a></nav>}
-      </header>
-
-      <section id="inicio" className="hero hero-new">
-        <div className="container hero-grid hero-grid-new">
-          <div className="hero-copy">
-            <div className="eyebrow" data-revelar><span className="eyebrow-dot" /> Conectividad local, atención cercana</div>
-            <h1 data-revelar data-delay="90">Internet que sí<br /><em>llega contigo.</em></h1>
-            <p data-revelar data-delay="180">Conecta tu hogar o negocio con internet rápido, estable y pensado para la vida en La Guajira.</p>
-            <div className="hero-actions" data-revelar data-delay="270">
-              <a href="#planes" className="button button-primary">Ver planes <ArrowRight size={17} /></a>
-              <a href="#cobertura" className="text-link"><MapPin size={17} /> Consultar cobertura</a>
-            </div>
-            <div className="hero-proof" data-revelar data-delay="360">
-              <div className="avatars"><span>J</span><span>M</span><span>A</span></div>
-              <p><strong>+2.500 hogares</strong><br />ya están conectados</p>
-            </div>
-          </div>
-          <div className="hero-visual hero-visual-new">
-            <div className="hero-orbit-label">RED ACTIVA / ALBANIA · LA GUAJIRA</div>
-            <HeroEscena />
-            <div className="hud-chip hud-estado"><span className="live-dot" /> Red GuajiraNet <b>En línea</b></div>
-            <div className="hud-chip hud-velocidad"><small>Velocidad actual</small><strong>300 Mbps</strong></div>
-            <div className="location-chip"><MapPin size={15} /> Riohacha, La Guajira</div>
-          </div>
-        </div>
-        <a className="hero-cue" href="#planes" aria-label="Ver planes"><span /> Desliza</a>
-      </section>
+      <NavegacionPrincipal pagoHref={PAGO} />
 
       <Metricas />
 
       <PlanesCarrusel />
 
       <section id="beneficios" className="benefits">
-        <FibraBanner />
         <div className="container benefits-grid">
           <div data-revelar="izq">
             <div className="eyebrow eyebrow-light">La diferencia GuajiraNet</div>
@@ -138,6 +132,7 @@ export default function Page() {
             <div data-revelar="der" data-delay="240"><MessageCircle /><span><strong>Atención por WhatsApp</strong><small>Resolvemos tus dudas por el canal que ya utilizas.</small></span></div>
           </div>
         </div>
+        <FibraBanner />
       </section>
 
       <section id="pasos" className="section pasos">
@@ -210,28 +205,22 @@ export default function Page() {
         <div className="container">
           <div className="section-heading">
             <div data-revelar="izq"><div className="eyebrow">Actualidad GuajiraNet</div><h2>Noticias que te mantienen conectado.</h2></div>
-            <a className="text-link" href="#noticias" data-revelar="der">Ver todas <ArrowRight size={16} /></a>
           </div>
           <div className="news-grid">
-            <article className="news-feature" data-revelar>
-              <div className="news-image"><Newspaper size={42} /></div>
-              <div className="news-body">
-                <span>Comunidad · 12 agosto 2026</span>
-                <h3>Seguimos expandiendo nuestra red por La Guajira</h3>
-                <p>Nuevas zonas se suman a una conexión estable, rápida y cercana.</p>
-                <a className="text-link" href="#contactos">Leer noticia <ArrowRight size={16} /></a>
-              </div>
-            </article>
-            <article className="news-card" data-revelar data-delay="120">
-              <span>Servicio · 06 agosto 2026</span>
-              <h3>Consejos para disfrutar mejor tu WiFi en casa</h3>
-              <a className="text-link" href="#faq">Conocer más <ArrowRight size={16} /></a>
-            </article>
-            <article className="news-card yellow-card" data-revelar data-delay="240">
-              <span>GuajiraNet · 28 julio 2026</span>
-              <h3>Atención local, tecnología para todos</h3>
-              <a className="text-link" href="#beneficios">Conocer más <ArrowRight size={16} /></a>
-            </article>
+            {noticias.map((noticia, index) => (
+              <article className={index === 0 ? 'news-feature' : `news-card ${index === 2 ? 'yellow-card' : ''}`} data-revelar data-delay={index ? `${index * 120}` : undefined} key={noticia.id}>
+                <div className={`news-image ${index === 2 ? 'news-image-branded' : ''}`}>
+                  {index === 2 && <img className="news-logo-watermark" src="/logo-guajiranet.png" alt="" aria-hidden="true" />}
+                  <img className="news-card-photo" src={noticia.imagen} alt="" loading="lazy" />
+                </div>
+                <div className="news-body">
+                  <span>{noticia.categoria} · {noticia.fecha}</span>
+                  <h3>{noticia.titulo}</h3>
+                  <p>{noticia.resumen}</p>
+                  <button className="news-more" type="button" onClick={() => setNoticiaAbierta(noticia.id)}>{index === 0 ? 'Leer noticia' : 'Conocer más'} <ArrowRight size={16} /></button>
+                </div>
+              </article>
+            ))}
           </div>
         </div>
       </section>
@@ -320,6 +309,18 @@ export default function Page() {
           </div>
         </div>
       </footer>
+
+      <Modal abierto={Boolean(noticiaActiva)} onCerrar={() => setNoticiaAbierta(null)} titulo={noticiaActiva?.titulo ?? ''} subtitulo={noticiaActiva ? `${noticiaActiva.categoria} · ${noticiaActiva.fecha}` : undefined} ancho={760}>
+        {noticiaActiva && (
+          <div className="noticia-detalle">
+            <img src={noticiaActiva.imagen} alt="" />
+            <p>{noticiaActiva.detalle}</p>
+            <h4>Consejos para tenerlo en cuenta</h4>
+            <ul>{noticiaActiva.consejos.map((consejo) => <li key={consejo}>{consejo}</li>)}</ul>
+            <a className="button button-primary" href={noticiaActiva.id === 'wifi' ? '#faq' : '#contactos'} onClick={() => setNoticiaAbierta(null)}>Continuar en GuajiraNet <ArrowRight size={16} /></a>
+          </div>
+        )}
+      </Modal>
 
       <AccionesFlotantes />
     </main>

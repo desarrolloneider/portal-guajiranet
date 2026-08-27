@@ -1,0 +1,9 @@
+
+> my-project@0.1.0 start
+> next start
+
+▲ Next.js 16.3.0
+- Local:         http://localhost:3000
+- Network:       http://192.168.100.163:3000
+✓ Ready in 191ms
+✓ Running next.config.mjs took 32ms
