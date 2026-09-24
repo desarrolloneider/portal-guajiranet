@@ -1,10 +1,14 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { NODOS } from '@/lib/red-nacional'
+
+/** Municipios con al menos un punto de la red (los mismos que muestra el mapa). */
+const MUNICIPIOS_CON_RED = new Set(NODOS.map((n) => n.municipio)).size
 
 const DATOS = [
   { valor: 2500, prefijo: '+', sufijo: '', titulo: 'Hogares conectados' },
-  { valor: 5, prefijo: '', sufijo: '', titulo: 'Municipios con cobertura' },
+  { valor: MUNICIPIOS_CON_RED, prefijo: '', sufijo: '', titulo: 'Municipios con cobertura' },
   { valor: 48, prefijo: '', sufijo: 'h', titulo: 'Para instalar en tu casa' },
   { valor: 99, prefijo: '', sufijo: '%', titulo: 'Disponibilidad de la red' },
 ]

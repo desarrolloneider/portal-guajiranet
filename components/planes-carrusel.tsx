@@ -62,8 +62,7 @@ export function PlanesCarrusel() {
       <div className="container">
         <div className="section-heading">
           <div data-revelar="izq">
-            <div className="eyebrow">Internet fibra óptica</div>
-            <h2>Elige el plan ideal para tu hogar.</h2>
+            <h2>Elige el plan para tu hogar</h2>
           </div>
           <p data-revelar="der">
             Todos incluyen línea móvil, minutos ilimitados
@@ -124,7 +123,7 @@ export function PlanesCarrusel() {
         </div>
 
         <p className="plans-note" data-revelar>
-          Costo de instalación según validación técnica. Consulta cobertura en el mapa antes de contratar.
+          La instalación y el router van incluidos en el valor del plan. Consulta la cobertura en el mapa antes de contratar.
         </p>
       </div>
     </section>

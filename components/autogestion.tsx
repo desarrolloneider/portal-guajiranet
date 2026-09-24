@@ -226,10 +226,9 @@ export function Autogestion() {
       <div className="container">
         <div className="section-heading">
           <div data-revelar="izq">
-            <div className="eyebrow">Resuelve en minutos</div>
-            <h2>Tu servicio,<br /><span>siempre a mano.</span></h2>
+            <h2>Resuelve en minutos</h2>
           </div>
-          <p data-revelar="der">Paga, mide, reporta o escríbenos.<br />Las gestiones más comunes, sin llamar.</p>
+          <p data-revelar="der">Paga tu factura, mide tu velocidad, radica un PQRS o cambia la clave del WiFi sin llamar.</p>
         </div>
 
         <div className="auto-grid">

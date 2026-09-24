@@ -2,18 +2,16 @@
 
 import { useState } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
-import { ArrowRight, CalendarDays, ChevronDown, ClipboardCheck, Clock, CreditCard, FileText, Gauge, Headphones, KeyRound, Mail, MapPin, MessageCircle, MousePointer2, Newspaper, Phone, ShieldCheck, Wifi, Wrench } from 'lucide-react'
+import { ArrowRight, Building2, CalendarDays, ChevronDown, ClipboardCheck, Clock, CreditCard, FileText, Gauge, KeyRound, Mail, MapPin, MessageCircle, MousePointer2, Phone, RadioTower, Wrench } from 'lucide-react'
 import { Autogestion } from '@/components/autogestion'
 import { Clientes } from '@/components/clientes'
 import { Cobertura } from '@/components/cobertura'
 import { FibraBanner } from '@/components/fibra-banner'
-import { Intro } from '@/components/intro'
 import { Metricas } from '@/components/metricas'
 import { Modal } from '@/components/modal'
 import { NavegacionPrincipal } from '@/components/navegacion-principal'
 import { PlanesCarrusel } from '@/components/planes-carrusel'
 import { Revelador } from '@/components/revelador'
-import { SliderMensajes } from '@/components/slider-mensajes'
 import { AccionesFlotantes, BarraProgreso } from '@/components/utilidades'
 
 const pasos = [
@@ -56,7 +54,7 @@ const resoluciones = [
 ]
 
 const faqs = [
-  ['¿En qué municipios tienen cobertura?', 'Estamos ampliando nuestra red en Riohacha, Maicao, Uribia, Manaure y municipios cercanos. Consulta tu dirección para confirmar disponibilidad.'],
+  ['¿Dónde tienen cobertura?', 'En los 15 municipios de La Guajira y en ciudades de otros 21 departamentos del país. Busca tu municipio en el mapa de cobertura para confirmarlo.'],
   ['¿Cuánto tarda la instalación?', 'Coordinamos tu instalación en un máximo de 48 horas hábiles después de validar la cobertura.'],
   ['¿Puedo pagar mi factura en línea?', 'Sí. Usa el botón Pagar factura para realizar tu pago de forma rápida y segura.'],
   ['¿El router está incluido en el plan?', 'Sí. Todos nuestros planes incluyen el router WiFi y la instalación, sin cobros escondidos.'],
@@ -71,8 +69,8 @@ const noticias = [
     fechaISO: '2026-08-12',
     titulo: 'Seguimos expandiendo nuestra red por toda Colombia',
     resumen: 'La Guajira es nuestro punto de partida y Colombia, el horizonte: conectamos nuevas comunidades con una red estable y cercana.',
-    imagen: '/noticias/expansion-red.webp',
-    enfoque: '48% 30%',
+    imagen: '/noticias/expansion-red.png',
+    enfoque: '40% 35%',
     detalle: 'Estamos llevando nuestra experiencia de conectividad local a nuevas regiones del país. Cada nueva zona comienza con escucha, planeación y una instalación pensada para las necesidades reales de la comunidad.',
     consejos: ['Consulta tu municipio en el mapa de cobertura.', 'Déjanos tus datos si tu zona aparece como próxima.', 'Comparte la información con vecinos que también necesiten conectarse.'],
   },
@@ -84,8 +82,8 @@ const noticias = [
     fechaISO: '2026-08-06',
     titulo: 'Consejos para disfrutar mejor tu WiFi en casa',
     resumen: 'Pequeños cambios de ubicación y hábitos pueden ayudarte a aprovechar mejor la conexión.',
-    imagen: '/noticias/wifi-en-casa.jpg',
-    enfoque: '40% 50%',
+    imagen: '/noticias/wifi-en-casa.png',
+    enfoque: '28% 50%',
     detalle: 'Una red WiFi estable empieza con una buena ubicación del router y continúa con hábitos sencillos de uso. Prueba estos consejos antes de solicitar soporte.',
     consejos: ['Ubica el router en un lugar alto, abierto y central.', 'Evita esconderlo dentro de muebles o cerca de electrodomésticos.', 'Conecta por cable los equipos que necesitan máxima estabilidad.', 'Reinicia el router solo cuando sea necesario y revisa primero las luces indicadoras.'],
   },
@@ -98,7 +96,7 @@ const noticias = [
     titulo: 'Atención local, tecnología para todos',
     resumen: 'Estamos cerca para ayudarte con instalación, soporte, facturación y orientación.',
     imagen: '/noticias/atencion-local.png',
-    enfoque: '53% 40%',
+    enfoque: '45% 40%',
     detalle: 'Nuestra atención combina herramientas digitales con acompañamiento humano. Queremos que cada solicitud tenga una respuesta clara y un canal sencillo para continuar.',
     consejos: ['Escríbenos por WhatsApp para una orientación rápida.', 'Ten a la mano tu número de contrato si necesitas soporte.', 'Consulta el portal de pagos para realizar tu trámite en línea.'],
   },
@@ -112,14 +110,13 @@ export default function Page() {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <Intro />
       <BarraProgreso />
       <Revelador />
 
       <div className="topbar">
         <div className="container flex items-center justify-between">
           <span>Internet que conecta a La Guajira</span>
-          <span className="hidden sm:inline">Lunes a sábado · 7:00 a.m. — 12:00 m. y 2:00 — 6:00 p.m.</span>
+          <span className="hidden sm:inline">Lunes a sábado · 7:00 a. m. a 12:00 m. y 2:00 a 6:00 p. m.</span>
         </div>
       </div>
 
@@ -134,15 +131,15 @@ export default function Page() {
       <section id="beneficios" className="benefits">
         <div className="container benefits-grid">
           <div data-revelar="izq">
-            <div className="eyebrow eyebrow-light">La diferencia GuajiraNet</div>
-            <h2>Más que internet.<br /><span>Una conexión de verdad.</span></h2>
-            <p>Somos de aquí. Por eso entendemos lo que necesitas y estamos cerca cuando nos necesitas.</p>
-            <a className="button button-yellow" href="#contacto">Conoce nuestros servicios <ArrowRight size={17} /></a>
+            <h2>Llegamos donde otros no cablean</h2>
+            <p>Somos de La Guajira: técnicos que viven en tu zona, soporte el mismo día y atención por WhatsApp para hogares y negocios.</p>
+            <a className="button button-yellow" href="#cobertura">Consultar mi zona <ArrowRight size={17} /></a>
           </div>
           <div className="benefit-list">
-            <div data-revelar="der"><ShieldCheck /><span><strong>Conexión estable</strong><small>Para tus clases, reuniones y entretenimiento sin interrupciones.</small></span></div>
-            <div data-revelar="der" data-delay="120"><Headphones /><span><strong>Soporte humano</strong><small>Hablas con personas reales que conocen tu zona.</small></span></div>
-            <div data-revelar="der" data-delay="240"><MessageCircle /><span><strong>Atención por WhatsApp</strong><small>Resolvemos tus dudas por el canal que ya utilizas.</small></span></div>
+            <div data-revelar="der"><RadioTower /><span><strong>Cobertura rural</strong><small>Rancherías, corregimientos y veredas: llegamos con fibra o radioenlace.</small></span></div>
+            <div data-revelar="der" data-delay="120"><Building2 /><span><strong>Enlaces dedicados para negocios</strong><small>Ancho de banda garantizado para tu datáfono, tu facturación y tus cámaras.</small></span></div>
+            <div data-revelar="der" data-delay="240"><Wrench /><span><strong>Soporte el mismo día</strong><small>Nuestros técnicos viven en la zona y llegan a tu casa el mismo día.</small></span></div>
+            <div data-revelar="der" data-delay="360"><MessageCircle /><span><strong>Atención por WhatsApp</strong><small>Resolvemos tus dudas por el canal que ya usas.</small></span></div>
           </div>
         </div>
         <FibraBanner />
@@ -151,8 +148,8 @@ export default function Page() {
       <section id="pasos" className="section pasos">
         <div className="container">
           <div className="section-heading">
-            <div data-revelar="izq"><div className="eyebrow">Instalar es fácil</div><h2>De la consulta al WiFi<br />en tres pasos.</h2></div>
-            <p data-revelar="der">Sin filas, sin papeleo interminable.<br />Nosotros nos encargamos.</p>
+            <div data-revelar="izq"><h2>Así te instalamos</h2></div>
+            <p data-revelar="der">Consultas tu zona, eliges el plan y en 48 horas un técnico te deja el WiFi funcionando.</p>
           </div>
           <ol className="pasos-grid">
             {pasos.map(({ icono: Icono, titulo, texto }, i) => (
@@ -169,32 +166,12 @@ export default function Page() {
 
       <Cobertura />
 
-      <SliderMensajes />
-
       <Clientes />
-
-      <section id="pago-factura" className="pago-factura">
-        <div className="container pago-factura-inner">
-          <div className="pago-factura-copy" data-revelar="izq">
-            <div className="eyebrow eyebrow-light">Paga fácil y seguro</div>
-            <h2>Tu factura,<br /><span>a un clic.</span></h2>
-            <p>Consulta y paga tu factura GuajiraNet en línea desde el portal de pagos. Es rápido, práctico y está disponible cuando lo necesites.</p>
-            <a className="button button-pay pago-factura-cta" href={PAGO} target="_blank" rel="noreferrer"><CreditCard size={19} /> Pagar factura <ArrowRight size={17} /></a>
-          </div>
-          <div className="pago-factura-card" data-revelar="der">
-            <span className="pago-factura-icon"><CreditCard size={25} /></span>
-            <strong>Portal de pagos</strong>
-            <span>Realiza tu pago de forma segura y continúa disfrutando tu conexión.</span>
-            <a href={PAGO} target="_blank" rel="noreferrer">Ingresar al portal <ArrowRight size={15} /></a>
-          </div>
-        </div>
-      </section>
 
       <section id="faq" className="section faq">
         <div className="container faq-grid">
           <div data-revelar="izq">
-            <div className="eyebrow">Resolvemos tus dudas</div>
-            <h2>Preguntas<br />frecuentes.</h2>
+            <h2>Preguntas frecuentes</h2>
             <p>¿No encuentras lo que buscas?</p>
             <a href="#contacto" className="text-link">Habla con nuestro equipo <ArrowRight size={16} /></a>
           </div>
@@ -215,7 +192,7 @@ export default function Page() {
       <section id="noticias" className="section noticias">
         <div className="container">
           <div className="section-heading">
-            <div data-revelar="izq"><div className="eyebrow">Actualidad GuajiraNet</div><h2>Noticias que te mantienen conectado.</h2></div>
+            <div data-revelar="izq"><div className="eyebrow">Actualidad</div><h2>Noticias de GuajiraNet</h2></div>
             <p data-revelar="der">Novedades de nuestra red, consejos para tu conexión y todo lo que pasa en GuajiraNet.</p>
           </div>
           <div className="noticias-grid">
@@ -251,30 +228,23 @@ export default function Page() {
 
       <section id="legal" className="legal-strip">
         <div className="container">
-          <div data-revelar="izq"><div className="eyebrow">Transparencia y confianza</div><h2>Marco legal</h2></div>
+          <div data-revelar="izq"><h2>Marco legal</h2></div>
           <div className="legal-links" data-revelar="der">
             <a href="#legal">Términos y condiciones <ArrowRight size={15} /></a>
             <a href="#legal">Política de privacidad <ArrowRight size={15} /></a>
-            <a href="#legal">PQR y reclamos <ArrowRight size={15} /></a>
+            <a href="https://www.guajiranet.com/presentar-un-pqrs/" target="_blank" rel="noreferrer">PQR y reclamos <ArrowRight size={15} /></a>
           </div>
         </div>
       </section>
 
-      <section id="contacto" className="contact">
-        <div className="container contact-inner">
-          <div data-revelar="izq"><div className="eyebrow eyebrow-light">¿Listo para conectarte?</div><h2>Hablemos de tu<br />próxima conexión.</h2></div>
-          <a className="button button-yellow" href={WHATSAPP} target="_blank" rel="noreferrer" data-revelar="der">Escribir por WhatsApp <ArrowRight size={17} /></a>
-        </div>
-      </section>
-
-      <section id="contactos" className="contact-details">
+      <section id="contacto" className="contact-details">
         <div className="container contact-details-grid">
           <div data-revelar="izq">
-            <div className="eyebrow">Estamos para ayudarte</div>
-            <h2>Conversemos.</h2>
-            <p>Encuentra atención cercana para instalación, soporte y facturación.</p>
+            <h2>¿Hablamos?</h2>
+            <p>Instalación, soporte o facturación: escríbenos por WhatsApp o llámanos. Te atendemos de lunes a sábado.</p>
           </div>
           <div className="contact-options" data-revelar="der">
+            <a href={WHATSAPP} target="_blank" rel="noreferrer"><MessageCircle size={20} /><span><small>WhatsApp</small><strong>Escríbenos ahora</strong></span></a>
             <a href="tel:+573009139909"><Phone size={20} /><span><small>Llámanos</small><strong>+57 300 913 9909</strong></span></a>
             <a id="correo" href="mailto:info@guajiranet.com"><Mail size={20} /><span><small>Escríbenos</small><strong>info@guajiranet.com</strong></span></a>
           </div>
@@ -297,10 +267,10 @@ export default function Page() {
           <div className="footer-col">
             <h4>Contactos</h4>
             <ul>
-              <li className="footer-dato"><MapPin size={15} /> Albania, Cra 4 #4-96, Barrio El Centro — La Guajira</li>
+              <li className="footer-dato"><MapPin size={15} /> Albania, Cra 4 #4-96, Barrio El Centro, La Guajira</li>
               <li><a className="footer-dato" href="mailto:info@guajiranet.com"><Mail size={15} /> info@guajiranet.com</a></li>
               <li><a className="footer-dato" href="tel:+573009139909"><Phone size={15} /> +57 300 913 9909</a></li>
-              <li className="footer-dato"><Clock size={15} /> Lunes a sábado<br />7:00 a.m. — 12:00 m.<br />2:00 — 6:00 p.m.</li>
+              <li className="footer-dato"><Clock size={15} /> Lunes a sábado<br />7:00 a. m. a 12:00 m.<br />2:00 a 6:00 p. m.</li>
             </ul>
           </div>
 
@@ -341,7 +311,7 @@ export default function Page() {
             <p>{noticiaActiva.detalle}</p>
             <h4>Consejos para tenerlo en cuenta</h4>
             <ul>{noticiaActiva.consejos.map((consejo) => <li key={consejo}>{consejo}</li>)}</ul>
-            <a className="button button-primary" href={noticiaActiva.id === 'wifi' ? '#faq' : '#contactos'} onClick={() => setNoticiaAbierta(null)}>Continuar en GuajiraNet <ArrowRight size={16} /></a>
+            <a className="button button-primary" href={noticiaActiva.id === 'wifi' ? '#faq' : '#contacto'} onClick={() => setNoticiaAbierta(null)}>Continuar en GuajiraNet <ArrowRight size={16} /></a>
           </div>
         )}
       </Modal>

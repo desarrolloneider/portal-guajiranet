@@ -10,14 +10,13 @@ const SECCIONES = [
   { id: 'cobertura', etiqueta: 'Cobertura' },
   { id: 'beneficios', etiqueta: 'Beneficios' },
   { id: 'autogestion', etiqueta: 'Resuelve en minutos' },
-  { id: 'pago-factura', etiqueta: 'Pagar factura' },
   { id: 'faq', etiqueta: 'Preguntas frecuentes' },
   { id: 'noticias', etiqueta: 'Noticias' },
-  { id: 'contactos', etiqueta: 'Contactos' },
+  { id: 'contacto', etiqueta: 'Contacto' },
   { id: 'legal', etiqueta: 'Marco legal' },
 ]
 
-const ESCRITORIO = SECCIONES.slice(1, 6)
+const ESCRITORIO = SECCIONES.slice(1, 5)
 const MOVIL = SECCIONES.slice(0, 10)
 
 type Props = {
@@ -80,12 +79,12 @@ export function NavegacionPrincipal({ pagoHref }: Props) {
               {seccion.etiqueta}
             </a>
           ))}
-          <div className={`nav-dropdown ${SECCIONES.slice(6).some((seccion) => activa === seccion.id) ? 'activo' : ''}`}>
-            <button type="button" aria-expanded={SECCIONES.slice(6).some((seccion) => activa === seccion.id)}>
+          <div className={`nav-dropdown ${SECCIONES.slice(5).some((seccion) => activa === seccion.id) ? 'activo' : ''}`}>
+            <button type="button" aria-expanded={SECCIONES.slice(5).some((seccion) => activa === seccion.id)}>
               Más <ChevronDown size={14} />
             </button>
             <div className="nav-dropdown-menu">
-              {SECCIONES.slice(6).map((seccion) => (
+              {SECCIONES.slice(5).map((seccion) => (
                 <a key={seccion.id} href={`#${seccion.id}`} onClick={irA(seccion.id)}>{seccion.etiqueta}</a>
               ))}
             </div>
@@ -127,7 +126,7 @@ export function NavegacionPrincipal({ pagoHref }: Props) {
       <section id="inicio" className="hero-new">
         <div className="container hero-grid-new">
           <div className="hero-copy">
-            <div className="eyebrow"><span className="eyebrow-dot" /> Conectando sueños</div>
+            <div className="eyebrow"><span className="eyebrow-dot" /> Internet por fibra óptica</div>
             <h1>Internet que sí<br /><em>llega contigo.</em></h1>
             <p>Conecta tu hogar o negocio con internet rápido, estable y pensado para la vida en La Guajira.</p>
             <div className="hero-actions">
@@ -135,8 +134,8 @@ export function NavegacionPrincipal({ pagoHref }: Props) {
               <a className="text-link" href="#cobertura" onClick={irA('cobertura')}><MapPin size={17} /> Consultar cobertura</a>
             </div>
             <div className="hero-proof">
-              <div className="avatars" aria-hidden="true"><span>GN</span><span>24</span><span>+</span></div>
-              <p><strong>Conexión cercana</strong><br />Soporte humano en tu zona.</p>
+              <span className="hero-proof-icono" aria-hidden="true"><MapPin size={18} /></span>
+              <p><strong>Más de 8 años</strong><br />conectando hogares y negocios de La Guajira.</p>
             </div>
           </div>
           <div className="hero-visual-new">

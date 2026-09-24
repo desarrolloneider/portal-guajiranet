@@ -1,6 +1,10 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
+import { Bricolage_Grotesque, Figtree } from 'next/font/google'
 import './globals.css'
+
+const titulos = Bricolage_Grotesque({ subsets: ['latin'], variable: '--fuente-titulos', display: 'swap' })
+const texto = Figtree({ subsets: ['latin'], variable: '--fuente-texto', display: 'swap' })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.guajiranet.com'),
@@ -40,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es" className="bg-background">
+    <html lang="es" className={`${titulos.variable} ${texto.variable} bg-background`}>
       <body className="antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}

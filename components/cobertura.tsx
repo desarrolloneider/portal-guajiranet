@@ -3,12 +3,16 @@
 import { useState } from 'react'
 import { ArrowRight, Check, MessageCircle, Wifi } from 'lucide-react'
 import { MUNICIPIOS, type Municipio } from '@/lib/guajira-map'
-import { MapaNacional } from '@/components/mapa-nacional'
+import { MapaNacional, type DestinoMapa } from '@/components/mapa-nacional'
+import { DEPARTAMENTOS } from '@/lib/colombia-map'
 import { NODOS } from '@/lib/red-nacional'
 
-type Resultado = { name: string; active: true; nacional: boolean } | null | 'sin-datos'
+type Resultado = { name: string; active: true; nacional: boolean; depto?: string } | null | 'sin-datos'
 
 const ACTIVOS = MUNICIPIOS.filter((m) => m.active)
+const DEPTOS_CON_RED = new Set(NODOS.map((n) => n.depto)).size
+const nombreDepto = (codigo: string) => DEPARTAMENTOS.find((d) => d.codigo === codigo)?.nombre ?? ''
+const nodoDelMunicipio = (codigo: string) => NODOS.find((n) => n.municipio === codigo)
 const ORDEN_ALFABETICO = [...ACTIVOS].sort((a, b) => a.name.localeCompare(b.name, 'es'))
 
 const normalizar = (texto: string) => texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim()
@@ -21,6 +25,11 @@ export function Cobertura() {
   const [foco, setFoco] = useState<string | null>(null)
   const [elegido, setElegido] = useState<string | null>(null)
   const [resultado, setResultado] = useState<Resultado>(null)
+  const [destino, setDestino] = useState<DestinoMapa | null>(null)
+
+  const mostrarEnMapa = (id?: string) => {
+    if (id) setDestino({ tipo: 'nodo', id, clave: Date.now() })
+  }
 
   const resaltado = foco ?? elegido
 
@@ -28,6 +37,7 @@ export function Cobertura() {
     setElegido(m.code)
     setConsulta(m.name)
     setResultado({ name: m.name, active: true, nacional: false })
+    mostrarEnMapa(nodoDelMunicipio(m.code)?.id)
   }
 
   const consultarCobertura = () => {
@@ -44,11 +54,13 @@ export function Cobertura() {
     if (encontrado) {
       setResultado({ name: encontrado.name, active: true, nacional: false })
       setElegido(encontrado.code)
+      mostrarEnMapa(nodoDelMunicipio(encontrado.code)?.id)
       return
     }
     if (ciudadNacional) {
-      setResultado({ name: ciudadNacional.nombre, active: true, nacional: true })
+      setResultado({ name: ciudadNacional.nombre, active: true, nacional: true, depto: nombreDepto(ciudadNacional.depto) })
       setElegido(null)
+      mostrarEnMapa(ciudadNacional.id)
       return
     }
     setResultado('sin-datos')
@@ -59,9 +71,8 @@ export function Cobertura() {
     <section id="cobertura" className="section coverage">
       <div className="container coverage-grid">
         <div>
-          <div className="eyebrow">Estamos cerca</div>
           <h2>¿Llegamos a<br />tu dirección?</h2>
-          <p>Escribe tu municipio o tócalo en el mapa y te confirmamos si puedes instalar GuajiraNet hoy.</p>
+          <p>Escribe tu municipio o búscalo en el mapa. Si ya llegamos, te agendamos la instalación.</p>
 
           <form
             className="coverage-form"
@@ -89,7 +100,7 @@ export function Cobertura() {
               <Check size={16} />
               <span>
                 <strong>{resultado.name}</strong>{' '}
-                {resultado.nacional ? 'tiene cobertura nacional activa en nuestra red. Podemos ayudarte a validar la instalación.' : 'tiene cobertura activa en La Guajira. Podemos agendar tu instalación.'}
+                {resultado.nacional ? `está en nuestra red${resultado.depto ? ` de ${resultado.depto}` : ''}. Escríbenos y validamos la instalación en tu dirección.` : 'tiene cobertura activa en La Guajira. Podemos agendar tu instalación.'}
                 <a className="coverage-whatsapp" href={whatsappHref(resultado.name)} target="_blank" rel="noreferrer">
                   <MessageCircle size={14} /> Escríbenos al WhatsApp <b>300 913 9909</b>
                 </a>
@@ -118,23 +129,18 @@ export function Cobertura() {
           </div>
         </div>
 
-        <div className="map-panel map-panel-nivel-1 map-vista-nacional">
+        <div className="map-panel map-vista-nacional">
           <div className="map-topline">
-            <span><Wifi size={14} /> Red nacional conectada</span>
-            <strong>{NODOS.length} ciudades y nodos con cobertura</strong>
-          </div>
-          <div className="map-live-strip">
-            <span><i className="live-dot" /> Red operativa</span>
-            <strong>{NODOS.length} ciudades conectadas</strong>
-            <small>Actualizado hoy</small>
+            <span><Wifi size={14} /> Nuestra red</span>
+            <strong>{NODOS.length} ciudades en {DEPTOS_CON_RED} departamentos</strong>
           </div>
 
-          <MapaNacional />
+          <MapaNacional destino={destino} />
 
           <div className="map-footer">
             <span><i className="legend-linea" /> Fibra terrestre</span>
             <span><i className="legend-linea legend-linea-sub" /> Fibra submarina</span>
-            <span className="map-source">Trazado ilustrativo · verificar con planta externa</span>
+            <span className="map-source">Trazado de referencia</span>
           </div>
         </div>
       </div>
