@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowRight, ChevronDown, ClipboardCheck, Clock, CreditCard, FileText, Gauge, Headphones, KeyRound, Mail, MapPin, MessageCircle, MousePointer2, Newspaper, Phone, ShieldCheck, Wifi, Wrench } from 'lucide-react'
+import { motion, useReducedMotion } from 'motion/react'
+import { ArrowRight, CalendarDays, ChevronDown, ClipboardCheck, Clock, CreditCard, FileText, Gauge, Headphones, KeyRound, Mail, MapPin, MessageCircle, MousePointer2, Newspaper, Phone, ShieldCheck, Wifi, Wrench } from 'lucide-react'
 import { Autogestion } from '@/components/autogestion'
 import { Clientes } from '@/components/clientes'
 import { Cobertura } from '@/components/cobertura'
@@ -65,36 +66,46 @@ const noticias = [
   {
     id: 'expansion',
     categoria: 'Comunidad',
+    tono: 'verde',
     fecha: '12 agosto 2026',
+    fechaISO: '2026-08-12',
     titulo: 'Seguimos expandiendo nuestra red por toda Colombia',
     resumen: 'La Guajira es nuestro punto de partida y Colombia, el horizonte: conectamos nuevas comunidades con una red estable y cercana.',
     imagen: '/noticias/expansion-red.webp',
+    enfoque: '48% 30%',
     detalle: 'Estamos llevando nuestra experiencia de conectividad local a nuevas regiones del país. Cada nueva zona comienza con escucha, planeación y una instalación pensada para las necesidades reales de la comunidad.',
     consejos: ['Consulta tu municipio en el mapa de cobertura.', 'Déjanos tus datos si tu zona aparece como próxima.', 'Comparte la información con vecinos que también necesiten conectarse.'],
   },
   {
     id: 'wifi',
     categoria: 'Servicio',
+    tono: 'azul',
     fecha: '06 agosto 2026',
+    fechaISO: '2026-08-06',
     titulo: 'Consejos para disfrutar mejor tu WiFi en casa',
     resumen: 'Pequeños cambios de ubicación y hábitos pueden ayudarte a aprovechar mejor la conexión.',
     imagen: '/noticias/wifi-en-casa.jpg',
+    enfoque: '40% 50%',
     detalle: 'Una red WiFi estable empieza con una buena ubicación del router y continúa con hábitos sencillos de uso. Prueba estos consejos antes de solicitar soporte.',
     consejos: ['Ubica el router en un lugar alto, abierto y central.', 'Evita esconderlo dentro de muebles o cerca de electrodomésticos.', 'Conecta por cable los equipos que necesitan máxima estabilidad.', 'Reinicia el router solo cuando sea necesario y revisa primero las luces indicadoras.'],
   },
   {
     id: 'atencion',
     categoria: 'GuajiraNet',
+    tono: 'amarillo',
     fecha: '28 julio 2026',
+    fechaISO: '2026-07-28',
     titulo: 'Atención local, tecnología para todos',
     resumen: 'Estamos cerca para ayudarte con instalación, soporte, facturación y orientación.',
     imagen: '/noticias/atencion-local.png',
+    enfoque: '53% 40%',
     detalle: 'Nuestra atención combina herramientas digitales con acompañamiento humano. Queremos que cada solicitud tenga una respuesta clara y un canal sencillo para continuar.',
     consejos: ['Escríbenos por WhatsApp para una orientación rápida.', 'Ten a la mano tu número de contrato si necesitas soporte.', 'Consulta el portal de pagos para realizar tu trámite en línea.'],
   },
 ]
 
 export default function Page() {
+  const reduce = useReducedMotion()
   const [openFaq, setOpenFaq] = useState<number | null>(0)
   const [noticiaAbierta, setNoticiaAbierta] = useState<string | null>(null)
   const noticiaActiva = noticias.find((noticia) => noticia.id === noticiaAbierta)
@@ -117,6 +128,8 @@ export default function Page() {
       <Metricas />
 
       <PlanesCarrusel />
+
+      <Autogestion />
 
       <section id="beneficios" className="benefits">
         <div className="container benefits-grid">
@@ -177,8 +190,6 @@ export default function Page() {
         </div>
       </section>
 
-      <Autogestion />
-
       <section id="faq" className="section faq">
         <div className="container faq-grid">
           <div data-revelar="izq">
@@ -201,25 +212,38 @@ export default function Page() {
         </div>
       </section>
 
-      <section id="noticias" className="section news">
+      <section id="noticias" className="section noticias">
         <div className="container">
           <div className="section-heading">
             <div data-revelar="izq"><div className="eyebrow">Actualidad GuajiraNet</div><h2>Noticias que te mantienen conectado.</h2></div>
+            <p data-revelar="der">Novedades de nuestra red, consejos para tu conexión y todo lo que pasa en GuajiraNet.</p>
           </div>
-          <div className="news-grid">
+          <div className="noticias-grid">
             {noticias.map((noticia, index) => (
-              <article className={index === 0 ? 'news-feature' : `news-card ${index === 2 ? 'yellow-card' : ''}`} data-revelar data-delay={index ? `${index * 120}` : undefined} key={noticia.id}>
-                <div className={`news-image ${index === 2 ? 'news-image-branded' : ''}`}>
-                  {index === 2 && <img className="news-logo-watermark" src="/logo-guajiranet.png" alt="" aria-hidden="true" />}
-                  <img className="news-card-photo" src={noticia.imagen} alt="" loading="lazy" />
+              <motion.article
+                className={index === 0 ? 'noticia noticia--destacada' : 'noticia'}
+                key={noticia.id}
+                initial={reduce ? false : { opacity: 0, y: 40 }}
+                whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.15, margin: '0px 0px -40px 0px' }}
+                transition={reduce ? { duration: 0 } : { duration: 0.7, delay: index * 0.12, ease: [0.22, 0.61, 0.36, 1] }}
+              >
+                <div className="noticia-media">
+                  {index === 0 && <span className="noticia-sello">Destacada</span>}
+                  <img src={noticia.imagen} alt="" loading="lazy" style={{ objectPosition: noticia.enfoque }} />
                 </div>
-                <div className="news-body">
-                  <span>{noticia.categoria} · {noticia.fecha}</span>
+                <div className="noticia-cuerpo">
+                  <div className="noticia-meta">
+                    <span className={`noticia-chip noticia-chip--${noticia.tono}`}>{noticia.categoria}</span>
+                    <time className="noticia-fecha" dateTime={noticia.fechaISO}><CalendarDays size={14} aria-hidden="true" /> {noticia.fecha}</time>
+                  </div>
                   <h3>{noticia.titulo}</h3>
                   <p>{noticia.resumen}</p>
-                  <button className="news-more" type="button" onClick={() => setNoticiaAbierta(noticia.id)}>{index === 0 ? 'Leer noticia' : 'Conocer más'} <ArrowRight size={16} /></button>
+                  <button className="noticia-cta" type="button" onClick={() => setNoticiaAbierta(noticia.id)} aria-label={`Leer noticia: ${noticia.titulo}`}>
+                    Leer noticia <span className="noticia-cta-icono"><ArrowRight size={16} /></span>
+                  </button>
                 </div>
-              </article>
+              </motion.article>
             ))}
           </div>
         </div>

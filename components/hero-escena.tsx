@@ -1,43 +1,47 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'motion/react'
 
 export function HeroEscena() {
-  const [p, setP] = useState(0)
-  const frame = useRef(0)
+  const reduce = useReducedMotion()
+  const { scrollY } = useScroll()
+  const scrollSuave = useSpring(scrollY, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
+  })
 
-  useEffect(() => {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (reduce) return
-    const onScroll = () => {
-      cancelAnimationFrame(frame.current)
-      frame.current = requestAnimationFrame(() => {
-        setP(Math.min(window.scrollY / 620, 1))
-      })
-    }
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => {
-      window.removeEventListener('scroll', onScroll)
-      cancelAnimationFrame(frame.current)
-    }
-  }, [])
-
-  const caida = p * 190
+  const desplazamientoX = useTransform(scrollSuave, [0, 620], [0, 34])
+  const desplazamientoY = useTransform(scrollSuave, [0, 620], [0, 190])
+  const giroMano = useTransform(scrollSuave, [0, 620], [0, 9])
+  const escalaMano = useTransform(scrollSuave, [0, 620], [1, 0.95])
+  const opacidadMano = useTransform(scrollSuave, [0, 620], [1, 0.75])
+  const giroRouter = useTransform(scrollSuave, [0, 620], [0, 900])
 
   return (
     <div className="hero-escena">
-      <img
+      <motion.img
         className="hero-mano"
         src="/guajiranet-hand.png"
         alt="Mano formada por hilos de fibra óptica"
+        width={880}
+        height={1016}
         style={{
-          transform: `translate3d(${p * 34}px, ${caida}px, 0) rotate(${p * 9}deg) scale(${1 - p * 0.05})`,
-          opacity: 1 - p * 0.25,
+          x: reduce ? 0 : desplazamientoX,
+          y: reduce ? 0 : desplazamientoY,
+          rotate: reduce ? 0 : giroMano,
+          scale: reduce ? 1 : escalaMano,
+          opacity: reduce ? 1 : opacidadMano,
         }}
       />
 
-      <div className="router-orbita" style={{ transform: `translate3d(${p * 34}px, ${caida}px, 0)` }}>
+      <motion.div
+        className="router-orbita"
+        style={{
+          x: reduce ? 0 : desplazamientoX,
+          y: reduce ? 0 : desplazamientoY,
+        }}
+      >
         <div className="router-ancla">
           <div className="router-halo" />
           <span className="router-onda onda-1" />
@@ -45,7 +49,7 @@ export function HeroEscena() {
           <span className="router-onda onda-3" />
 
           <div className="router-flota">
-            <div className="router-giro" style={{ transform: `rotateY(${p * 900}deg)` }}>
+            <motion.div className="router-giro" style={{ rotateY: reduce ? 0 : giroRouter }}>
               <div className="router-vaiven">
                 <div className="router-cuerpo">
                   <div className="cara cara-frente">
@@ -66,12 +70,12 @@ export function HeroEscena() {
                   <span className="antena antena-b"><i /><i /></span>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
 
           <div className="router-sombra" />
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }

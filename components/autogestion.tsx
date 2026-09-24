@@ -214,10 +214,11 @@ export function Autogestion() {
   const [vista, setVista] = useState<Vista>(null)
 
   const tarjetas = [
-    { icono: CreditCard, titulo: 'Pagar factura', texto: 'Paga en línea de forma rápida y segura, sin salir de casa.', accion: 'Ir a pagar', href: PAGO },
-    { icono: Gauge, titulo: 'Test de velocidad', texto: 'Mide en segundos la velocidad real de tu conexión.', accion: 'Medir ahora', vista: 'velocidad' as const },
-    { icono: FileText, titulo: 'Presentar un PQRS', texto: 'Radica tu petición, queja, reclamo o sugerencia.', accion: 'Radicar', vista: 'pqrs' as const },
-    { icono: KeyRound, titulo: 'Cambio de clave', texto: 'Actualiza la contraseña de tu red WiFi cuando quieras.', accion: 'Cambiar clave', vista: 'clave' as const },
+    { icono: CreditCard, titulo: 'Pagar factura', texto: 'Paga en línea de forma rápida y segura, sin salir de casa.', accion: 'Ir a pagar', href: PAGO, whatsapp: false },
+    { icono: Gauge, titulo: 'Test de velocidad', texto: 'Mide en segundos la velocidad real de tu conexión.', accion: 'Medir ahora', vista: 'velocidad' as const, whatsapp: false },
+    { icono: FileText, titulo: 'Presentar un PQRS', texto: 'Radica tu petición, queja, reclamo o sugerencia.', accion: 'Radicar', vista: 'pqrs' as const, whatsapp: false },
+    { icono: KeyRound, titulo: 'Cambio de clave', texto: 'Actualiza la contraseña de tu red WiFi cuando quieras.', accion: 'Cambiar clave', vista: 'clave' as const, whatsapp: false },
+    { icono: MessageCircle, titulo: 'Hablar por WhatsApp', texto: 'Escríbenos para recibir orientación rápida y cercana.', accion: 'Escríbenos', href: `https://wa.me/${WHATSAPP}`, whatsapp: true },
   ]
 
   return (
@@ -225,16 +226,16 @@ export function Autogestion() {
       <div className="container">
         <div className="section-heading">
           <div data-revelar="izq">
-            <div className="eyebrow">Hazlo tú mismo, cuando quieras</div>
-            <h2>Tu servicio,<br />en tus manos.</h2>
+            <div className="eyebrow">Resuelve en minutos</div>
+            <h2>Tu servicio,<br /><span>siempre a mano.</span></h2>
           </div>
-          <p data-revelar="der">Las gestiones más comunes, resueltas<br />en menos de un minuto y sin llamar.</p>
+          <p data-revelar="der">Paga, mide, reporta o escríbenos.<br />Las gestiones más comunes, sin llamar.</p>
         </div>
 
         <div className="auto-grid">
-          {tarjetas.map(({ icono: Icono, titulo, texto, accion, href, vista: v }, i) =>
+          {tarjetas.map(({ icono: Icono, titulo, texto, accion, href, vista: v, whatsapp }, i) =>
             href ? (
-              <a className="auto-card" href={href} target="_blank" rel="noreferrer" key={titulo} data-revelar data-delay={i * 100}>
+              <a className={`auto-card${whatsapp ? ' auto-card-whatsapp' : ''}`} href={href} target="_blank" rel="noreferrer" key={titulo} data-revelar data-delay={i * 100}>
                 <span className="auto-icono"><Icono size={21} /></span>
                 <strong>{titulo}</strong>
                 <small>{texto}</small>

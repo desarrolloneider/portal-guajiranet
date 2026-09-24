@@ -9,7 +9,7 @@ const SECCIONES = [
   { id: 'planes', etiqueta: 'Planes' },
   { id: 'cobertura', etiqueta: 'Cobertura' },
   { id: 'beneficios', etiqueta: 'Beneficios' },
-  { id: 'autogestion', etiqueta: 'Autogestión' },
+  { id: 'autogestion', etiqueta: 'Resuelve en minutos' },
   { id: 'pago-factura', etiqueta: 'Pagar factura' },
   { id: 'faq', etiqueta: 'Preguntas frecuentes' },
   { id: 'noticias', etiqueta: 'Noticias' },
@@ -127,7 +127,7 @@ export function NavegacionPrincipal({ pagoHref }: Props) {
       <section id="inicio" className="hero-new">
         <div className="container hero-grid-new">
           <div className="hero-copy">
-            <div className="eyebrow"><span className="eyebrow-dot" /> Conectividad local, atención cercana</div>
+            <div className="eyebrow"><span className="eyebrow-dot" /> Conectando sueños</div>
             <h1>Internet que sí<br /><em>llega contigo.</em></h1>
             <p>Conecta tu hogar o negocio con internet rápido, estable y pensado para la vida en La Guajira.</p>
             <div className="hero-actions">

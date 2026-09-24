@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { motion, useReducedMotion } from 'motion/react'
 import { ArrowRight, ChevronLeft, ChevronRight, Globe, MessageCircle, MonitorPlay, PhoneCall, Smartphone } from 'lucide-react'
 
 type Plan = {
@@ -24,6 +25,7 @@ const PLANES: Plan[] = [
 ]
 
 export function PlanesCarrusel() {
+  const reduce = useReducedMotion()
   const [ini, setIni] = useState(true)
   const [fin, setFin] = useState(false)
   const pista = useRef<HTMLDivElement>(null)
@@ -79,7 +81,15 @@ export function PlanesCarrusel() {
 
           <div className="planes-pista" ref={pista}>
             {PLANES.map((p, i) => (
-              <article className={`pcard nivel-${i}${p.destacado ? ' destacado' : ''}`} key={p.megas}>
+              <motion.article
+                className={`pcard nivel-${i}${p.destacado ? ' destacado' : ''}`}
+                key={p.megas}
+                initial={reduce ? false : { opacity: 0, y: 48, scale: 0.94 }}
+                whileInView={reduce ? undefined : { opacity: 1, y: 0, scale: 1 }}
+                whileHover={reduce ? undefined : { y: -7, scale: 1.01 }}
+                viewport={{ once: true, amount: 0.08, margin: '0px 0px -40px 0px' }}
+                transition={reduce ? { duration: 0 } : { duration: 0.7, delay: i * 0.1, ease: [0.22, 0.61, 0.36, 1] }}
+              >
                 {p.destacado && <span className="pcard-cinta">Más elegido</span>}
 
                 <header className="pcard-cabecera">
@@ -108,7 +118,7 @@ export function PlanesCarrusel() {
                 </ul>
 
                 <a className="pcard-cta" href="#contacto">Lo quiero <ArrowRight size={17} /></a>
-              </article>
+              </motion.article>
             ))}
           </div>
         </div>

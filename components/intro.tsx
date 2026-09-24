@@ -78,7 +78,7 @@ export function Intro() {
       <div className="intro-video-vignette" aria-hidden="true" />
       <div className="intro-video-marca">
         <img src="/logo-guajiranet-claro.png" alt="GuajiraNet Telecomunicaciones" width={1280} height={720} />
-        <span>Conectando lo que importa.</span>
+        <span>Conectando sueños.</span>
       </div>
       <button type="button" className="intro-skip intro-video-skip" onClick={cerrar}>
         Saltar intro
