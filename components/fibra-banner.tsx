@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { Building2, Home, Smartphone } from 'lucide-react'
 
 const HILOS = [
@@ -13,29 +13,69 @@ const HILOS = [
 ]
 
 const NODOS = [
-  { icono: Home, titulo: 'Hogares', pie: 'Fibra hasta la casa', en: 0.45 },
-  { icono: Building2, titulo: 'Negocios', pie: 'Enlaces dedicados', en: 0.62 },
-  { icono: Smartphone, titulo: 'Móvil', pie: 'Siempre conectado', en: 0.79 },
+  { icono: Home, titulo: 'Hogares', pie: 'Fibra hasta la casa' },
+  { icono: Building2, titulo: 'Negocios', pie: 'Enlaces dedicados' },
+  { icono: Smartphone, titulo: 'Móvil', pie: 'Siempre conectado' },
 ]
 
+const acotar = (v: number) => Math.max(0, Math.min(v, 1))
+
+/**
+ * Fondo de hilos de fibra que se dibujan al bajar por la sección, y la fila de acometidas:
+ * una luz recorre el riel y enciende cada nodo (hogares, negocios, móvil) cuando pasa por él.
+ * En escritorio el riel es horizontal; en celular pasa a ser vertical.
+ */
 export function FibraBanner() {
-  const ref = useRef<HTMLDivElement>(null)
+  const fondoRef = useRef<HTMLDivElement>(null)
+  const nodosRef = useRef<HTMLDivElement>(null)
+  const rielRef = useRef<HTMLDivElement>(null)
   const frame = useRef(0)
+  // p: avance de los hilos (toda la sección). r: avance de la luz por el riel.
   const [p, setP] = useState(0)
+  const [r, setR] = useState(0)
+  // Punto del riel (0 a 1) donde queda cada nodo; se mide del DOM.
+  const [umbrales, setUmbrales] = useState([0.04, 0.37, 0.71])
 
   useEffect(() => {
+    const riel = rielRef.current
+    const nodos = nodosRef.current
+    if (!riel || !nodos) return
+
+    const medirUmbrales = () => {
+      const rr = riel.getBoundingClientRect()
+      if (!rr.width || !rr.height) return
+      const vertical = rr.height > rr.width
+      const puntos = Array.from(nodos.querySelectorAll<HTMLElement>('.fibra-nodo-punto'))
+      if (puntos.length !== NODOS.length) return
+      setUmbrales(
+        puntos.map((pt) => {
+          const b = pt.getBoundingClientRect()
+          const u = vertical ? (b.top + b.height / 2 - rr.top) / rr.height : (b.left + b.width / 2 - rr.left) / rr.width
+          return acotar(u)
+        }),
+      )
+    }
+    medirUmbrales()
+    const ro = new ResizeObserver(medirUmbrales)
+    ro.observe(nodos)
+
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       setP(1)
-      return
+      setR(1)
+      return () => ro.disconnect()
     }
 
     const medir = () => {
-      const el = ref.current
-      if (!el) return
-      const r = el.getBoundingClientRect()
       const vh = window.innerHeight || 800
-      const avance = (vh - r.top) / (vh * 0.7 + r.height * 0.35)
-      setP((prev) => Math.max(prev, Math.max(0, Math.min(avance, 1))))
+      const fondo = fondoRef.current
+      if (fondo) {
+        const b = fondo.getBoundingClientRect()
+        const avance = (vh - b.top) / (vh * 0.7 + b.height * 0.35)
+        setP((prev) => Math.max(prev, acotar(avance)))
+      }
+      // La luz arranca cuando la fila asoma por abajo y llega al final cuando está a media pantalla.
+      const b = nodos.getBoundingClientRect()
+      setR((prev) => Math.max(prev, acotar((vh - b.top) / (vh * 0.55))))
     }
 
     const onScroll = () => {
@@ -47,6 +87,7 @@ export function FibraBanner() {
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onScroll)
     return () => {
+      ro.disconnect()
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
       cancelAnimationFrame(frame.current)
@@ -54,70 +95,74 @@ export function FibraBanner() {
   }, [])
 
   const dibujado = p > 0.92
+  const enCamino = r > 0.01 && r < 0.99
 
   return (
-    <div className="fibra" ref={ref}>
-      <svg className="fibra-svg" viewBox="0 0 1200 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-        <defs>
-          <linearGradient id="hiloGrad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#4fa3e8" stopOpacity="0" />
-            <stop offset="18%" stopColor="#4fa3e8" stopOpacity=".85" />
-            <stop offset="70%" stopColor="#8ccbff" stopOpacity=".9" />
-            <stop offset="100%" stopColor="#fad21b" stopOpacity=".75" />
-          </linearGradient>
-          <filter id="hiloGlow" x="-10%" y="-40%" width="120%" height="180%">
-            <feGaussianBlur stdDeviation="4" result="b" />
-            <feMerge>
-              <feMergeNode in="b" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
+    <>
+      <div className="fibra-fondo" ref={fondoRef} aria-hidden="true">
+        <svg className="fibra-svg" viewBox="0 0 1200 560" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <linearGradient id="hiloGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#4fa3e8" stopOpacity="0" />
+              <stop offset="18%" stopColor="#4fa3e8" stopOpacity=".85" />
+              <stop offset="70%" stopColor="#8ccbff" stopOpacity=".9" />
+              <stop offset="100%" stopColor="#fad21b" stopOpacity=".75" />
+            </linearGradient>
+            <filter id="hiloGlow" x="-10%" y="-40%" width="120%" height="180%">
+              <feGaussianBlur stdDeviation="4" result="b" />
+              <feMerge>
+                <feMergeNode in="b" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
 
-        <g filter="url(#hiloGlow)">
-          {HILOS.map((d, i) => (
-            <path
-              key={d}
-              id={`hilo-${i}`}
-              d={d}
-              className="hilo"
-              pathLength={1}
-              strokeDasharray={1}
-              strokeDashoffset={1 - Math.max(0, Math.min((p - i * 0.045) / 0.7, 1))}
-            />
-          ))}
-        </g>
-
-        {dibujado && (
-          <g className="destellos">
-            {HILOS.map((_, i) => (
-              <circle key={i} className="destello" r="3.5">
-                <animateMotion dur={`${4.5 + i * 0.8}s`} repeatCount="indefinite" begin={`${i * 0.7}s`}>
-                  <mpath href={`#hilo-${i}`} />
-                </animateMotion>
-              </circle>
+          <g filter="url(#hiloGlow)">
+            {HILOS.map((d, i) => (
+              <path
+                key={d}
+                id={`hilo-${i}`}
+                d={d}
+                className="hilo"
+                pathLength={1}
+                strokeDasharray={1}
+                strokeDashoffset={1 - Math.max(0, Math.min((p - i * 0.045) / 0.7, 1))}
+              />
             ))}
           </g>
-        )}
-      </svg>
 
-      <div className="container fibra-nodos">
-        <div className="fibra-riel">
-          <span className="fibra-riel-luz" style={{ transform: `scaleX(${p})` }} />
+          {dibujado && (
+            <g className="destellos">
+              {HILOS.map((_, i) => (
+                <circle key={i} className="destello" r="3.5">
+                  <animateMotion dur={`${4.5 + i * 0.8}s`} repeatCount="indefinite" begin={`${i * 0.7}s`}>
+                    <mpath href={`#hilo-${i}`} />
+                  </animateMotion>
+                </circle>
+              ))}
+            </g>
+          )}
+        </svg>
+      </div>
+
+      <div className="container fibra-nodos" ref={nodosRef} style={{ '--r': r } as CSSProperties}>
+        <div className="fibra-riel" ref={rielRef} aria-hidden="true">
+          <span className="fibra-riel-luz" />
+          <span className={`fibra-riel-cabeza${enCamino ? ' on' : ''}`} />
         </div>
-        <div className="fibra-tarjetas">
-          {NODOS.map(({ icono: Icono, titulo, pie, en }) => (
-            <div className={`fibra-nodo ${p >= en ? 'on' : ''}`} key={titulo}>
-              <span className="fibra-nodo-punto" />
-              <span className="fibra-nodo-icono">
-                <Icono size={20} />
+        <ul className="fibra-tarjetas">
+          {NODOS.map(({ icono: Icono, titulo, pie }, i) => (
+            <li className={`fibra-nodo${r >= umbrales[i] - 0.005 ? ' on' : ''}`} key={titulo}>
+              <span className="fibra-nodo-punto" aria-hidden="true" />
+              <span className="fibra-nodo-icono" aria-hidden="true">
+                <Icono size={22} />
               </span>
               <strong>{titulo}</strong>
               <small>{pie}</small>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
-    </div>
+    </>
   )
 }

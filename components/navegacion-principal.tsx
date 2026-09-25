@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { ArrowRight, ChevronDown, CreditCard, MapPin, Menu, X } from 'lucide-react'
+import { HeroCobertura } from '@/components/hero-cobertura'
 import { HeroEscena } from '@/components/hero-escena'
+import { PRECIO_DESDE } from '@/lib/planes'
 
 const SECCIONES = [
   { id: 'inicio', etiqueta: 'Inicio' },
@@ -126,12 +128,14 @@ export function NavegacionPrincipal({ pagoHref }: Props) {
       <section id="inicio" className="hero-new">
         <div className="container hero-grid-new">
           <div className="hero-copy">
+            <p className="hero-slogan">Conectando sueños</p>
             <div className="eyebrow"><span className="eyebrow-dot" /> Internet por fibra óptica</div>
             <h1>Internet que sí<br /><em>llega contigo.</em></h1>
             <p>Conecta tu hogar o negocio con internet rápido, estable y pensado para la vida en La Guajira.</p>
+            <HeroCobertura />
             <div className="hero-actions">
-              <a className="button button-primary" href="#planes" onClick={irA('planes')}>Ver planes <ArrowRight size={17} /></a>
-              <a className="text-link" href="#cobertura" onClick={irA('cobertura')}><MapPin size={17} /> Consultar cobertura</a>
+              <a className="button hero-boton-planes" href="#planes" onClick={irA('planes')}>Ver planes <ArrowRight size={17} /></a>
+              <span className="hero-desde">Desde <strong>${PRECIO_DESDE}</strong>/mes · instalación incluida</span>
             </div>
             <div className="hero-proof">
               <span className="hero-proof-icono" aria-hidden="true"><MapPin size={18} /></span>
@@ -139,7 +143,6 @@ export function NavegacionPrincipal({ pagoHref }: Props) {
             </div>
           </div>
           <div className="hero-visual-new">
-            <div className="hero-orbit-label"><span className="eyebrow-dot" /> Fibra diseñada para tu día a día</div>
             <HeroEscena />
           </div>
         </div>

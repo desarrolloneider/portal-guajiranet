@@ -1,24 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ArrowRight, Check, MessageCircle, Wifi } from 'lucide-react'
-import { MUNICIPIOS, type Municipio } from '@/lib/guajira-map'
+import { type Municipio } from '@/lib/guajira-map'
 import { MapaNacional, type DestinoMapa } from '@/components/mapa-nacional'
-import { DEPARTAMENTOS } from '@/lib/colombia-map'
 import { NODOS } from '@/lib/red-nacional'
+import { buscarCobertura, EVENTO_COBERTURA, MUNICIPIOS_ACTIVOS, whatsappCobertura, type Hallazgo } from '@/lib/cobertura'
 
 type Resultado = { name: string; active: true; nacional: boolean; depto?: string } | null | 'sin-datos'
 
-const ACTIVOS = MUNICIPIOS.filter((m) => m.active)
+const ACTIVOS = MUNICIPIOS_ACTIVOS
 const DEPTOS_CON_RED = new Set(NODOS.map((n) => n.depto)).size
-const nombreDepto = (codigo: string) => DEPARTAMENTOS.find((d) => d.codigo === codigo)?.nombre ?? ''
 const nodoDelMunicipio = (codigo: string) => NODOS.find((n) => n.municipio === codigo)
 const ORDEN_ALFABETICO = [...ACTIVOS].sort((a, b) => a.name.localeCompare(b.name, 'es'))
-
-const normalizar = (texto: string) => texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim()
-
-const whatsappHref = (municipio: string) =>
-  `https://wa.me/573009139909?text=${encodeURIComponent(`Hola, quiero información sobre la cobertura de GuajiraNet en ${municipio}.`)}`
 
 export function Cobertura() {
   const [consulta, setConsulta] = useState('')
@@ -40,32 +34,40 @@ export function Cobertura() {
     mostrarEnMapa(nodoDelMunicipio(m.code)?.id)
   }
 
-  const consultarCobertura = () => {
-    const texto = normalizar(consulta)
-    if (!texto) return
-    const encontrado = ACTIVOS.find((m) => {
-      const nombre = normalizar(m.name)
-      return texto.includes(nombre) || nombre.includes(texto)
-    })
-    const ciudadNacional = NODOS.find((n) => {
-      const nombre = normalizar(n.nombre)
-      return texto.includes(nombre) || nombre.includes(texto)
-    })
-    if (encontrado) {
-      setResultado({ name: encontrado.name, active: true, nacional: false })
-      setElegido(encontrado.code)
-      mostrarEnMapa(nodoDelMunicipio(encontrado.code)?.id)
-      return
-    }
-    if (ciudadNacional) {
-      setResultado({ name: ciudadNacional.nombre, active: true, nacional: true, depto: nombreDepto(ciudadNacional.depto) })
+  const aplicarHallazgo = (hallazgo: Hallazgo | null) => {
+    if (!hallazgo) {
+      setResultado('sin-datos')
       setElegido(null)
-      mostrarEnMapa(ciudadNacional.id)
       return
     }
-    setResultado('sin-datos')
-    setElegido(null)
+    if (hallazgo.tipo === 'local') {
+      setResultado({ name: hallazgo.nombre, active: true, nacional: false })
+      setElegido(hallazgo.codigo)
+    } else {
+      setResultado({ name: hallazgo.nombre, active: true, nacional: true, depto: hallazgo.depto })
+      setElegido(null)
+    }
+    mostrarEnMapa(hallazgo.nodo)
   }
+
+  const consultarCobertura = (texto = consulta) => {
+    const hallazgo = buscarCobertura(texto)
+    if (hallazgo !== undefined) aplicarHallazgo(hallazgo)
+  }
+
+  // La consulta rápida del inicio pide mostrar aquí un municipio (botón «Ver en el mapa»).
+  useEffect(() => {
+    const alPedir = (e: Event) => {
+      const texto = (e as CustomEvent<string>).detail
+      if (typeof texto !== 'string' || !texto.trim()) return
+      setConsulta(texto)
+      const hallazgo = buscarCobertura(texto)
+      if (hallazgo !== undefined) aplicarHallazgo(hallazgo)
+    }
+    window.addEventListener(EVENTO_COBERTURA, alPedir)
+    return () => window.removeEventListener(EVENTO_COBERTURA, alPedir)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <section id="cobertura" className="section coverage">
@@ -100,8 +102,8 @@ export function Cobertura() {
               <Check size={16} />
               <span>
                 <strong>{resultado.name}</strong>{' '}
-                {resultado.nacional ? `está en nuestra red${resultado.depto ? ` de ${resultado.depto}` : ''}. Escríbenos y validamos la instalación en tu dirección.` : 'tiene cobertura activa en La Guajira. Podemos agendar tu instalación.'}
-                <a className="coverage-whatsapp" href={whatsappHref(resultado.name)} target="_blank" rel="noreferrer">
+                {resultado.nacional ? `está en nuestra red${resultado.depto ? ` de ${resultado.depto}` : ''}${resultado.depto?.endsWith('.') ? '' : '.'} Escríbenos y validamos la instalación en tu dirección.` : 'tiene cobertura activa en La Guajira. Podemos agendar tu instalación.'}
+                <a className="coverage-whatsapp" href={whatsappCobertura(resultado.name)} target="_blank" rel="noreferrer">
                   <MessageCircle size={14} /> Escríbenos al WhatsApp <b>300 913 9909</b>
                 </a>
               </span>

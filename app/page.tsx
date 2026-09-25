@@ -1,8 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { motion, useReducedMotion } from 'motion/react'
-import { ArrowRight, Building2, CalendarDays, ChevronDown, ClipboardCheck, Clock, CreditCard, FileText, Gauge, KeyRound, Mail, MapPin, MessageCircle, MousePointer2, Phone, RadioTower, Wrench } from 'lucide-react'
+import { ArrowRight, Building2, ChevronDown, ClipboardCheck, Clock, CreditCard, FileText, Gauge, KeyRound, Mail, MapPin, MessageCircle, MousePointer2, Phone, RadioTower, Wrench } from 'lucide-react'
 import { Autogestion } from '@/components/autogestion'
 import { Clientes } from '@/components/clientes'
 import { Cobertura } from '@/components/cobertura'
@@ -10,7 +9,8 @@ import { FibraBanner } from '@/components/fibra-banner'
 import { Metricas } from '@/components/metricas'
 import { Modal } from '@/components/modal'
 import { NavegacionPrincipal } from '@/components/navegacion-principal'
-import { PlanesCarrusel } from '@/components/planes-carrusel'
+import { NoticiasSlider } from '@/components/noticias-slider'
+import { PlanesSelector } from '@/components/planes-selector'
 import { Revelador } from '@/components/revelador'
 import { AccionesFlotantes, BarraProgreso } from '@/components/utilidades'
 
@@ -18,6 +18,13 @@ const pasos = [
   { icono: MousePointer2, titulo: 'Consulta tu cobertura', texto: 'Busca tu municipio en el mapa y confirma en segundos si ya llegamos a tu zona.' },
   { icono: ClipboardCheck, titulo: 'Elige tu plan', texto: 'Te ayudamos a escoger la velocidad según cuántos son en casa y qué hacen en línea.' },
   { icono: Wrench, titulo: 'Instalamos en 48 horas', texto: 'Un técnico de la zona llega, instala la fibra y deja tu WiFi funcionando y probado.' },
+]
+
+const ventajas = [
+  { icono: RadioTower, titulo: 'Cobertura rural', texto: 'Rancherías, corregimientos y veredas: llegamos con fibra o radioenlace.' },
+  { icono: Building2, titulo: 'Enlaces dedicados para negocios', texto: 'Ancho de banda garantizado para tu datáfono, tu facturación y tus cámaras.' },
+  { icono: Wrench, titulo: 'Soporte el mismo día', texto: 'Nuestros técnicos viven en la zona y llegan a tu casa el mismo día.' },
+  { icono: MessageCircle, titulo: 'Atención por WhatsApp', texto: 'Resolvemos tus dudas por el canal que ya usas.' },
 ]
 
 const IconoFacebook = () => (
@@ -103,7 +110,6 @@ const noticias = [
 ]
 
 export default function Page() {
-  const reduce = useReducedMotion()
   const [openFaq, setOpenFaq] = useState<number | null>(0)
   const [noticiaAbierta, setNoticiaAbierta] = useState<string | null>(null)
   const noticiaActiva = noticias.find((noticia) => noticia.id === noticiaAbierta)
@@ -124,23 +130,27 @@ export default function Page() {
 
       <Metricas />
 
-      <PlanesCarrusel />
+      <PlanesSelector />
 
       <Autogestion />
 
-      <section id="beneficios" className="benefits">
-        <div className="container benefits-grid">
-          <div data-revelar="izq">
-            <h2>Llegamos donde otros no cablean</h2>
+      <section id="beneficios" className="beneficios">
+        <div className="container beneficios-grid">
+          <div className="beneficios-copy" data-revelar="izq">
+            <div className="eyebrow">Por qué GuajiraNet</div>
+            <h2>Llegamos donde otros <span>no cablean</span></h2>
             <p>Somos de La Guajira: técnicos que viven en tu zona, soporte el mismo día y atención por WhatsApp para hogares y negocios.</p>
             <a className="button button-yellow" href="#cobertura">Consultar mi zona <ArrowRight size={17} /></a>
           </div>
-          <div className="benefit-list">
-            <div data-revelar="der"><RadioTower /><span><strong>Cobertura rural</strong><small>Rancherías, corregimientos y veredas: llegamos con fibra o radioenlace.</small></span></div>
-            <div data-revelar="der" data-delay="120"><Building2 /><span><strong>Enlaces dedicados para negocios</strong><small>Ancho de banda garantizado para tu datáfono, tu facturación y tus cámaras.</small></span></div>
-            <div data-revelar="der" data-delay="240"><Wrench /><span><strong>Soporte el mismo día</strong><small>Nuestros técnicos viven en la zona y llegan a tu casa el mismo día.</small></span></div>
-            <div data-revelar="der" data-delay="360"><MessageCircle /><span><strong>Atención por WhatsApp</strong><small>Resolvemos tus dudas por el canal que ya usas.</small></span></div>
-          </div>
+          <ul className="ventajas">
+            {ventajas.map(({ icono: Icono, titulo, texto }, i) => (
+              <li className="ventaja" key={titulo} data-revelar data-delay={i * 110}>
+                <span className="ventaja-icono" aria-hidden="true"><Icono size={22} /></span>
+                <strong>{titulo}</strong>
+                <p>{texto}</p>
+              </li>
+            ))}
+          </ul>
         </div>
         <FibraBanner />
       </section>
@@ -189,42 +199,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section id="noticias" className="section noticias">
-        <div className="container">
-          <div className="section-heading">
-            <div data-revelar="izq"><div className="eyebrow">Actualidad</div><h2>Noticias de GuajiraNet</h2></div>
-            <p data-revelar="der">Novedades de nuestra red, consejos para tu conexión y todo lo que pasa en GuajiraNet.</p>
-          </div>
-          <div className="noticias-grid">
-            {noticias.map((noticia, index) => (
-              <motion.article
-                className={index === 0 ? 'noticia noticia--destacada' : 'noticia'}
-                key={noticia.id}
-                initial={reduce ? false : { opacity: 0, y: 40 }}
-                whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15, margin: '0px 0px -40px 0px' }}
-                transition={reduce ? { duration: 0 } : { duration: 0.7, delay: index * 0.12, ease: [0.22, 0.61, 0.36, 1] }}
-              >
-                <div className="noticia-media">
-                  {index === 0 && <span className="noticia-sello">Destacada</span>}
-                  <img src={noticia.imagen} alt="" loading="lazy" style={{ objectPosition: noticia.enfoque }} />
-                </div>
-                <div className="noticia-cuerpo">
-                  <div className="noticia-meta">
-                    <span className={`noticia-chip noticia-chip--${noticia.tono}`}>{noticia.categoria}</span>
-                    <time className="noticia-fecha" dateTime={noticia.fechaISO}><CalendarDays size={14} aria-hidden="true" /> {noticia.fecha}</time>
-                  </div>
-                  <h3>{noticia.titulo}</h3>
-                  <p>{noticia.resumen}</p>
-                  <button className="noticia-cta" type="button" onClick={() => setNoticiaAbierta(noticia.id)} aria-label={`Leer noticia: ${noticia.titulo}`}>
-                    Leer noticia <span className="noticia-cta-icono"><ArrowRight size={16} /></span>
-                  </button>
-                </div>
-              </motion.article>
-            ))}
-          </div>
-        </div>
-      </section>
+      <NoticiasSlider noticias={noticias} onAbrir={setNoticiaAbierta} detenido={noticiaAbierta !== null} />
 
       <section id="legal" className="legal-strip">
         <div className="container">
