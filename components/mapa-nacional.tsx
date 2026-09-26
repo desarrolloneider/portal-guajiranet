@@ -209,8 +209,8 @@ const Tierra = memo(function Tierra({ depto }: { depto: string | null }) {
 const Municipios = memo(function Municipios({ geo }: { geo: DeptoGeo }) {
   return (
     <g className="nac-municipios" key={geo.codigo}>
-      {geo.municipios.map((m) => (
-        <path key={m.codigo} d={m.d} data-mpio={m.codigo} className={MPIOS_CON_SERVICIO.has(m.codigo) ? 'con' : undefined} />
+      {geo.municipios.map((m, i) => (
+        <path key={`${m.codigo}-${i}`} d={m.d} data-mpio={m.codigo} className={MPIOS_CON_SERVICIO.has(m.codigo) ? 'con' : undefined} />
       ))}
       <path d={geo.contorno} className="nac-contorno" />
     </g>
