@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { ArrowRight, Building2, ChevronDown, ClipboardCheck, Clock, CreditCard, FileText, Gauge, KeyRound, Mail, MapPin, MessageCircle, MousePointer2, Phone, RadioTower, Wrench } from 'lucide-react'
-import { Autogestion } from '@/components/autogestion'
+import { Autogestion, EVENTO_AUTOGESTION } from '@/components/autogestion'
 import { Clientes } from '@/components/clientes'
 import { Cobertura } from '@/components/cobertura'
 import { FibraBanner } from '@/components/fibra-banner'
@@ -55,11 +55,11 @@ const institucionales = [
 ]
 
 const resoluciones = [
-  ['Ley 679 de 2001', 'https://guajiranet.com/wp-content/uploads/2024/08/LEY_679_DE_2001_Colombia.pdf'],
-  ['Ley 1341 de 2009', 'https://guajiranet.com/wp-content/uploads/2024/08/ley_1341_de_2009.pdf'],
-  ['Ley 1978 de 2019', 'https://guajiranet.com/wp-content/uploads/2024/08/LEY-1978-DEL-25-DE-JULIO-DE-2019.pdf'],
-  ['Resolución 5050 de 2016', 'https://guajiranet.com/wp-content/uploads/2024/08/resolucion-5050-2016.pdf'],
-  ['Resolución 5111 de 2017', 'https://guajiranet.com/wp-content/uploads/2024/08/Resolucion-5111-2017.pdf'],
+  ['Ley 679 de 2001', '/legal/LEY_679_DE_2001_Colombia.pdf'],
+  ['Ley 1341 de 2009', '/legal/ley_1341_de_2009.pdf'],
+  ['Ley 1978 de 2019', '/legal/LEY-1978-DEL-25-DE-JULIO-DE-2019.pdf'],
+  ['Resolución 5050 de 2016', '/legal/resolucion-5050-2016.pdf'],
+  ['Resolución 5111 de 2017', '/legal/Resolucion-5111-2017.pdf'],
 ]
 
 const faqs = [
@@ -118,6 +118,10 @@ export default function Page() {
   const abrirInfo = (cual: 'seguridad' | 'internet-sano') => (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault()
     setInfoLegal(cual)
+  }
+  const abrirPqrs = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault()
+    window.dispatchEvent(new CustomEvent(EVENTO_AUTOGESTION, { detail: 'pqrs' }))
   }
   const noticiaActiva = noticias.find((noticia) => noticia.id === noticiaAbierta)
 
@@ -214,7 +218,7 @@ export default function Page() {
           <div className="legal-links" data-revelar="der">
             <a href="#legal">Términos y condiciones <ArrowRight size={15} /></a>
             <a href="#legal">Política de privacidad <ArrowRight size={15} /></a>
-            <a href="https://www.guajiranet.com/presentar-un-pqrs/" target="_blank" rel="noreferrer">PQR y reclamos <ArrowRight size={15} /></a>
+            <a href="#autogestion" onClick={abrirPqrs}>PQR y reclamos <ArrowRight size={15} /></a>
             <a href="#legal" onClick={abrirInfo('seguridad')}>Seguridad de la red <ArrowRight size={15} /></a>
             <a href="#legal" onClick={abrirInfo('internet-sano')}>Internet sano · Ley 679 de 2001 <ArrowRight size={15} /></a>
           </div>
@@ -283,7 +287,7 @@ export default function Page() {
           <div className="footer-legal">
             <a href="#legal">Términos y condiciones</a>
             <a href="#legal">Política de privacidad</a>
-            <a href="https://www.guajiranet.com/presentar-un-pqrs/" target="_blank" rel="noreferrer">PQRS</a>
+            <a href="#autogestion" onClick={abrirPqrs}>PQRS</a>
             <a href="#legal" onClick={abrirInfo('seguridad')}>Tu seguridad</a>
             <a href="#legal" onClick={abrirInfo('internet-sano')}>Internet sano</a>
           </div>

@@ -318,8 +318,20 @@ function FormClave() {
   )
 }
 
+/** Evento para abrir una ventana de autogestión desde otra parte de la página (por ejemplo, el enlace de PQRS del pie). */
+export const EVENTO_AUTOGESTION = 'guajiranet:autogestion'
+
 export function Autogestion() {
   const [vista, setVista] = useState<Vista>(null)
+
+  useEffect(() => {
+    const alPedir = (e: Event) => {
+      const cual = (e as CustomEvent<Vista>).detail
+      if (cual === 'pqrs' || cual === 'clave' || cual === 'velocidad') setVista(cual)
+    }
+    window.addEventListener(EVENTO_AUTOGESTION, alPedir)
+    return () => window.removeEventListener(EVENTO_AUTOGESTION, alPedir)
+  }, [])
 
   const tarjetas = [
     { icono: CreditCard, titulo: 'Pagar factura', texto: 'Paga en línea de forma rápida y segura, sin salir de casa.', accion: 'Ir a pagar', href: PAGO, whatsapp: false },
