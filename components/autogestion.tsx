@@ -4,6 +4,7 @@ import { type ChangeEvent, useEffect, useState } from 'react'
 import { ArrowRight, Check, CreditCard, FileText, Gauge, KeyRound, MessageCircle } from 'lucide-react'
 import { Modal } from '@/components/modal'
 import { TestVelocidad } from '@/components/test-velocidad'
+import { MUNICIPIOS_CON_COBERTURA } from '@/lib/cobertura'
 
 const PAGO = 'https://ds.dsnube.co/documento/?empresa=UqBGh1ev+4w5YMySqWUUuWnbyM4NML2QEEUqsYUO93o='
 const WHATSAPP = '573009139909'
@@ -18,20 +19,16 @@ const TIPOS_PQRS = [
   ['sugerencia', 'Sugerencia', 'Propones algo para que mejoremos.'],
 ] as const
 
-const MUNICIPIOS = ['Albania', 'Fonseca', 'Riohacha', 'Maicao', 'Uribia', 'Manaure', 'Otro']
-
-function radicado(prefijo: string) {
-  const d = new Date()
-  const fecha = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`
-  return `${prefijo}-${fecha}-${String(Math.floor(Math.random() * 9000) + 1000)}`
-}
+const MUNICIPIOS = [...MUNICIPIOS_CON_COBERTURA.map((m) => m.name).sort((a, b) => a.localeCompare(b, 'es')), 'Otro']
 
 function FormPqrs() {
   const [tipo, setTipo] = useState<string>('peticion')
-  const [datos, setDatos] = useState({ nombre: '', documento: '', telefono: '', correo: '', municipio: 'Albania', contrato: '', detalle: '' })
+  const [datos, setDatos] = useState({ nombre: '', documento: '', telefono: '', correo: '', municipio: MUNICIPIOS[0], contrato: '', detalle: '' })
   const [archivo, setArchivo] = useState<File | null>(null)
   const [archivoError, setArchivoError] = useState('')
-  const [enviado, setEnviado] = useState<string | null>(null)
+  const [enviando, setEnviando] = useState(false)
+  const [error, setError] = useState('')
+  const [enviado, setEnviado] = useState<{ radicado: string; constanciaEnviada: boolean } | null>(null)
 
   const set = (k: string, v: string) => setDatos((d) => ({ ...d, [k]: v }))
   const seleccionarArchivo = (e: ChangeEvent<HTMLInputElement>) => {
@@ -47,30 +44,42 @@ function FormPqrs() {
   }
   const etiqueta = TIPOS_PQRS.find((t) => t[0] === tipo)![1]
 
-  const mensaje = () =>
-    `*${etiqueta} — GuajiraNet*\n` +
-    `Radicado: ${enviado}\n` +
-    `Nombre: ${datos.nombre}\nDocumento: ${datos.documento}\n` +
-    `Teléfono: ${datos.telefono}\nCorreo: ${datos.correo}\n` +
-    `Municipio: ${datos.municipio}\nContrato: ${datos.contrato || 'no indicado'}\nAdjunto: ${archivo?.name || 'no adjunto'}\n\n${datos.detalle}`
+  const radicar = async () => {
+    setEnviando(true)
+    setError('')
+    try {
+      const cuerpo = new FormData()
+      cuerpo.append('tipo', tipo)
+      Object.entries(datos).forEach(([k, v]) => cuerpo.append(k, v))
+      if (archivo) cuerpo.append('archivo', archivo)
+      const r = await fetch('/api/pqrs', { method: 'POST', body: cuerpo })
+      const respuesta = await r.json().catch(() => null)
+      if (!r.ok || !respuesta?.radicado) throw new Error(respuesta?.mensaje ?? 'No pudimos registrar tu solicitud. Intenta de nuevo o escríbenos por WhatsApp.')
+      setEnviado(respuesta)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'No pudimos registrar tu solicitud.')
+    } finally {
+      setEnviando(false)
+    }
+  }
 
   if (enviado) {
     return (
       <div className="ok-panel">
         <span className="ok-icono"><Check size={26} /></span>
-        <h4>Tu {etiqueta.toLowerCase()} quedó registrada</h4>
+        <h4>Radicamos tu {etiqueta.toLowerCase()}</h4>
         <p>Guarda este número para hacerle seguimiento:</p>
-        <strong className="ok-radicado">{enviado}</strong>
+        <strong className="ok-radicado">{enviado.radicado}</strong>
         <p className="ok-plazo">
-          Por la Resolución CRC 5050 tenemos hasta 15 días hábiles para responderte. Te contactaremos al correo y
-          teléfono que registraste.
+          Por la Resolución CRC 5050 tenemos hasta 15 días hábiles para responderte.{' '}
+          {enviado.constanciaEnviada
+            ? `Te enviamos una constancia a ${datos.correo}.`
+            : 'No pudimos enviarte la constancia por correo, así que anota el número.'}{' '}
+          Te contactaremos al correo y teléfono que registraste.
         </p>
         <div className="ok-acciones">
-          <a className="pcard-cta" href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensaje())}`} target="_blank" rel="noreferrer">
-            Enviar por WhatsApp <MessageCircle size={17} />
-          </a>
-          <a className="boton-suave" href={`mailto:${CORREO}?subject=${encodeURIComponent(`${etiqueta} ${enviado}`)}&body=${encodeURIComponent(mensaje())}`}>
-            Enviar por correo
+          <a className="boton-suave" href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, radiqué una ${etiqueta.toLowerCase()} en la página. Radicado ${enviado.radicado}.`)}`} target="_blank" rel="noreferrer">
+            ¿Dudas? Escríbenos <MessageCircle size={17} />
           </a>
         </div>
       </div>
@@ -82,7 +91,7 @@ function FormPqrs() {
       className="form"
       onSubmit={(e) => {
         e.preventDefault()
-        setEnviado(radicado('PQRS'))
+        radicar()
       }}
     >
       <fieldset className="form-tipos">
@@ -121,7 +130,8 @@ function FormPqrs() {
         {archivoError && <em className="form-error">{archivoError}</em>}
       </label>
 
-      <button type="submit" className="pcard-cta">Radicar <ArrowRight size={17} /></button>
+      {error && <em className="form-error">{error}</em>}
+      <button type="submit" className="pcard-cta" disabled={enviando}>{enviando ? 'Radicando…' : 'Radicar'} <ArrowRight size={17} /></button>
       <p className="form-nota">Al radicar aceptas el tratamiento de tus datos conforme a la Ley 1581 de 2012.</p>
     </form>
   )

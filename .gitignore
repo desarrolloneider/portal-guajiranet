@@ -15,3 +15,6 @@ node_modules
 .DS_Store
 .vercel
 .env*
+
+# Registros y consecutivo de PQRS (datos personales, se quedan solo en el servidor)
+datos-pqrs/
