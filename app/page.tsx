@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowRight, Building2, ChevronDown, ClipboardCheck, Clock, CreditCard, FileText, Gauge, KeyRound, Mail, MapPin, MessageCircle, MousePointer2, Phone, RadioTower, Wrench } from 'lucide-react'
+import { ArrowRight, Building2, ChevronDown, ClipboardCheck, Clock, Mail, MapPin, MessageCircle, MousePointer2, Phone, RadioTower, Wrench } from 'lucide-react'
 import { Autogestion, EVENTO_AUTOGESTION } from '@/components/autogestion'
 import { Clientes } from '@/components/clientes'
 import { Cobertura } from '@/components/cobertura'
@@ -38,13 +38,6 @@ const IconoInstagram = () => (
 
 const PAGO = 'https://ds.dsnube.co/documento/?empresa=UqBGh1ev+4w5YMySqWUUuWnbyM4NML2QEEUqsYUO93o='
 const WHATSAPP = 'https://wa.me/573009139909'
-
-const autogestion = [
-  { icono: CreditCard, titulo: 'Pagar factura', texto: 'Paga en línea de forma rápida y segura, sin salir de casa.', accion: 'Ir a pagar', href: PAGO },
-  { icono: Gauge, titulo: 'Test de velocidad', texto: 'Mide en segundos la velocidad real de tu conexión.', accion: 'Medir ahora', href: 'https://www.guajiranet.com/test-de-velocidad-de-internet/' },
-  { icono: FileText, titulo: 'Presentar un PQRS', texto: 'Radica tu petición, queja, reclamo o sugerencia.', accion: 'Radicar', href: 'https://www.guajiranet.com/presentar-un-pqrs/' },
-  { icono: KeyRound, titulo: 'Cambio de clave', texto: 'Actualiza la contraseña de tu red WiFi cuando quieras.', accion: 'Cambiar clave', href: 'https://www.guajiranet.com/cambio-de-clave/' },
-]
 
 const institucionales = [
   ['Dignidad Infantil', 'https://teprotejocolombia.org/'],

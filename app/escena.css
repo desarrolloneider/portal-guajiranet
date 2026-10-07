@@ -207,7 +207,9 @@ footer#pagar { background: #17191d; color: #e5b87e; padding: 0; }
 /* ---------- 20. Responsive del carrusel y el slider ---------- */
 
 /* ---------- 21. Logo de la marca ---------- */
-.brand img { display: block; height: 80px; object-fit: contain; width: auto; }
+/* El logo se muestra un poco más ancho que el archivo original (746x420 = 1.78). Para ajustarlo, cambia --logo-proporcion. */
+.brand { --logo-proporcion: 2.1; }
+.brand img { aspect-ratio: var(--logo-proporcion); display: block; height: 80px; object-fit: fill; width: auto; }
 .footer-marca .brand img { height: 64px; }
 @media (max-width: 800px) { .brand img { height: 68px; }}
 @media (max-width: 560px) { .brand img { height: 48px; }}
@@ -365,7 +367,7 @@ footer#pagar { background: #17191d; color: #e5b87e; padding: 0; }
 @media (max-width: 640px) {
   .nav-header-inner { gap: 7px; height: 72px; }
   .nav-header .brand { min-width: 0; }
-  .nav-header .brand img { height: 60px; max-width: 107px; object-fit: contain; }
+  .nav-header .brand img { height: 52px; }
   .nav-acciones { gap: 6px; }
   .nav-acciones .nav-pago { font-size: 11px; min-height: 44px; padding: 10px 11px; }
   .nav-menu-movil { padding-left: 14px; padding-right: 14px; }}
@@ -602,10 +604,11 @@ footer#pagar { background: #17191d; color: #e5b87e; padding: 0; }
 .nac-casco { fill: none; pointer-events: none; stroke: #2b2e34; stroke-linecap: round; stroke-opacity: .85; stroke-width: 4.2; vector-effect: non-scaling-stroke; }
 .nac-enlace { fill: none; pointer-events: none; stroke: #f2f3f7; stroke-linecap: round; stroke-width: 1.7; transition: stroke .25s, stroke-width .25s; vector-effect: non-scaling-stroke; }
 .nac-enlace.hl { stroke: var(--marca-amarillo); stroke-width: 2.8; }
-.nac-flujo { animation-iteration-count: infinite; animation-name: nacFlujo; animation-timing-function: linear; fill: none; pointer-events: none; stroke: #ffffff; stroke-linecap: round; stroke-width: 2.6; vector-effect: non-scaling-stroke; }
+.nac-flujo { animation-iteration-count: infinite; animation-name: nacFlujo; animation-timing-function: linear; fill: none; pointer-events: none; stroke: var(--marca-rojo); stroke-linecap: round; stroke-width: 2.6; vector-effect: non-scaling-stroke; }
 @keyframes nacFlujo { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -1400; } }
 .nac-submarino { fill: none; pointer-events: none; stroke: var(--marca-amarillo); stroke-linecap: round; stroke-width: 2.2; vector-effect: non-scaling-stroke; }
-.nac-pulso { fill: #ffffff; pointer-events: none; }
+/* Rojo = fibra óptica. Los cables submarinos llevan su propio color (el de la leyenda). */
+.nac-pulso { fill: var(--marca-rojo); pointer-events: none; }
 .nac-pulso-sub { fill: #fff3b0; }
 .nac-mar { fill: #eea950; stroke: #f2f3f7; stroke-width: 1.2; vector-effect: non-scaling-stroke; }
 
@@ -859,7 +862,29 @@ html, body { overflow-x: clip; }
 
 /* Escalera: una fibra por plan, de altura proporcional a los megas */
 .planes-escalera { background-color: #f5f6f9; background-image: repeating-linear-gradient(0deg, transparent 0 calc(var(--H) / 4 - 1px), #eceff4 calc(var(--H) / 4 - 1px) calc(var(--H) / 4)), radial-gradient(80% 60% at 50% 100%, #5f67790f 0%, transparent 70%); background-position: 0 calc(100% - 74px), 0 0; background-repeat: no-repeat; background-size: 100% var(--H), 100% 100%; display: flex; flex-direction: column; justify-content: flex-end; padding: 36px 28px 26px; position: relative; }
-.planes-peldanos { display: grid; gap: 6px; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.planes-peldanos { display: grid; gap: 6px; grid-template-columns: repeat(var(--n, 6), minmax(0, 1fr)); margin: 0 auto; max-width: calc(var(--n, 6) * 130px); width: 100%; }
+
+/* Zonas de los planes (cada zona puede tener planes distintos; ver lib/planes.ts) */
+.planes-zonas { align-items: center; display: flex; flex-wrap: wrap; gap: 10px 14px; margin: -6px 0 22px; }
+.planes-zonas-titulo { align-items: center; color: var(--marca-grafito); display: inline-flex; font-size: 14px; font-weight: 800; gap: 6px; }
+.planes-zonas-titulo svg { color: #d98516; }
+.planes-zonas-botones { display: flex; flex-wrap: wrap; gap: 8px; }
+.planes-zona { background: #ffffff; border: 1.5px solid #e1e4eb; border-radius: 999px; color: var(--marca-grafito); cursor: pointer; font: inherit; font-size: 14px; font-weight: 700; min-height: 42px; padding: 9px 18px; transition: background .2s, border-color .2s, color .2s, box-shadow .2s; }
+.planes-zona:hover { border-color: #d98516; }
+.planes-zona:focus-visible { outline: 2px solid #d98516; outline-offset: 2px; }
+.planes-zona.on { background: var(--marca-grafito); border-color: var(--marca-grafito); box-shadow: 0 8px 18px #2b2e3626; color: #ffffff; }
+.planes-zonas-cubre { color: #626873; flex-basis: 100%; font-size: 14px; font-weight: 600; margin: 0; }
+
+/* Notas "Ten en cuenta" */
+.planes-notas { background: #f5f6f9; border: 1px solid #e5e8ef; border-radius: 22px; margin-top: 26px; padding: 20px 26px; }
+.planes-notas h3 { align-items: center; color: var(--marca-grafito); display: flex; font-size: 15px; gap: 8px; margin: 0 0 12px; }
+.planes-notas h3 svg { color: #d98516; }
+.planes-notas ul { display: grid; gap: 8px 28px; grid-template-columns: repeat(2, minmax(0, 1fr)); list-style: none; margin: 0; padding: 0; }
+.planes-notas li { color: #626873; display: flex; font-size: 13.5px; gap: 9px; line-height: 1.45; }
+.planes-notas li svg { color: var(--marca-verde); flex-shrink: 0; margin-top: 2px; }
+@media (max-width: 760px) {
+  .planes-notas { padding: 18px 18px; }
+  .planes-notas ul { grid-template-columns: minmax(0, 1fr); }}
 .planes-ayuda { align-items: center; color: var(--muted-foreground); display: flex; font-size: 13px; font-weight: 600; gap: 7px; left: 28px; margin: 0; position: absolute; top: 26px; }
 .planes-ayuda svg { color: #5f6779; }
 .planes-escalera::after { background: #f5e5cf; bottom: 74px; content: ''; height: 2px; left: 28px; pointer-events: none; position: absolute; right: 28px; }
@@ -941,7 +966,7 @@ html, body { overflow-x: clip; }
   /* En celular cada plan es una fila y la fibra se tiende a lo ancho */
   .planes-panel { border-radius: 22px; }
   .planes-escalera { background: #f5f6f9; padding: 14px; }
-  .planes-peldanos { gap: 8px; grid-template-columns: minmax(0, 1fr); }
+  .planes-peldanos { gap: 8px; grid-template-columns: minmax(0, 1fr); max-width: none; }
   .planes-ayuda { margin: 2px 4px 14px; position: static; }
   .planes-escalera::after { display: none; }
   .peldano { align-items: center; background: transparent; column-gap: 12px; display: grid; grid-template-columns: 58px minmax(0, 1fr) auto; min-height: 0; padding: 12px 14px; }

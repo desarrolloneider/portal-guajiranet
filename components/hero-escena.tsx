@@ -3,10 +3,7 @@
 import { useEffect, useState, type CSSProperties } from 'react'
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'motion/react'
 import { MonitorPlay, Smartphone, Wifi } from 'lucide-react'
-import { PLANES } from '@/lib/planes'
-
-const MAX_MEGAS = Math.max(...PLANES.map((p) => p.megas))
-const MAX_CANALES = Math.max(...PLANES.map((p) => p.canales))
+import { MAX_CANALES, MAX_MEGAS_PORTADA as MAX_MEGAS } from '@/lib/planes'
 
 // Los tres servicios de un mismo plan, orbitando el globo que proyecta la mano.
 const SERVICIOS = [

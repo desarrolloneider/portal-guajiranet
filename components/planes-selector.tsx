@@ -2,13 +2,14 @@
 
 import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react'
 import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react'
-import { ArrowRight, Check, Globe, MapPin, MessageCircle, MonitorPlay, MousePointerClick, PhoneCall, Smartphone, type LucideIcon } from 'lucide-react'
-import { PLANES, type Plan } from '@/lib/planes'
+import { ArrowRight, Check, Globe, Info, MapPin, MessageCircle, MonitorPlay, MousePointerClick, PhoneCall, Smartphone, type LucideIcon } from 'lucide-react'
+import { NOTAS_PLANES, VELOCIDADES, ZONAS_PLANES, type Plan } from '@/lib/planes'
 
-// Tono de cada fibra: de azul claro a azul eléctrico a medida que sube la velocidad.
-const TONOS = ['#f0d6b5', '#e3b374', '#5f6779', '#515767', '#434855', '#30333d']
+// Tono de cada fibra: de ámbar claro a grafito a medida que sube la velocidad (un tono por velocidad).
+const TONOS = ['#f0d6b5', '#e3b374', '#5f6779', '#515767', '#434855', '#30333d', '#1f2127']
+const tono = (megas: number) => TONOS[Math.min(VELOCIDADES.indexOf(megas), TONOS.length - 1)]
 
-const MAX = Math.max(...PLANES.map((p) => p.megas))
+const inicioDe = (planes: Plan[]) => Math.max(0, planes.findIndex((p) => p.destacado))
 const WHATSAPP = 'https://wa.me/573009139909'
 
 type Item = { clave: string; icono: LucideIcon; texto: string; extra?: string; mejora: boolean }
@@ -59,8 +60,10 @@ function Rodante({ valor, dir, variantes }: { valor: string; dir: number; varian
 
 export function PlanesSelector() {
   const reducir = useReducedMotion() ?? false
-  const inicial = Math.max(0, PLANES.findIndex((p) => p.destacado))
-  const [sel, setSel] = useState(inicial)
+  const [zona, setZona] = useState(0)
+  const { planes: PLANES, cubre, nombre: nombreZona } = ZONAS_PLANES[zona]
+  const MAX = Math.max(...PLANES.map((p) => p.megas))
+  const [sel, setSel] = useState(() => inicioDe(ZONAS_PLANES[0].planes))
   const [dir, setDir] = useState(1)
   const [visto, setVisto] = useState(false)
   const escaleraRef = useRef<HTMLDivElement>(null)
@@ -87,6 +90,13 @@ export function PlanesSelector() {
     return () => io.disconnect()
   }, [reducir])
 
+  const elegirZona = (i: number) => {
+    if (i === zona) return
+    setZona(i)
+    setDir(1)
+    setSel(inicioDe(ZONAS_PLANES[i].planes))
+  }
+
   const elegir = (i: number, enfocar = false) => {
     const n = (i + PLANES.length) % PLANES.length
     if (n === sel) return
@@ -105,7 +115,7 @@ export function PlanesSelector() {
   const plan = PLANES[sel]
   const items = incluye(plan, PLANES[sel - 1])
   const variantes = reducir ? vQuieto : vRodar
-  const mensaje = encodeURIComponent(`Hola, quiero el plan de ${plan.megas} Megas`)
+  const mensaje = encodeURIComponent(`Hola, quiero el plan de ${plan.megas} Megas en ${nombreZona}`)
 
   return (
     <section id="planes" className="section plans-section planes">
@@ -121,15 +131,35 @@ export function PlanesSelector() {
           </p>
         </div>
 
+        <div className="planes-zonas" data-revelar>
+          <span className="planes-zonas-titulo" id="planes-zonas-titulo">
+            <MapPin size={15} aria-hidden="true" /> Elige tu zona
+          </span>
+          <div className="planes-zonas-botones" role="group" aria-labelledby="planes-zonas-titulo">
+            {ZONAS_PLANES.map((z, i) => (
+              <button key={z.nombre} type="button" className={`planes-zona${i === zona ? ' on' : ''}`} aria-pressed={i === zona} onClick={() => elegirZona(i)}>
+                {z.nombre}
+              </button>
+            ))}
+          </div>
+          {cubre && <p className="planes-zonas-cubre">{cubre}</p>}
+        </div>
+
         <div className="planes-panel">
           <div className={`planes-escalera${visto ? ' visto' : ''}`} ref={escaleraRef}>
             <p className="planes-ayuda">
               <MousePointerClick size={15} aria-hidden="true" /> Elige una velocidad · precios por mes
             </p>
-            <div className="planes-peldanos" role="radiogroup" aria-label="Velocidad del plan" onKeyDown={alTeclado}>
+            <div
+              className="planes-peldanos"
+              role="radiogroup"
+              aria-label={`Velocidad del plan en ${nombreZona}`}
+              onKeyDown={alTeclado}
+              style={{ '--n': PLANES.length } as CSSProperties}
+            >
               {PLANES.map((p, i) => (
                 <button
-                  key={p.megas}
+                  key={`${nombreZona}-${p.megas}`}
                   ref={(el) => {
                     botones.current[i] = el
                   }}
@@ -139,7 +169,7 @@ export function PlanesSelector() {
                   aria-label={`${p.megas} Megas, $${p.precio} al mes${p.destacado ? ', el más elegido' : ''}`}
                   tabIndex={i === sel ? 0 : -1}
                   className={`peldano${i === sel ? ' on' : ''}${p.destacado ? ' destacado' : ''}`}
-                  style={{ '--alto': p.megas / MAX, '--i': i, '--c': TONOS[i] } as CSSProperties}
+                  style={{ '--alto': p.megas / MAX, '--i': i, '--c': tono(p.megas) } as CSSProperties}
                   onClick={() => elegir(i)}
                 >
                   {p.destacado && <span className="peldano-cinta">Más elegido</span>}
@@ -161,7 +191,7 @@ export function PlanesSelector() {
 
           <div className="planes-detalle">
             <p className="sr-only" aria-live="polite">
-              Plan de {plan.megas} Megas por ${plan.precio} al mes
+              Plan de {plan.megas} Megas en {nombreZona} por ${plan.precio} al mes
             </p>
             <div className="pd-cabecera">
               <span className="pd-rotulo">Tu plan</span>
@@ -211,6 +241,19 @@ export function PlanesSelector() {
               <MapPin size={15} aria-hidden="true" /> Consulta la cobertura en el mapa antes de contratar
             </a>
           </div>
+        </div>
+
+        <div className="planes-notas">
+          <h3>
+            <Info size={17} aria-hidden="true" /> Ten en cuenta
+          </h3>
+          <ul>
+            {NOTAS_PLANES.map((n) => (
+              <li key={n}>
+                <Check size={15} strokeWidth={3} aria-hidden="true" /> {n}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

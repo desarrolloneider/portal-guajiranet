@@ -343,6 +343,16 @@ export function Autogestion() {
     return () => window.removeEventListener(EVENTO_AUTOGESTION, alPedir)
   }, [])
 
+  // Las direcciones de la web vieja llegan con ?abrir=pqrs, ?abrir=clave o ?abrir=velocidad (ver next.config.mjs).
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    const cual = url.searchParams.get('abrir')
+    if (cual !== 'pqrs' && cual !== 'clave' && cual !== 'velocidad') return
+    setVista(cual)
+    url.searchParams.delete('abrir')
+    window.history.replaceState(null, '', url.pathname + url.search + url.hash)
+  }, [])
+
   const tarjetas = [
     { icono: CreditCard, titulo: 'Pagar factura', texto: 'Paga en línea de forma rápida y segura, sin salir de casa.', accion: 'Ir a pagar', href: PAGO, whatsapp: false },
     { icono: Gauge, titulo: 'Test de velocidad', texto: 'Mide en segundos la velocidad real de tu conexión.', accion: 'Medir ahora', vista: 'velocidad' as const, whatsapp: false },
