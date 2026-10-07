@@ -685,14 +685,18 @@ footer#pagar { background: #17191d; color: #e5b87e; padding: 0; }
   .nac-flujo, .nac-municipios { animation: none; }}
 
 /* ---------- 41. Noticias: slider de ancho completo ---------- */
-.ns { background: radial-gradient(90% 120% at 78% 40%, #474d5b 0%, #31343e 38%, #17191d 78%); border-bottom: 1px solid #ffffff14; color: #ffffff; isolation: isolate; overflow: hidden; position: relative; }
-.ns::before { background: radial-gradient(40% 60% at 10% 110%, #09ac2729 0%, transparent 70%); content: ''; inset: 0; pointer-events: none; position: absolute; z-index: 0; }
+/* Fondo: negro a la izquierda (detrás del texto) y un gris suave solo detrás de la foto. */
+.ns { background: linear-gradient(90deg, #0d0e10 0%, #111214 42%, #11121400 68%), radial-gradient(70% 100% at 84% 40%, #3a3f4a 0%, #24272d 42%, #111214 80%); border-bottom: 1px solid #ffffff14; color: #ffffff; isolation: isolate; overflow: hidden; position: relative; }
+/* Brillo verde: sube desde la esquina de abajo y cubre todo el lado izquierdo. */
+.ns::before { background: radial-gradient(62% 95% at 0% 100%, #09ac2742 0%, #09ac271c 45%, transparent 78%), radial-gradient(35% 55% at 0% 30%, #09ac2714 0%, transparent 70%); content: ''; inset: 0; pointer-events: none; position: absolute; z-index: 0; }
 .ns-escenario { height: clamp(600px, 84vh, 740px); position: relative; touch-action: pan-y; }
 .ns-medios { bottom: 0; position: absolute; right: 0; top: 0; width: 66%; z-index: 1; }
 .ns-slide { inset: 0; position: absolute; }
 .ns-recorte { inset: 0; overflow: hidden; position: absolute; -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 34%); mask-image: linear-gradient(90deg, transparent 0%, #000 34%); }
 .ns-recorte::after { background: linear-gradient(180deg, #17191d8c 0%, transparent 30%, transparent 58%, #17191de6 100%); content: ''; inset: 0; pointer-events: none; position: absolute; }
 .ns-foto { display: block; height: 100%; object-fit: cover; pointer-events: none; user-select: none; width: 100%; }
+/* Fotos con zoom (ver "zoom" en las noticias de app/page.tsx): el recuadro crece hacia la derecha y abajo. Solo en pantallas anchas. */
+@media (min-width: 761px) { .ns-foto[data-zoom] { height: var(--zoom); max-width: none; width: var(--zoom); }}
 .ns-cortina { background: linear-gradient(180deg, transparent 0%, var(--marca-amarillo) 20%, #fff6c4 50%, var(--marca-amarillo) 80%, transparent 100%); bottom: 0; box-shadow: 0 0 22px 4px #fad21b8c, 0 0 60px 12px #fad21b33; margin-left: -2px; pointer-events: none; position: absolute; top: 0; width: 4px; z-index: 3; }
 
 .ns-contenido { bottom: 0; display: flex; flex-direction: column; justify-content: space-between; left: 0; margin: 0 auto; padding: 44px 0 36px; pointer-events: none; position: absolute; right: 0; top: 0; z-index: 4; }

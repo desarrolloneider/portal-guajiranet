@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react'
 import { ArrowLeft, ArrowRight, CalendarDays, Pause, Play } from 'lucide-react'
 
@@ -16,6 +16,10 @@ export type NoticiaSlide = {
   imagen: string
   /** object-position de la foto, para que el encuadre no corte a las personas. */
   enfoque?: string
+  /** Agranda el recuadro de la foto grande (1.12 = 12% más) para mover el encuadre más allá del borde. Solo en pantallas anchas. */
+  zoom?: number
+  /** object-position de la miniatura, si debe ser distinto al de la foto grande. */
+  enfoqueMini?: string
 }
 
 /** Tiempo que se queda cada noticia antes de pasar a la siguiente. */
@@ -215,7 +219,8 @@ export function NoticiasSlider({
                   src={actual.imagen}
                   alt=""
                   draggable={false}
-                  style={{ objectPosition: actual.enfoque }}
+                  style={{ objectPosition: actual.enfoque, ...(actual.zoom ? { '--zoom': `${actual.zoom * 100}%` } : {}) } as CSSProperties}
+                  data-zoom={actual.zoom ? '' : undefined}
                   variants={vF}
                 />
               </motion.div>
@@ -331,7 +336,7 @@ export function NoticiasSlider({
                 const n = noticias[i]
                 return (
                   <button key={n.id} type="button" className="ns-mini" onClick={() => ir(i, 1)}>
-                    <img src={n.imagen} alt="" style={{ objectPosition: n.enfoque }} />
+                    <img src={n.imagen} alt="" style={{ objectPosition: n.enfoqueMini ?? n.enfoque }} />
                     <span>
                       <small>{n.categoria}</small>
                       <strong>{n.titulo}</strong>
