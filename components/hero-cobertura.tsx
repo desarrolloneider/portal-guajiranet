@@ -4,8 +4,8 @@ import { useState, type MouseEvent } from 'react'
 import { ArrowRight, Check, MapPin, MessageCircle, Search, TriangleAlert } from 'lucide-react'
 import { buscarCobertura, EVENTO_COBERTURA, SUGERENCIAS_COBERTURA, whatsappCobertura, type Hallazgo } from '@/lib/cobertura'
 
-// Atajos para probar sin escribir: la sede (Albania) y los municipios más grandes.
-const RAPIDOS = ['Albania', 'Riohacha', 'Maicao', 'Uribia']
+// Atajos para probar sin escribir: la sede (Albania) y los municipios con más cobertura.
+const RAPIDOS = ['Albania', 'San Juan del Cesar', 'Fonseca', 'Hatonuevo']
 
 const irA = (id: string) => (e: MouseEvent<HTMLAnchorElement>) => {
   e.preventDefault()
@@ -18,6 +18,7 @@ export function HeroCobertura() {
   // undefined: todavía no ha consultado; null: sin cobertura conocida.
   const [resultado, setResultado] = useState<Hallazgo | null | undefined>(undefined)
   const [consultado, setConsultado] = useState('')
+  const hayCobertura = resultado?.tipo === 'municipio' || resultado?.tipo === 'zona'
 
   const consultar = (valor: string) => {
     const hallazgo = buscarCobertura(valor)
@@ -27,7 +28,7 @@ export function HeroCobertura() {
   }
 
   const verEnMapa = () => {
-    window.dispatchEvent(new CustomEvent(EVENTO_COBERTURA, { detail: resultado?.nombre ?? consultado }))
+    window.dispatchEvent(new CustomEvent(EVENTO_COBERTURA, { detail: resultado && resultado.tipo !== 'sin-cobertura' ? resultado.nombre : consultado }))
     document.getElementById('cobertura')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
@@ -54,8 +55,8 @@ export function HeroCobertura() {
               setTexto(e.target.value)
               if (resultado !== undefined) setResultado(undefined)
             }}
-            placeholder="Escribe tu municipio"
-            aria-label="Municipio"
+            placeholder="Municipio, corregimiento o barrio"
+            aria-label="Municipio, corregimiento o barrio"
             list="hc-sugerencias"
             autoComplete="off"
             enterKeyHint="search"
@@ -88,41 +89,45 @@ export function HeroCobertura() {
           ))}
         </div>
       ) : (
-        <div className={`hc-resultado ${resultado ? 'ok' : 'aviso'}`} role="status">
+        <div className={`hc-resultado ${hayCobertura ? 'ok' : 'aviso'}`} role="status">
           <span className="hc-resultado-ico" aria-hidden="true">
-            {resultado ? <Check size={16} strokeWidth={3} /> : <TriangleAlert size={16} />}
+            {hayCobertura ? <Check size={16} strokeWidth={3} /> : <TriangleAlert size={16} />}
           </span>
           <div>
-            {resultado?.tipo === 'local' && (
+            {resultado?.tipo === 'municipio' && (
               <p>
-                <strong>{resultado.nombre}</strong> tiene cobertura activa. Podemos agendar tu instalación.
+                <strong>{resultado.nombre}</strong> tiene cobertura. Revisa tu barrio en el mapa para confirmar que llegamos a tu casa.
               </p>
             )}
-            {resultado?.tipo === 'nacional' && (
+            {resultado?.tipo === 'zona' && (
               <p>
-                <strong>{resultado.nombre}</strong> está en nuestra red{resultado.depto ? ` de ${resultado.depto}` : ''}
-                {resultado.depto.endsWith('.') ? '' : '.'} Escríbenos y
-                validamos la instalación en tu dirección.
+                <strong>{resultado.nombre}</strong> ({resultado.municipio}) está dentro de nuestra cobertura. Podemos agendar tu instalación.
+              </p>
+            )}
+            {resultado?.tipo === 'sin-cobertura' && (
+              <p>
+                Por ahora no tenemos cobertura en <strong>{resultado.nombre}</strong>. Escríbenos y te avisamos cuando lleguemos.
               </p>
             )}
             {resultado === null && (
               <p>
-                No encontramos cobertura activa en <strong>«{consultado}»</strong>. Revisa la escritura o escríbenos por WhatsApp.
+                No reconocemos <strong>«{consultado}»</strong> como municipio o corregimiento. Si es un barrio o una dirección, búscala en el
+                mapa.
               </p>
             )}
             <div className="hc-acciones">
-              {resultado?.tipo === 'local' && (
+              {hayCobertura && (
                 <a href="#planes" onClick={irA('planes')}>
                   Ver planes <ArrowRight size={14} />
                 </a>
               )}
-              {resultado && (
+              {resultado?.tipo !== 'sin-cobertura' && (
                 <button type="button" onClick={verEnMapa}>
-                  <MapPin size={14} aria-hidden="true" /> Ver en el mapa
+                  <MapPin size={14} aria-hidden="true" /> {resultado === null ? 'Buscar en el mapa' : 'Ver en el mapa'}
                 </button>
               )}
               <a href={whatsappCobertura(resultado?.nombre ?? consultado)} target="_blank" rel="noreferrer">
-                <MessageCircle size={14} aria-hidden="true" /> {resultado?.tipo === 'local' ? 'Agendar por WhatsApp' : 'Escríbenos por WhatsApp'}
+                <MessageCircle size={14} aria-hidden="true" /> {hayCobertura ? 'Agendar por WhatsApp' : 'Escríbenos por WhatsApp'}
               </a>
             </div>
           </div>

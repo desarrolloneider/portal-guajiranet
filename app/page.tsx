@@ -7,12 +7,14 @@ import { Clientes } from '@/components/clientes'
 import { Cobertura } from '@/components/cobertura'
 import { FibraBanner } from '@/components/fibra-banner'
 import { Metricas } from '@/components/metricas'
+import { BannerCrc, InternetSano, SeguridadRed } from '@/components/info-legal'
 import { Modal } from '@/components/modal'
 import { NavegacionPrincipal } from '@/components/navegacion-principal'
 import { NoticiasSlider } from '@/components/noticias-slider'
 import { PlanesSelector } from '@/components/planes-selector'
 import { Revelador } from '@/components/revelador'
 import { AccionesFlotantes, BarraProgreso } from '@/components/utilidades'
+import { LISTA_MUNICIPIOS_CON_COBERTURA } from '@/lib/cobertura'
 
 const pasos = [
   { icono: MousePointer2, titulo: 'Consulta tu cobertura', texto: 'Busca tu municipio en el mapa y confirma en segundos si ya llegamos a tu zona.' },
@@ -61,7 +63,7 @@ const resoluciones = [
 ]
 
 const faqs = [
-  ['¿Dónde tienen cobertura?', 'En los 15 municipios de La Guajira y en ciudades de otros 21 departamentos del país. Busca tu municipio en el mapa de cobertura para confirmarlo.'],
+  ['¿Dónde tienen cobertura?', `Hoy tenemos cobertura para hogares en zonas de ${LISTA_MUNICIPIOS_CON_COBERTURA}, en La Guajira. Escribe tu barrio o dirección en el mapa de cobertura para confirmar que llegamos a tu casa.`],
   ['¿Cuánto tarda la instalación?', 'Coordinamos tu instalación en un máximo de 48 horas hábiles después de validar la cobertura.'],
   ['¿Puedo pagar mi factura en línea?', 'Sí. Usa el botón Pagar factura para realizar tu pago de forma rápida y segura.'],
   ['¿El router está incluido en el plan?', 'Sí. Todos nuestros planes incluyen el router WiFi y la instalación, sin cobros escondidos.'],
@@ -76,8 +78,8 @@ const noticias = [
     fechaISO: '2026-08-12',
     titulo: 'Seguimos expandiendo nuestra red por toda Colombia',
     resumen: 'La Guajira es nuestro punto de partida y Colombia, el horizonte: conectamos nuevas comunidades con una red estable y cercana.',
-    imagen: '/noticias/expansion-red.png',
-    enfoque: '40% 35%',
+    imagen: '/noticias/expansion-red.jpg',
+    enfoque: '65% 50%',
     detalle: 'Estamos llevando nuestra experiencia de conectividad local a nuevas regiones del país. Cada nueva zona comienza con escucha, planeación y una instalación pensada para las necesidades reales de la comunidad.',
     consejos: ['Consulta tu municipio en el mapa de cobertura.', 'Déjanos tus datos si tu zona aparece como próxima.', 'Comparte la información con vecinos que también necesiten conectarse.'],
   },
@@ -89,8 +91,8 @@ const noticias = [
     fechaISO: '2026-08-06',
     titulo: 'Consejos para disfrutar mejor tu WiFi en casa',
     resumen: 'Pequeños cambios de ubicación y hábitos pueden ayudarte a aprovechar mejor la conexión.',
-    imagen: '/noticias/wifi-en-casa.png',
-    enfoque: '28% 50%',
+    imagen: '/noticias/wifi-en-casa.jpg',
+    enfoque: '65% 50%',
     detalle: 'Una red WiFi estable empieza con una buena ubicación del router y continúa con hábitos sencillos de uso. Prueba estos consejos antes de solicitar soporte.',
     consejos: ['Ubica el router en un lugar alto, abierto y central.', 'Evita esconderlo dentro de muebles o cerca de electrodomésticos.', 'Conecta por cable los equipos que necesitan máxima estabilidad.', 'Reinicia el router solo cuando sea necesario y revisa primero las luces indicadoras.'],
   },
@@ -102,8 +104,8 @@ const noticias = [
     fechaISO: '2026-07-28',
     titulo: 'Atención local, tecnología para todos',
     resumen: 'Estamos cerca para ayudarte con instalación, soporte, facturación y orientación.',
-    imagen: '/noticias/atencion-local.png',
-    enfoque: '45% 40%',
+    imagen: '/noticias/atencion-local.jpg',
+    enfoque: '65% 50%',
     detalle: 'Nuestra atención combina herramientas digitales con acompañamiento humano. Queremos que cada solicitud tenga una respuesta clara y un canal sencillo para continuar.',
     consejos: ['Escríbenos por WhatsApp para una orientación rápida.', 'Ten a la mano tu número de contrato si necesitas soporte.', 'Consulta el portal de pagos para realizar tu trámite en línea.'],
   },
@@ -112,6 +114,11 @@ const noticias = [
 export default function Page() {
   const [openFaq, setOpenFaq] = useState<number | null>(0)
   const [noticiaAbierta, setNoticiaAbierta] = useState<string | null>(null)
+  const [infoLegal, setInfoLegal] = useState<null | 'seguridad' | 'internet-sano'>(null)
+  const abrirInfo = (cual: 'seguridad' | 'internet-sano') => (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault()
+    setInfoLegal(cual)
+  }
   const noticiaActiva = noticias.find((noticia) => noticia.id === noticiaAbierta)
 
   return (
@@ -208,6 +215,8 @@ export default function Page() {
             <a href="#legal">Términos y condiciones <ArrowRight size={15} /></a>
             <a href="#legal">Política de privacidad <ArrowRight size={15} /></a>
             <a href="https://www.guajiranet.com/presentar-un-pqrs/" target="_blank" rel="noreferrer">PQR y reclamos <ArrowRight size={15} /></a>
+            <a href="#legal" onClick={abrirInfo('seguridad')}>Seguridad de la red <ArrowRight size={15} /></a>
+            <a href="#legal" onClick={abrirInfo('internet-sano')}>Internet sano · Ley 679 de 2001 <ArrowRight size={15} /></a>
           </div>
         </div>
       </section>
@@ -227,6 +236,7 @@ export default function Page() {
       </section>
 
       <footer id="pagar">
+        <BannerCrc />
         <div className="container footer-top">
           <div className="footer-col footer-marca">
             <a href="#inicio" className="brand"><img src="/logo-guajiranet-claro.png" alt="GuajiraNet Telecomunicaciones" width={1280} height={720} /></a>
@@ -274,7 +284,8 @@ export default function Page() {
             <a href="#legal">Términos y condiciones</a>
             <a href="#legal">Política de privacidad</a>
             <a href="https://www.guajiranet.com/presentar-un-pqrs/" target="_blank" rel="noreferrer">PQRS</a>
-            <a href="https://www.guajiranet.com/tu-seguridad/" target="_blank" rel="noreferrer">Tu seguridad</a>
+            <a href="#legal" onClick={abrirInfo('seguridad')}>Tu seguridad</a>
+            <a href="#legal" onClick={abrirInfo('internet-sano')}>Internet sano</a>
           </div>
         </div>
       </footer>
@@ -289,6 +300,14 @@ export default function Page() {
             <a className="button button-primary" href={noticiaActiva.id === 'wifi' ? '#faq' : '#contacto'} onClick={() => setNoticiaAbierta(null)}>Continuar en GuajiraNet <ArrowRight size={16} /></a>
           </div>
         )}
+      </Modal>
+
+      <Modal abierto={infoLegal === 'seguridad'} onCerrar={() => setInfoLegal(null)} titulo="Seguridad de la red" subtitulo="Procedimientos para garantizar la seguridad y la integridad del servicio" ancho={760}>
+        <SeguridadRed />
+      </Modal>
+
+      <Modal abierto={infoLegal === 'internet-sano'} onCerrar={() => setInfoLegal(null)} titulo="Internet sano" subtitulo="Ley 679 de 2001 y Decreto 1524 de 2002" ancho={760}>
+        <InternetSano />
       </Modal>
 
       <AccionesFlotantes />

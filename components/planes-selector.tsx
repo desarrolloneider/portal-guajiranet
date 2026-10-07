@@ -6,7 +6,7 @@ import { ArrowRight, Check, Globe, MapPin, MessageCircle, MonitorPlay, MousePoin
 import { PLANES, type Plan } from '@/lib/planes'
 
 // Tono de cada fibra: de azul claro a azul eléctrico a medida que sube la velocidad.
-const TONOS = ['#b6d2ef', '#77ace0', '#0868c6', '#0758a8', '#06498b', '#043463']
+const TONOS = ['#f0d6b5', '#e3b374', '#5f6779', '#515767', '#434855', '#30333d']
 
 const MAX = Math.max(...PLANES.map((p) => p.megas))
 const WHATSAPP = 'https://wa.me/573009139909'

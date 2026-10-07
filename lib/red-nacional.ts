@@ -108,9 +108,9 @@ export const ENLACES_NAC: [string, string][] = [
   ['pasto', 'ipiales'],
 ]
 
-/** Amarres de cable submarino: punto en el mar -> ciudad de aterrizaje. */
-export const SUBMARINOS: { id: string; mar: [number, number]; destino: string }[] = [
-  { id: 's1', mar: [-77.9, 10.9], destino: 'cartagena' },
-  { id: 's2', mar: [-75.6, 12.4], destino: 'barranquilla' },
-  { id: 's3', mar: [-71.3, 12.5], destino: 'riohacha' },
+/** Amarres de cable submarino: punto en el mar -> ciudad de aterrizaje, con el país de donde viene el cable. */
+export const SUBMARINOS: { id: string; mar: [number, number]; destino: string; pais: string; color: string; lado: 'izq' | 'der' }[] = [
+  { id: 's1', mar: [-77.9, 10.9], destino: 'cartagena', pais: 'Panamá', color: '#c084fc', lado: 'izq' },
+  { id: 's2', mar: [-75.6, 12.4], destino: 'barranquilla', pais: 'Estados Unidos', color: '#ff7a6b', lado: 'izq' },
+  { id: 's3', mar: [-71.3, 12.5], destino: 'riohacha', pais: 'Curazao', color: '#2dd4bf', lado: 'der' },
 ]

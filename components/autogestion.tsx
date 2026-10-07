@@ -1,6 +1,6 @@
 'use client'
 
-import { type ChangeEvent, useState } from 'react'
+import { type ChangeEvent, useEffect, useState } from 'react'
 import { ArrowRight, Check, CreditCard, FileText, Gauge, KeyRound, MessageCircle } from 'lucide-react'
 import { Modal } from '@/components/modal'
 import { TestVelocidad } from '@/components/test-velocidad'
@@ -139,51 +139,164 @@ function fuerza(c: string) {
 
 const NIVELES = ['Muy débil', 'Débil', 'Aceptable', 'Buena', 'Excelente']
 
+type EquipoWeb = { id: string; red: string }
+type ResultadoClave = { estado: 'en_cola' | 'equipo_apagado'; tarea: number; firma: string }
+
+async function pedirCambioClave(cuerpo: Record<string, unknown>) {
+  const r = await fetch('/api/cambio-clave', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(cuerpo),
+  })
+  const datos = await r.json().catch(() => null)
+  if (!r.ok) throw new Error(datos?.mensaje ?? 'No pudimos completar la solicitud. Escríbenos por WhatsApp.')
+  return datos
+}
+
+const ESTADOS_TAREA: Record<string, string> = {
+  en_cola: 'En cola: tu solicitud está esperando turno.',
+  en_proceso: 'Aplicando el cambio en tu router…',
+  fallido: 'No se pudo aplicar el cambio. Escríbenos por WhatsApp y lo revisamos.',
+}
+
 function FormClave() {
-  const [datos, setDatos] = useState({ nombre: '', apellido: '', documento: '', telefono: '', correo: '', claveActual: '', red: '', nuevaRed: '', clave: '', repetir: '', detalle: '' })
-  const [enviado, setEnviado] = useState<string | null>(null)
+  const [paso, setPaso] = useState<'datos' | 'clave' | 'listo'>('datos')
+  const [datos, setDatos] = useState({ cedula: '', celular: '', clave: '', repetir: '', red: '' })
+  const [equipos, setEquipos] = useState<EquipoWeb[]>([])
+  const [equipo, setEquipo] = useState('')
+  const [cargando, setCargando] = useState(false)
+  const [error, setError] = useState('')
+  const [resultado, setResultado] = useState<ResultadoClave | null>(null)
+  const [estadoTarea, setEstadoTarea] = useState('')
   const set = (k: string, v: string) => setDatos((d) => ({ ...d, [k]: v }))
 
   const nivel = fuerza(datos.clave)
   const coincide = datos.clave.length > 0 && datos.clave === datos.repetir
-  const valido = datos.clave.length >= 8 && coincide
+  const valido = /^[A-Za-z0-9]{8,32}$/.test(datos.clave) && coincide && (equipos.length < 2 || !!equipo)
 
-  if (enviado) {
+  // Después de encolar, se consulta el estado de la tarea unas cuantas veces.
+  useEffect(() => {
+    if (!resultado) return
+    let vueltas = 0
+    let vivo = true
+    const revisar = async () => {
+      try {
+        const r = await pedirCambioClave({ accion: 'estado', tarea: resultado.tarea, firma: resultado.firma })
+        if (!vivo) return
+        setEstadoTarea(String(r.estado ?? ''))
+        if (/complet|exit|ok|done|aplic|fallido/i.test(String(r.estado))) return
+      } catch {
+        if (!vivo) return
+      }
+      if (++vueltas < 15) temporizador = window.setTimeout(revisar, 4000)
+    }
+    let temporizador = window.setTimeout(revisar, 2500)
+    return () => {
+      vivo = false
+      window.clearTimeout(temporizador)
+    }
+  }, [resultado])
+
+  const verificar = async () => {
+    setCargando(true)
+    setError('')
+    try {
+      const r = await pedirCambioClave({ accion: 'verificar', cedula: datos.cedula, celular: datos.celular })
+      const lista = (r.equipos ?? []) as EquipoWeb[]
+      setEquipos(lista)
+      setEquipo(lista.length === 1 ? lista[0].id : '')
+      setPaso('clave')
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'No pudimos verificar tus datos.')
+    } finally {
+      setCargando(false)
+    }
+  }
+
+  const cambiar = async () => {
+    setCargando(true)
+    setError('')
+    try {
+      const r = (await pedirCambioClave({
+        accion: 'cambiar',
+        cedula: datos.cedula,
+        celular: datos.celular,
+        equipo,
+        clave: datos.clave,
+        red: datos.red,
+      })) as ResultadoClave
+      setResultado(r)
+      setPaso('listo')
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'No pudimos cambiar la clave.')
+    } finally {
+      setCargando(false)
+    }
+  }
+
+  if (paso === 'listo' && resultado) {
+    const aplicado = /complet|exit|ok|done|aplic/i.test(estadoTarea)
     return (
       <div className="ok-panel">
         <span className="ok-icono"><Check size={26} /></span>
-        <h4>Solicitud de cambio registrada</h4>
+        <h4>{aplicado ? 'Clave cambiada' : 'Recibimos tu cambio de clave'}</h4>
         <p>Número de seguimiento:</p>
-        <strong className="ok-radicado">{enviado}</strong>
+        <strong className="ok-radicado">{resultado.tarea}</strong>
         <p className="ok-plazo">
-          Un técnico aplicará el cambio en tu router y te confirmará. Por seguridad nunca enviamos contraseñas por
-          WhatsApp ni por correo: te llamamos al número registrado para verificar tu identidad.
+          {resultado.estado === 'equipo_apagado'
+            ? 'Tu router está apagado o sin conexión. El cambio se aplicará automáticamente cuando vuelva a conectarse.'
+            : aplicado
+              ? 'Ya puedes conectar tus dispositivos con la nueva clave.'
+              : (ESTADOS_TAREA[estadoTarea] ?? 'El cambio se aplica en tu router en unos minutos.')}{' '}
+          Al aplicarse, todos tus dispositivos se desconectan y debes volver a conectarlos con la clave nueva
+          {datos.red ? ` en la red «${datos.red}»` : ''}.
         </p>
         <div className="ok-acciones">
-          <a className="pcard-cta" href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, solicité un cambio de clave WiFi. Radicado ${enviado}. Documento ${datos.documento}.`)}`} target="_blank" rel="noreferrer">
-            Avisar por WhatsApp <MessageCircle size={17} />
+          <a className="boton-suave" href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, hice un cambio de clave WiFi desde la página. Seguimiento ${resultado.tarea}.`)}`} target="_blank" rel="noreferrer">
+            ¿Problemas? Escríbenos <MessageCircle size={17} />
           </a>
         </div>
       </div>
     )
   }
 
+  if (paso === 'datos') {
+    return (
+      <form className="form" onSubmit={(e) => { e.preventDefault(); verificar() }}>
+        <p className="form-ayuda-clave">Primero confirmamos que eres el titular del servicio.</p>
+        <div className="form-grid">
+          <label>Cédula del titular *<input required inputMode="numeric" autoComplete="off" value={datos.cedula} onChange={(e) => set('cedula', e.target.value)} placeholder="Sin puntos ni espacios" /></label>
+          <label>Celular registrado *<input required inputMode="tel" autoComplete="tel" value={datos.celular} onChange={(e) => set('celular', e.target.value)} placeholder="El que nos diste al contratar" /></label>
+        </div>
+        {error && <em className="form-error">{error}</em>}
+        <button type="submit" className="pcard-cta" disabled={cargando}>{cargando ? 'Verificando…' : 'Continuar'} <ArrowRight size={17} /></button>
+        <p className="form-nota">Usamos estos datos solo para verificar tu identidad, conforme a la Ley 1581 de 2012.</p>
+      </form>
+    )
+  }
+
   return (
-    <form className="form" onSubmit={(e) => { e.preventDefault(); setEnviado(radicado('CLV')) }}>
+    <form className="form" onSubmit={(e) => { e.preventDefault(); if (valido) cambiar() }}>
+      {equipos.length > 1 && (
+        <fieldset className="form-tipos">
+          <legend>¿Qué red quieres cambiar?</legend>
+          {equipos.map((eq) => (
+            <label key={eq.id} className={equipo === eq.id ? 'on' : ''}>
+              <input type="radio" name="equipo" value={eq.id} checked={equipo === eq.id} onChange={() => setEquipo(eq.id)} />
+              <strong>{eq.red}</strong>
+            </label>
+          ))}
+        </fieldset>
+      )}
+      {equipos.length === 1 && <p className="form-ayuda-clave">Vas a cambiar la clave de la red <strong>{equipos[0].red}</strong>.</p>}
+
       <div className="form-grid">
-        <label>Tu nombre *<input required value={datos.nombre} onChange={(e) => set('nombre', e.target.value)} /></label>
-        <label>Tu apellido *<input required value={datos.apellido} onChange={(e) => set('apellido', e.target.value)} /></label>
-        <label>Cédula *<input required inputMode="numeric" value={datos.documento} onChange={(e) => set('documento', e.target.value)} /></label>
-        <label>Celular *<input required inputMode="tel" value={datos.telefono} onChange={(e) => set('telefono', e.target.value)} /></label>
-        <label>Tu correo *<input required type="email" value={datos.correo} onChange={(e) => set('correo', e.target.value)} /></label>
-        <label>Clave actual *<input required type="password" value={datos.claveActual} onChange={(e) => set('claveActual', e.target.value)} /></label>
-        <label>Nombre WiFi <i>(opcional)</i><input value={datos.red} onChange={(e) => set('red', e.target.value)} placeholder="Ej: GUAJIRANET-4821" /></label>
-        <label>Nuevo nombre WiFi <i>(opcional)</i><input value={datos.nuevaRed} onChange={(e) => set('nuevaRed', e.target.value)} /></label>
-        <label>Clave nueva *<input required type="password" minLength={8} pattern="[A-Za-z0-9]{8,}" title="Usa al menos 8 caracteres alfanuméricos" value={datos.clave} onChange={(e) => set('clave', e.target.value)} /></label>
-        <label>Repetir clave *<input required type="password" value={datos.repetir} onChange={(e) => set('repetir', e.target.value)} /></label>
+        <label>Clave nueva *<input required type="password" autoComplete="new-password" minLength={8} maxLength={32} pattern="[A-Za-z0-9]{8,32}" title="Entre 8 y 32 letras o números" value={datos.clave} onChange={(e) => set('clave', e.target.value)} /></label>
+        <label>Repetir clave *<input required type="password" autoComplete="new-password" value={datos.repetir} onChange={(e) => set('repetir', e.target.value)} /></label>
+        <label>Nuevo nombre WiFi <i>(opcional)</i><input maxLength={32} value={datos.red} onChange={(e) => set('red', e.target.value)} placeholder="Déjalo vacío para no cambiarlo" /></label>
       </div>
 
-      <p className="form-ayuda-clave">Las claves deben tener 8 caracteres alfanuméricos.</p>
+      <p className="form-ayuda-clave">La clave debe tener entre 8 y 32 letras o números, sin espacios ni símbolos.</p>
 
       {datos.clave && (
         <div className="fuerza">
@@ -195,16 +308,11 @@ function FormClave() {
       )}
 
       {datos.repetir && !coincide && <em className="form-error">Las contraseñas no coinciden.</em>}
+      {error && <em className="form-error">{error}</em>}
 
-      <label className="form-ancho">
-        Observaciones <i>(opcional)</i>
-        <textarea rows={4} value={datos.detalle} onChange={(e) => set('detalle', e.target.value)} placeholder="Escribe alguna observación adicional." />
-      </label>
-
-      <button type="submit" className="pcard-cta" disabled={!valido}>Enviar clave <ArrowRight size={17} /></button>
+      <button type="submit" className="pcard-cta" disabled={!valido || cargando}>{cargando ? 'Enviando…' : 'Cambiar clave'} <ArrowRight size={17} /></button>
       <p className="form-nota">
-        Al cambiar la clave se desconectarán todos los dispositivos: tendrás que volver a conectarlos con la nueva
-        contraseña.
+        Al cambiar la clave se desconectarán todos los dispositivos: tendrás que volver a conectarlos con la nueva contraseña.
       </p>
     </form>
   )
@@ -260,7 +368,7 @@ export function Autogestion() {
         <FormPqrs />
       </Modal>
 
-      <Modal abierto={vista === 'clave'} onCerrar={() => setVista(null)} titulo="Cambio de clave WiFi" subtitulo="Solicita una contraseña nueva para tu red" ancho={900}>
+      <Modal abierto={vista === 'clave'} onCerrar={() => setVista(null)} titulo="Cambio de clave WiFi" subtitulo="Cambia la contraseña de tu red desde aquí" ancho={760}>
         <FormClave />
       </Modal>
     </section>

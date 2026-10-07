@@ -103,9 +103,9 @@ export function FibraBanner() {
         <svg className="fibra-svg" viewBox="0 0 1200 560" preserveAspectRatio="xMidYMid slice">
           <defs>
             <linearGradient id="hiloGrad" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#4fa3e8" stopOpacity="0" />
-              <stop offset="18%" stopColor="#4fa3e8" stopOpacity=".85" />
-              <stop offset="70%" stopColor="#8ccbff" stopOpacity=".9" />
+              <stop offset="0%" stopColor="#e8a64f" stopOpacity="0" />
+              <stop offset="18%" stopColor="#e8a64f" stopOpacity=".85" />
+              <stop offset="70%" stopColor="#f5cc96" stopOpacity=".9" />
               <stop offset="100%" stopColor="#fad21b" stopOpacity=".75" />
             </linearGradient>
             <filter id="hiloGlow" x="-10%" y="-40%" width="120%" height="180%">

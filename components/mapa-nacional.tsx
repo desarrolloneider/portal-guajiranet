@@ -4,6 +4,8 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 import { ArrowLeft, Minus, Plus, RotateCcw } from 'lucide-react'
 import { COL_HEIGHT, COL_WIDTH, DEPARTAMENTOS, PAIS, proyectar } from '@/lib/colombia-map'
 import { ENLACES_NAC, NODOS, SUBMARINOS, type Nodo } from '@/lib/red-nacional'
+import { ZONAS_COBERTURA } from '@/lib/cobertura-zonas'
+import { CODIGOS_CON_COBERTURA } from '@/lib/cobertura'
 
 /* ------------------------------------------------------------------ */
 /* Lienzo y datos fijos                                                */
@@ -19,7 +21,13 @@ type MunicipioGeo = { codigo: string; nombre: string; d: string; centro: Punto }
 type DeptoGeo = { codigo: string; nombre: string; caja: Caja; contorno: string; municipios: MunicipioGeo[] }
 
 /** Pedido externo para mover el mapa (por ejemplo, desde el buscador de cobertura). */
-export type DestinoMapa = { tipo: 'depto'; codigo: string; clave: number } | { tipo: 'nodo'; id: string; clave: number }
+export type DestinoMapa =
+  | { tipo: 'depto'; codigo: string; clave: number }
+  | { tipo: 'nodo'; id: string; clave: number }
+  | { tipo: 'zonas'; ids: number[]; clave: number }
+  | { tipo: 'punto'; lat: number; lng: number; estado: 'con' | 'probable' | 'sin'; clave: number }
+
+type Pin = { x: number; y: number; estado: 'con' | 'probable' | 'sin' }
 
 // Se amplía el lienzo a los lados para que las etiquetas de la costa no queden cortadas.
 const MARGEN_X = 108
@@ -40,10 +48,59 @@ const NODO = new Map(NODOS.map((n) => [n.id, n]))
 const PUNTOS = new Map<string, Punto>(NODOS.map((n) => [n.id, proyectar(n.lon, n.lat)]))
 const DEPTO = new Map(DEPARTAMENTOS.map((d) => [d.codigo, d]))
 const CON_SERVICIO = new Set(NODOS.map((n) => n.depto))
-const MPIOS_CON_SERVICIO = new Set(NODOS.map((n) => n.municipio))
+/** Departamento donde están las zonas de cobertura para hogares. */
+const DEPTO_COBERTURA = '44'
+/** En La Guajira cuentan las zonas de cobertura; en el resto del país, las ciudades de la red. */
+const MPIOS_CON_SERVICIO = new Set([...NODOS.filter((n) => n.depto !== DEPTO_COBERTURA).map((n) => n.municipio), ...CODIGOS_CON_COBERTURA])
 const DEPTOS_CON_SERVICIO = DEPARTAMENTOS.filter((d) => CON_SERVICIO.has(d.codigo))
-const NODOS_DE = (codigo: string) => NODOS.filter((n) => n.depto === codigo)
-const MPIOS_DE = (codigo: string) => new Set(NODOS_DE(codigo).map((n) => n.municipio)).size
+const NODOS_DE = (codigo: string) =>
+  NODOS.filter((n) => n.depto === codigo && (codigo !== DEPTO_COBERTURA || CODIGOS_CON_COBERTURA.has(n.municipio)))
+const MPIOS_DE = (codigo: string) => (codigo === DEPTO_COBERTURA ? CODIGOS_CON_COBERTURA.size : new Set(NODOS_DE(codigo).map((n) => n.municipio)).size)
+const RESUMEN_DEPTO = (codigo: string) => {
+  const n = MPIOS_DE(codigo)
+  if (codigo === DEPTO_COBERTURA) return `${n} ${n === 1 ? 'municipio' : 'municipios'} con cobertura`
+  return `${n} ${n === 1 ? 'ciudad' : 'ciudades'} de nuestra red`
+}
+
+/* ---------- Zonas de cobertura (mapa de calor) ---------- */
+
+const ZONAS_GEO = ZONAS_COBERTURA.map((z) => {
+  let x0 = Infinity
+  let y0 = Infinity
+  let x1 = -Infinity
+  let y1 = -Infinity
+  const d = z.poligonos
+    .flatMap((pol) =>
+      pol.map((anillo) => {
+        const pts = anillo.map(([lng, lat]) => {
+          const [x, y] = proyectar(lng, lat)
+          x0 = Math.min(x0, x)
+          y0 = Math.min(y0, y)
+          x1 = Math.max(x1, x)
+          y1 = Math.max(y1, y)
+          return `${x.toFixed(2)},${y.toFixed(2)}`
+        })
+        return `M${pts.join('L')}Z`
+      }),
+    )
+    .join('')
+  const [cx, cy] = proyectar(z.centro[1], z.centro[0])
+  return { id: z.id, nombre: z.nombre, municipio: z.municipio, nivel: z.nivel, d, cx, cy, caja: [x0, y0, x1 - x0, y1 - y0] as Caja }
+})
+const ZONA_GEO = new Map(ZONAS_GEO.map((z) => [z.id, z]))
+/** Radio del resplandor de cada zona en la vista de todo el país; se achica al acercar. */
+const RADIO_CALOR = (nivel: number) => 4 + nivel * 2.2
+
+/** Une varias cajas y les da un tamaño mínimo para que el acercamiento no sea exagerado. */
+function unirCajas(cajas: Caja[], minimo = 9): Caja {
+  const x0 = Math.min(...cajas.map((c) => c[0]))
+  const y0 = Math.min(...cajas.map((c) => c[1]))
+  const x1 = Math.max(...cajas.map((c) => c[0] + c[2]))
+  const y1 = Math.max(...cajas.map((c) => c[1] + c[3]))
+  const w = Math.max(minimo, x1 - x0)
+  const h = Math.max(minimo, y1 - y0)
+  return [(x0 + x1) / 2 - w / 2, (y0 + y1) / 2 - h / 2, w, h]
+}
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v))
 const suave = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
@@ -69,7 +126,7 @@ const SEGMENTOS = ENLACES_NAC.map(([da, db], i) => {
 const AMARRES = SUBMARINOS.map((s, i) => {
   const a = proyectar(s.mar[0], s.mar[1])
   const b = PUNTOS.get(s.destino)!
-  return { id: s.id, mar: a, d: curva(a, b, 0.16), dur: 3 + i * 0.6, delay: i * 0.9 }
+  return { id: s.id, mar: a, d: curva(a, b, 0.16), dur: 3 + i * 0.6, delay: i * 0.9, pais: s.pais, color: s.color, lado: s.lado }
 })
 
 /* ---------- Polígonos para saber en qué departamento está un punto ---------- */
@@ -217,22 +274,38 @@ const Municipios = memo(function Municipios({ geo }: { geo: DeptoGeo }) {
   )
 })
 
+const Calor = memo(function Calor() {
+  return (
+    <g className="nac-calor">
+      {ZONAS_GEO.map((z) => (
+        <circle key={`h-${z.id}`} className="nac-calor-halo" cx={z.cx} cy={z.cy} r={RADIO_CALOR(z.nivel)} data-r={RADIO_CALOR(z.nivel)} fill={`url(#nacCalor${z.nivel})`} />
+      ))}
+      {ZONAS_GEO.map((z) => (
+        <path key={z.id} d={z.d} data-zona={z.id} className={`nac-zona n${z.nivel}`} fillRule="evenodd" />
+      ))}
+    </g>
+  )
+})
+
 const Red = memo(function Red({ activo }: { activo: string | null }) {
   const conectado = (s: { id: string }) => !!activo && (s.id.startsWith(`${activo}-`) || s.id.endsWith(`-${activo}`))
   return (
     <g className="nac-red" filter="url(#nacRed)">
       {AMARRES.map((s) => (
-        <path key={s.id} id={`sub-${s.id}`} d={s.d} className="nac-submarino" />
+        <path key={s.id} id={`sub-${s.id}`} d={s.d} className="nac-submarino" style={{ stroke: s.color }} />
       ))}
       {AMARRES.map((s) => (
-        <circle key={`${s.id}-p`} className="nac-pulso nac-pulso-sub" r="3.6" data-r="3.6">
+        <circle key={`${s.id}-p`} className="nac-pulso nac-pulso-sub" r="3.6" data-r="3.6" style={{ fill: s.color }}>
           <animateMotion dur={`${s.dur}s`} begin={`${s.delay}s`} repeatCount="indefinite">
             <mpath href={`#sub-${s.id}`} />
           </animateMotion>
         </circle>
       ))}
       {AMARRES.map((s) => (
-        <circle key={`${s.id}-m`} cx={s.mar[0]} cy={s.mar[1]} r="4.5" data-r="4.5" className="nac-pulso nac-mar" />
+        <circle key={`${s.id}-m`} cx={s.mar[0]} cy={s.mar[1]} r="4.5" data-r="4.5" className="nac-pulso nac-mar" style={{ fill: s.color }} />
+      ))}
+      {SEGMENTOS.map((s) => (
+        <path key={`${s.id}-c`} d={s.d} className="nac-casco" />
       ))}
       {SEGMENTOS.map((s) => (
         <path key={s.id} id={`nac-${s.id}`} d={s.d} className={`nac-enlace${conectado(s) ? ' hl' : ''}`} />
@@ -289,6 +362,7 @@ export function MapaNacional({ destino }: { destino?: DestinoMapa | null }) {
   const [seleccionado, setSeleccionado] = useState<string | null>(null)
   const [asentado, setAsentado] = useState(0)
   const [etiquetas, setEtiquetas] = useState<Etiqueta[]>(ETIQUETAS_INICIALES)
+  const [pin, setPin] = useState<Pin | null>(null)
 
   const deptoRef = useRef(depto)
   const selRef = useRef(seleccionado)
@@ -356,6 +430,7 @@ export function MapaNacional({ destino }: { destino?: DestinoMapa | null }) {
       const q = m ? tamanoEtiqueta(m) / (UNIDAD_ETIQUETA * v.k * m.s) : 1 / v.k
       svg.querySelectorAll<SVGGElement>('.nac-escala').forEach((g) => g.setAttribute('transform', `scale(${q.toFixed(5)})`))
       svg.querySelectorAll<SVGCircleElement>('.nac-pulso').forEach((c) => c.setAttribute('r', (Number(c.dataset.r) / v.k).toFixed(4)))
+      svg.querySelectorAll<SVGCircleElement>('.nac-calor-halo').forEach((c) => c.setAttribute('r', (Number(c.dataset.r) / Math.pow(v.k, 0.75)).toFixed(4)))
       const halo = clamp(1 - (v.k - 1) / 0.7, 0, 1)
       svg.style.setProperty('--halo', halo.toFixed(3))
       const raiz = raizRef.current
@@ -563,10 +638,38 @@ export function MapaNacional({ destino }: { destino?: DestinoMapa | null }) {
     [activarDepto, animar, encuadrar],
   )
 
+  /** Acerca el mapa a una o varias zonas de cobertura. */
+  const irAZonas = useCallback(
+    (ids: number[]) => {
+      const cajas = ids.map((id) => ZONA_GEO.get(id)?.caja).filter((c): c is Caja => !!c)
+      if (!cajas.length) return
+      activarDepto(DEPTO_COBERTURA)
+      selRef.current = null
+      setSeleccionado(null)
+      requestAnimationFrame(() => animar(encuadrar(unirCajas(cajas))))
+    },
+    [activarDepto, animar, encuadrar],
+  )
+
+  /** Marca un punto buscado (dirección, barrio o ubicación de la persona) y acerca el mapa. */
+  const irAPunto = useCallback(
+    (lat: number, lng: number, estado: Pin['estado']) => {
+      const [x, y] = proyectar(lng, lat)
+      const codigo = deptoEn([x, y])
+      activarDepto(codigo && CON_SERVICIO.has(codigo) ? codigo : DEPTO_COBERTURA)
+      selRef.current = null
+      setSeleccionado(null)
+      setPin({ x, y, estado })
+      requestAnimationFrame(() => animar(encuadrar(unirCajas([[x, y, 0, 0]], 7))))
+    },
+    [activarDepto, animar, encuadrar],
+  )
+
   const volver = useCallback(() => {
     activarDepto(null)
     selRef.current = null
     setSeleccionado(null)
+    setPin(null)
     ocultarTip()
     requestAnimationFrame(() => animar(IDENTIDAD))
   }, [activarDepto, animar, ocultarTip])
@@ -635,7 +738,10 @@ export function MapaNacional({ destino }: { destino?: DestinoMapa | null }) {
   // Pedidos desde fuera (buscador, chips de municipios).
   useEffect(() => {
     if (!destino) return
-    if (destino.tipo === 'depto') irADepto(destino.codigo)
+    if (destino.tipo === 'punto') return irAPunto(destino.lat, destino.lng, destino.estado)
+    setPin(null)
+    if (destino.tipo === 'zonas') irAZonas(destino.ids)
+    else if (destino.tipo === 'depto') irADepto(destino.codigo)
     else {
       const n = NODO.get(destino.id)
       if (n) irADepto(n.depto, n.id)
@@ -766,6 +872,8 @@ export function MapaNacional({ destino }: { destino?: DestinoMapa | null }) {
     const el = e.target as Element
     const nodo = el.closest('[data-nodo]')?.getAttribute('data-nodo')
     if (nodo) return elegirNodo(nodo)
+    const zona = el.closest('[data-zona]')?.getAttribute('data-zona')
+    if (zona) return irAZonas([Number(zona)])
     const mpio = el.closest('[data-mpio]')?.getAttribute('data-mpio')
     if (mpio && MPIOS_CON_SERVICIO.has(mpio)) {
       const n = NODOS.find((x) => x.municipio === mpio)
@@ -784,15 +892,21 @@ export function MapaNacional({ destino }: { destino?: DestinoMapa | null }) {
     const y = e.clientY - raiz.top
     const nodo = el.closest('[data-nodo]')?.getAttribute('data-nodo')
     if (nodo) return tipNodo(nodo)
+    const zona = ZONA_GEO.get(Number(el.closest('[data-zona]')?.getAttribute('data-zona')))
+    if (zona) return mostrarTip(zona.nombre, `Zona con cobertura · ${zona.municipio}`, x, y - 14)
     const mpio = el.closest('[data-mpio]')?.getAttribute('data-mpio')
     if (mpio) {
       const m = municipiosPorCodigo.get(mpio)
-      if (m) return mostrarTip(m.nombre, MPIOS_CON_SERVICIO.has(mpio) ? 'Con servicio GuajiraNet' : 'Escríbenos para consultar', x, y - 14)
+      const detalle = !MPIOS_CON_SERVICIO.has(mpio)
+        ? 'Escríbenos para consultar'
+        : mpio.startsWith(DEPTO_COBERTURA)
+          ? 'Con cobertura GuajiraNet'
+          : 'Ciudad de nuestra red'
+      if (m) return mostrarTip(m.nombre, detalle, x, y - 14)
     }
     const d = el.closest('[data-depto]')?.getAttribute('data-depto')
     if (d && d !== deptoRef.current) {
-      const n = MPIOS_DE(d)
-      return mostrarTip(DEPTO.get(d)?.nombre ?? '', `${n} ${n === 1 ? 'municipio' : 'municipios'} con servicio · toca para ver`, x, y - 14)
+      return mostrarTip(DEPTO.get(d)?.nombre ?? '', `${RESUMEN_DEPTO(d)} · toca para ver`, x, y - 14)
     }
     restaurarTip()
   }
@@ -815,7 +929,6 @@ export function MapaNacional({ destino }: { destino?: DestinoMapa | null }) {
 
   const infoDepto = depto ? DEPTO.get(depto) : null
   const nodosDepto = depto ? NODOS_DE(depto) : []
-  const mpiosDepto = depto ? MPIOS_DE(depto) : 0
 
   return (
     <div
@@ -885,25 +998,38 @@ export function MapaNacional({ destino }: { destino?: DestinoMapa | null }) {
         >
           <defs>
             <linearGradient id="nacPais" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="248" y2="830">
-              <stop offset="0%" stopColor="#3fd0ff" />
-              <stop offset="45%" stopColor="#1291f0" />
-              <stop offset="100%" stopColor="#0b5fc4" />
+              <stop offset="0%" stopColor="#fbe8c8" />
+              <stop offset="45%" stopColor="#f5d39f" />
+              <stop offset="100%" stopColor="#edbd78" />
             </linearGradient>
             <linearGradient id="nacPaisClaro" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="248" y2="830">
-              <stop offset="0%" stopColor="#8fe6ff" />
-              <stop offset="45%" stopColor="#47b2ff" />
-              <stop offset="100%" stopColor="#2f86e8" />
+              <stop offset="0%" stopColor="#fff4e2" />
+              <stop offset="45%" stopColor="#fbe5c0" />
+              <stop offset="100%" stopColor="#f5d29b" />
             </linearGradient>
             <linearGradient id="nacPaisMedio" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="248" y2="830">
-              <stop offset="0%" stopColor="#2386bf" />
-              <stop offset="45%" stopColor="#1668ae" />
-              <stop offset="100%" stopColor="#104f99" />
+              <stop offset="0%" stopColor="#d8cfc1" />
+              <stop offset="45%" stopColor="#cdc3b3" />
+              <stop offset="100%" stopColor="#c1b6a4" />
             </linearGradient>
             <linearGradient id="nacPaisOscuro" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="248" y2="830">
-              <stop offset="0%" stopColor="#134e75" />
-              <stop offset="45%" stopColor="#0e3d6b" />
-              <stop offset="100%" stopColor="#0a2f5c" />
+              <stop offset="0%" stopColor="#3f4450" />
+              <stop offset="45%" stopColor="#383c47" />
+              <stop offset="100%" stopColor="#2f333c" />
             </linearGradient>
+            {[
+              [1, '#f4a340'],
+              [2, '#ec7f2c'],
+              [3, '#e05a26'],
+              [4, '#c93a1f'],
+              [5, '#a8201a'],
+            ].map(([n, color]) => (
+              <radialGradient key={n} id={`nacCalor${n}`}>
+                <stop offset="0%" stopColor={color as string} stopOpacity="0.85" />
+                <stop offset="45%" stopColor={color as string} stopOpacity="0.4" />
+                <stop offset="100%" stopColor={color as string} stopOpacity="0" />
+              </radialGradient>
+            ))}
             <filter id="nacHalo" x="-25%" y="-25%" width="150%" height="150%">
               <feGaussianBlur stdDeviation="9" />
             </filter>
@@ -925,6 +1051,7 @@ export function MapaNacional({ destino }: { destino?: DestinoMapa | null }) {
             <Tierra depto={depto} />
             {geo && geo.codigo === depto && <Municipios geo={geo} />}
             <path d={PAIS} className="nac-pais" />
+            <Calor />
             <Red activo={seleccionado} />
 
             <g className="nac-nodos">
@@ -973,12 +1100,38 @@ export function MapaNacional({ destino }: { destino?: DestinoMapa | null }) {
                 )
               })}
             </g>
+
+            <g className="nac-paises" aria-hidden="true">
+              {AMARRES.map((s) => (
+                <g key={s.id} transform={`translate(${s.mar[0]} ${s.mar[1]})`}>
+                  <g className="nac-escala">
+                    <text x={s.lado === 'izq' ? -11 : 11} y={3.6} textAnchor={s.lado === 'izq' ? 'end' : 'start'} className="nac-pais-cable" style={{ fill: s.color }}>
+                      {s.pais}
+                    </text>
+                  </g>
+                </g>
+              ))}
+            </g>
+
+            {pin && (
+              <g transform={`translate(${pin.x} ${pin.y})`} className={`nac-pin ${pin.estado}`} aria-hidden="true">
+                <g className="nac-escala">
+                  <circle className="nac-pin-onda" r="13" />
+                  <circle className="nac-pin-punto" r="7.5" />
+                </g>
+              </g>
+            )}
           </g>
 
           <g className="nac-leyenda" transform={`translate(${COL_WIDTH - 96} 108)`} aria-hidden="true">
-            <line x1="0" y1="0" x2="34" y2="0" className="nac-leyenda-linea" />
-            <text x="0" y="18" className="nac-leyenda-texto">FIBRA ÓPTICA</text>
-            <text x="0" y="33" className="nac-leyenda-texto">SUBMARINA</text>
+            <text x="0" y="0" className="nac-leyenda-texto">CABLES</text>
+            <text x="0" y="15" className="nac-leyenda-texto">SUBMARINOS</text>
+            {AMARRES.map((s, i) => (
+              <g key={s.id} transform={`translate(0 ${32 + i * 17})`}>
+                <line x1="0" y1="-3.5" x2="16" y2="-3.5" className="nac-leyenda-linea" style={{ stroke: s.color }} />
+                <text x="22" y="0" className="nac-leyenda-texto nac-leyenda-pais">{s.pais}</text>
+              </g>
+            ))}
           </g>
         </svg>
       </div>
@@ -989,7 +1142,7 @@ export function MapaNacional({ destino }: { destino?: DestinoMapa | null }) {
             <div className="nac-info-texto">
               <strong>{infoDepto.nombre}</strong>
               <span>
-                {mpiosDepto} {mpiosDepto === 1 ? 'municipio' : 'municipios'} con servicio
+                {RESUMEN_DEPTO(infoDepto.codigo)}
               </span>
             </div>
             <div className="nac-chips">
@@ -1003,7 +1156,7 @@ export function MapaNacional({ destino }: { destino?: DestinoMapa | null }) {
         ) : (
           <div className="nac-info-texto">
             <strong>Toca un departamento o una ciudad</strong>
-            <span>Verás su mapa con los municipios donde tenemos servicio.</span>
+            <span>En La Guajira, las manchas de color son las zonas donde ya tenemos cobertura.</span>
           </div>
         )}
       </div>
