@@ -17,7 +17,8 @@ import {
 import { buscarDireccion, formatearDistancia, verificarPunto, type EstadoCobertura } from '@/lib/cobertura-geo'
 
 type Resultado =
-  | { tipo: 'municipio'; nombre: string; zonas: string[] }
+  /** `buscado`: la dirección que escribió la persona y no se pudo ubicar; se respondió por el municipio. */
+  | { tipo: 'municipio'; nombre: string; zonas: string[]; buscado?: string }
   | { tipo: 'zona'; nombre: string; municipio: string }
   | { tipo: 'sin-cobertura'; nombre: string; depto: string }
   | { tipo: 'punto'; estado: EstadoCobertura; etiqueta: string; zona: string; municipio: string; distanciaM: number; aproximada: boolean }
@@ -42,12 +43,23 @@ function lugarDe(r: Resultado) {
   if (r.tipo === 'punto') return r.etiqueta
   if (r.tipo === 'no-encontrado') return r.texto
   if (r.tipo === 'error') return 'mi dirección'
+  if (r.tipo === 'municipio' && r.buscado) return r.buscado
   return r.nombre
 }
 
 function Mensaje({ r }: { r: Resultado }) {
   switch (r.tipo) {
     case 'municipio':
+      // Ya escribió su dirección: no se le pide otra vez, se le dice qué pasó y cómo confirmar.
+      if (r.buscado) {
+        return (
+          <>
+            No pudimos ubicar <strong>«{r.buscado}»</strong> exactamente en el mapa, pero sí tenemos cobertura en <strong>{r.nombre}</strong>
+            {r.zonas.length > 1 ? ` (${lista(r.zonas)})` : ''}. Escríbenos por WhatsApp con tu dirección y un asesor te confirma, o usa tu
+            ubicación.
+          </>
+        )
+      }
       return r.zonas.length === 1 && normalizar(r.zonas[0]) === normalizar(r.nombre) ? (
         <>
           Tenemos cobertura en <strong>{r.nombre}</strong>. Escribe tu barrio o dirección para confirmar que llegamos a tu casa.
@@ -135,10 +147,10 @@ export function Cobertura() {
     setDestino({ tipo: 'punto', lat, lng, estado: r.estado, clave: Date.now() })
   }
 
-  const aplicarHallazgo = (h: Hallazgo) => {
+  const aplicarHallazgo = (h: Hallazgo, buscado?: string) => {
     if (h.tipo === 'municipio') {
       setElegido(h.codigo)
-      setResultado({ tipo: 'municipio', nombre: h.nombre, zonas: h.zonas })
+      setResultado({ tipo: 'municipio', nombre: h.nombre, zonas: h.zonas, buscado })
       mostrarZonas(idsDelMunicipio(h.nombre))
     } else if (h.tipo === 'zona') {
       setElegido(null)
@@ -170,11 +182,11 @@ export function Cobertura() {
       const ubicacion = await buscarDireccion(limpio, control.signal)
       if (control.signal.aborted) return
       if (ubicacion) mostrarPunto(ubicacion.lat, ubicacion.lng, ubicacion.etiqueta, ubicacion.aproximada)
-      else if (hallazgo) aplicarHallazgo(hallazgo)
+      else if (hallazgo) aplicarHallazgo(hallazgo, limpio)
       else setResultado({ tipo: 'no-encontrado', texto: limpio })
     } catch {
       if (control.signal.aborted) return
-      if (hallazgo) aplicarHallazgo(hallazgo)
+      if (hallazgo) aplicarHallazgo(hallazgo, limpio)
       else setResultado({ tipo: 'error', mensaje: 'No pudimos buscar la dirección en este momento. Usa tu ubicación o escríbenos por WhatsApp.' })
     } finally {
       if (pedido.current === control) setCargando(null)
