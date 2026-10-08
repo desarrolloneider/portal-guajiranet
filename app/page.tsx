@@ -13,7 +13,6 @@ import { NavegacionPrincipal } from '@/components/navegacion-principal'
 import { NoticiasSlider } from '@/components/noticias-slider'
 import { PlanesSelector } from '@/components/planes-selector'
 import { Revelador } from '@/components/revelador'
-import { Tutorial } from '@/components/tutorial'
 import { AccionesFlotantes, BarraProgreso } from '@/components/utilidades'
 import { LISTA_MUNICIPIOS_CON_COBERTURA } from '@/lib/cobertura'
 
@@ -213,7 +212,7 @@ export default function Page() {
         <div className="container">
           <div data-revelar="izq"><h2>Marco legal</h2></div>
           <div className="legal-links" data-revelar="der">
-            <a href="#legal">Términos y condiciones <ArrowRight size={15} /></a>
+            <a href="/legal/terminos-y-condiciones.pdf" target="_blank" rel="noreferrer">Términos y condiciones <ArrowRight size={15} /></a>
             <a href="/legal/politica-tratamiento-datos.pdf" target="_blank" rel="noreferrer">Política de privacidad <ArrowRight size={15} /></a>
             <a href="#autogestion" onClick={abrirPqrs}>PQR y reclamos <ArrowRight size={15} /></a>
             <a href="#legal" onClick={abrirInfo('seguridad')}>Seguridad de la red <ArrowRight size={15} /></a>
@@ -282,7 +281,7 @@ export default function Page() {
         <div className="container footer-bottom">
           <small>© 2026 GUAJIRANET ISP S.A.S. Todos los derechos reservados.</small>
           <div className="footer-legal">
-            <a href="#legal">Términos y condiciones</a>
+            <a href="/legal/terminos-y-condiciones.pdf" target="_blank" rel="noreferrer">Términos y condiciones</a>
             <a href="/legal/politica-tratamiento-datos.pdf" target="_blank" rel="noreferrer">Política de privacidad</a>
             <a href="#autogestion" onClick={abrirPqrs}>PQRS</a>
             <a href="#legal" onClick={abrirInfo('seguridad')}>Tu seguridad</a>
@@ -312,7 +311,6 @@ export default function Page() {
       </Modal>
 
       <AccionesFlotantes />
-      <Tutorial />
     </main>
   )
 }
