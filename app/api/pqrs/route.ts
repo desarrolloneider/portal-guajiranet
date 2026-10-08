@@ -112,6 +112,7 @@ export async function POST(req: NextRequest) {
   if (documento.length < 5) return fallo(400, 'Escribe tu número de documento.')
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) return fallo(400, 'Escribe un correo válido.')
   if (detalle.length < 20) return fallo(400, 'Cuéntanos con más detalle qué pasó (mínimo 20 caracteres).')
+  if (campo('autorizacion') !== 'si') return fallo(400, 'Debes autorizar el tratamiento de tus datos para radicar la solicitud.')
 
   let adjunto: { filename: string; content: Buffer; contentType: string } | null = null
   if (archivo instanceof File && archivo.size > 0) {
@@ -139,6 +140,7 @@ export async function POST(req: NextRequest) {
         ['Municipio', municipio || 'No indicado'],
         ['N.º de contrato', contrato || 'No indicado'],
         ['Adjunto', adjunto ? adjunto.filename : 'Sin adjunto'],
+        ['Autorización de datos', `Sí, aceptada en el sitio web el ${fechaTexto}`],
       ]
       const tabla = filas
         .map(([k, v]) => `<tr><td style="padding:6px 12px 6px 0;color:#626873">${k}</td><td style="padding:6px 0"><strong>${escapar(v)}</strong></td></tr>`)
@@ -162,7 +164,7 @@ export async function POST(req: NextRequest) {
       await guardarConsecutivo(fecha.getFullYear(), consecutivo)
       await appendFile(
         join(CARPETA_DATOS, 'pqrs.jsonl'),
-        JSON.stringify({ radicado, fecha: fecha.toISOString(), tipo, nombre, documento, telefono, correo, municipio, contrato, detalle, adjunto: adjunto?.filename ?? null }) + '\n',
+        JSON.stringify({ radicado, fecha: fecha.toISOString(), tipo, nombre, documento, telefono, correo, municipio, contrato, detalle, adjunto: adjunto?.filename ?? null, autorizacion: { aceptada: true, fecha: fecha.toISOString(), ip, politica: '/legal/politica-tratamiento-datos.pdf' } }) + '\n',
       )
 
       // 3. Constancia para el cliente. Si falla, la solicitud igual quedó radicada.

@@ -104,6 +104,10 @@ export async function POST(req: NextRequest) {
     if (!RE_CEDULA.test(cedula)) return fallo(400, 'INVALIDO', 'Escribe tu cédula sin puntos ni espacios.')
     if (VERIFICAR_CELULAR && celular.length < 7) return fallo(400, 'INVALIDO', 'Escribe el celular que registraste con nosotros.')
 
+    if ((accion === 'verificar' || accion === 'cambiar') && cuerpo.autorizacion !== true) {
+      return fallo(400, 'INVALIDO', 'Debes autorizar el uso de tus datos para continuar.')
+    }
+
     if (accion === 'verificar') {
       if (!permitido(`verificar:${ip}`, 10, 15 * 60_000)) {
         return fallo(429, 'LIMITE', 'Hiciste muchos intentos. Espera 15 minutos o escríbenos por WhatsApp.')

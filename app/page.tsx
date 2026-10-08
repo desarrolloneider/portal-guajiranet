@@ -71,7 +71,7 @@ const noticias = [
     fechaISO: '2026-08-12',
     titulo: 'Seguimos expandiendo nuestra red por toda Colombia',
     resumen: 'La Guajira es nuestro punto de partida y Colombia, el horizonte: conectamos nuevas comunidades con una red estable y cercana.',
-    imagen: '/noticias/expansion-red.jpg',
+    imagen: '/noticias/expansion-red.webp',
     enfoque: '65% 50%',
     detalle: 'Estamos llevando nuestra experiencia de conectividad local a nuevas regiones del país. Cada nueva zona comienza con escucha, planeación y una instalación pensada para las necesidades reales de la comunidad.',
     consejos: ['Consulta tu municipio en el mapa de cobertura.', 'Déjanos tus datos si tu zona aparece como próxima.', 'Comparte la información con vecinos que también necesiten conectarse.'],
@@ -213,7 +213,7 @@ export default function Page() {
           <div data-revelar="izq"><h2>Marco legal</h2></div>
           <div className="legal-links" data-revelar="der">
             <a href="#legal">Términos y condiciones <ArrowRight size={15} /></a>
-            <a href="#legal">Política de privacidad <ArrowRight size={15} /></a>
+            <a href="/legal/politica-tratamiento-datos.pdf" target="_blank" rel="noreferrer">Política de privacidad <ArrowRight size={15} /></a>
             <a href="#autogestion" onClick={abrirPqrs}>PQR y reclamos <ArrowRight size={15} /></a>
             <a href="#legal" onClick={abrirInfo('seguridad')}>Seguridad de la red <ArrowRight size={15} /></a>
             <a href="#legal" onClick={abrirInfo('internet-sano')}>Internet sano · Ley 679 de 2001 <ArrowRight size={15} /></a>
@@ -282,7 +282,7 @@ export default function Page() {
           <small>© 2026 GUAJIRANET ISP S.A.S. Todos los derechos reservados.</small>
           <div className="footer-legal">
             <a href="#legal">Términos y condiciones</a>
-            <a href="#legal">Política de privacidad</a>
+            <a href="/legal/politica-tratamiento-datos.pdf" target="_blank" rel="noreferrer">Política de privacidad</a>
             <a href="#autogestion" onClick={abrirPqrs}>PQRS</a>
             <a href="#legal" onClick={abrirInfo('seguridad')}>Tu seguridad</a>
             <a href="#legal" onClick={abrirInfo('internet-sano')}>Internet sano</a>

@@ -1132,3 +1132,7 @@ section.hero-new .hero-proof { margin-top: 30px; }
   .holo-orbe:nth-child(2) { transform: translate(-100px, 103.9px); }
   .holo-orbe:nth-child(3) { transform: translate(-100px, -103.9px); }
 }
+
+.form .form-autoriza { align-items: flex-start; color: var(--muted-foreground); cursor: pointer; display: flex; flex-direction: row; font-size: 13px; font-weight: 500; gap: 10px; line-height: 1.5; margin: 4px 0 14px; }
+.form .form-autoriza input { accent-color: var(--marca-grafito); border: 0; flex: none; height: 17px; margin: 2px 0 0; padding: 0; width: 17px; }
+.form .form-autoriza a { color: var(--marca-grafito); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }

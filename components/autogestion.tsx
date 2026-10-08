@@ -29,6 +29,7 @@ function FormPqrs() {
   const [enviando, setEnviando] = useState(false)
   const [error, setError] = useState('')
   const [enviado, setEnviado] = useState<{ radicado: string; constanciaEnviada: boolean } | null>(null)
+  const [autoriza, setAutoriza] = useState(false)
 
   const set = (k: string, v: string) => setDatos((d) => ({ ...d, [k]: v }))
   const seleccionarArchivo = (e: ChangeEvent<HTMLInputElement>) => {
@@ -52,6 +53,7 @@ function FormPqrs() {
       cuerpo.append('tipo', tipo)
       Object.entries(datos).forEach(([k, v]) => cuerpo.append(k, v))
       if (archivo) cuerpo.append('archivo', archivo)
+      cuerpo.append('autorizacion', autoriza ? 'si' : 'no')
       const r = await fetch('/api/pqrs', { method: 'POST', body: cuerpo })
       const respuesta = await r.json().catch(() => null)
       if (!r.ok || !respuesta?.radicado) throw new Error(respuesta?.mensaje ?? 'No pudimos registrar tu solicitud. Intenta de nuevo o escríbenos por WhatsApp.')
@@ -130,9 +132,16 @@ function FormPqrs() {
         {archivoError && <em className="form-error">{archivoError}</em>}
       </label>
 
+      <label className="form-autoriza">
+        <input type="checkbox" required checked={autoriza} onChange={(e) => setAutoriza(e.target.checked)} />
+        <span>
+          Autorizo a GUAJIRANET ISP S.A.S. a tratar mis datos personales para atender esta solicitud, según su{' '}
+          <a href="/legal/politica-tratamiento-datos.pdf" target="_blank" rel="noreferrer">Política de Tratamiento de Datos Personales</a>.
+        </span>
+      </label>
+
       {error && <em className="form-error">{error}</em>}
-      <button type="submit" className="pcard-cta" disabled={enviando}>{enviando ? 'Radicando…' : 'Radicar'} <ArrowRight size={17} /></button>
-      <p className="form-nota">Al radicar aceptas el tratamiento de tus datos conforme a la Ley 1581 de 2012.</p>
+      <button type="submit" className="pcard-cta" disabled={enviando || !autoriza}>{enviando ? 'Radicando…' : 'Radicar'} <ArrowRight size={17} /></button>
     </form>
   )
 }
@@ -175,6 +184,7 @@ function FormClave() {
   const [equipos, setEquipos] = useState<EquipoWeb[]>([])
   const [equipo, setEquipo] = useState('')
   const [cargando, setCargando] = useState(false)
+  const [autoriza, setAutoriza] = useState(false)
   const [error, setError] = useState('')
   const [resultado, setResultado] = useState<ResultadoClave | null>(null)
   const [estadoTarea, setEstadoTarea] = useState('')
@@ -211,7 +221,7 @@ function FormClave() {
     setCargando(true)
     setError('')
     try {
-      const r = await pedirCambioClave({ accion: 'verificar', cedula: datos.cedula, celular: datos.celular })
+      const r = await pedirCambioClave({ accion: 'verificar', cedula: datos.cedula, celular: datos.celular, autorizacion: autoriza })
       const lista = (r.equipos ?? []) as EquipoWeb[]
       setEquipos(lista)
       setEquipo(lista.length === 1 ? lista[0].id : '')
@@ -229,6 +239,7 @@ function FormClave() {
     try {
       const r = (await pedirCambioClave({
         accion: 'cambiar',
+        autorizacion: autoriza,
         cedula: datos.cedula,
         celular: datos.celular,
         equipo,
@@ -278,9 +289,15 @@ function FormClave() {
           <label>Cédula del titular *<input required inputMode="numeric" autoComplete="off" value={datos.cedula} onChange={(e) => set('cedula', e.target.value)} placeholder="Sin puntos ni espacios" /></label>
           <label>Celular registrado *<input required inputMode="tel" autoComplete="tel" value={datos.celular} onChange={(e) => set('celular', e.target.value)} placeholder="El que nos diste al contratar" /></label>
         </div>
+        <label className="form-autoriza">
+          <input type="checkbox" required checked={autoriza} onChange={(e) => setAutoriza(e.target.checked)} />
+          <span>
+            Autorizo a GUAJIRANET ISP S.A.S. a usar mi cédula y celular para verificar que soy el titular del servicio, según su{' '}
+            <a href="/legal/politica-tratamiento-datos.pdf" target="_blank" rel="noreferrer">Política de Tratamiento de Datos Personales</a>.
+          </span>
+        </label>
         {error && <em className="form-error">{error}</em>}
-        <button type="submit" className="pcard-cta" disabled={cargando}>{cargando ? 'Verificando…' : 'Continuar'} <ArrowRight size={17} /></button>
-        <p className="form-nota">Usamos estos datos solo para verificar tu identidad, conforme a la Ley 1581 de 2012.</p>
+        <button type="submit" className="pcard-cta" disabled={cargando || !autoriza}>{cargando ? 'Verificando…' : 'Continuar'} <ArrowRight size={17} /></button>
       </form>
     )
   }
