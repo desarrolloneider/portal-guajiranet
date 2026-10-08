@@ -1,4 +1,4 @@
-﻿/* Escena del hero (mano de fibra + holograma de servicios) y mapa de cobertura de La Guajira. */
+/* Escena del hero (mano de fibra + holograma de servicios) y mapa de cobertura de La Guajira. */
 
 /* ---------- 1. Escena del hero ---------- */
 .hero-escena { inset: 0; position: absolute; }
@@ -348,12 +348,14 @@ footer#pagar { background: #17191d; color: #e5b87e; padding: 0; }
 .nav-pago { box-shadow: 0 8px 18px #09ac2724; }
 .nav-toggle { align-items: center; background: #f4f6f9; border: 1px solid #f4e1c9; border-radius: 11px; color: #5f6779; cursor: pointer; display: none; height: 44px; justify-content: center; padding: 9px; transition: background .18s, border-color .18s, transform .18s; width: 44px; }
 .nav-toggle:hover { background: #e9ecf2; border-color: #eccda5; transform: translateY(-1px); }
-.nav-menu-movil { background: #ffffff; border-top: 1px solid #f6e7d4; box-shadow: 0 18px 32px #17191d1a; padding: 14px 20px 20px; }
-.nav-menu-list { display: grid; gap: 6px; }
-.nav-menu-list a { align-items: center; background: #f5f7f9; border: 1px solid #e7eaf1; border-radius: 11px; color: var(--marca-grafito); display: flex; font-size: 13px; font-weight: 700; justify-content: space-between; min-height: 46px; padding: 11px 13px; text-decoration: none; transition: background .18s, border-color .18s, color .18s, transform .18s; }
-.nav-menu-list a:hover, .nav-menu-list a.activo { background: #f2f3f7; border-color: #f2d9b9; color: #5f6779; transform: translateX(2px); }
-.nav-menu-acciones { border-top: 0; display: grid; gap: 10px; margin-top: 15px; padding-top: 0; }
-.nav-menu-acciones .button { border-radius: 11px; min-height: 48px; width: 100%; }
+.nav-menu-movil { background: #ffffff; border-top: 1px solid #f6e7d4; box-shadow: 0 18px 32px #17191d1a; left: 0; max-height: calc(100dvh - 96px); overflow-y: auto; overscroll-behavior: contain; padding: 14px 20px 20px; position: absolute; right: 0; top: 100%; }
+body.menu-navegacion-abierto { overflow: hidden; }
+.nav-menu-list { display: grid; gap: 6px; margin: 0 auto; max-width: 640px; }
+.nav-menu-movil .nav-menu-list a { align-items: center; background: #f5f7f9; border: 1px solid #e7eaf1; border-radius: 11px; color: var(--marca-grafito); display: flex; font-size: 13px; font-weight: 700; justify-content: space-between; min-height: 46px; padding: 11px 13px; text-decoration: none; transition: background .18s, border-color .18s, color .18s, transform .18s; }
+.nav-menu-movil .nav-menu-list a:hover, .nav-menu-movil .nav-menu-list a.activo { background: #f2f3f7; border-color: #f2d9b9; color: #5f6779; transform: translateX(2px); }
+.nav-menu-acciones { border-top: 0; display: grid; gap: 10px; margin: 15px auto 0; max-width: 640px; padding-top: 0; }
+.nav-menu-movil .nav-menu-acciones .button { align-items: center; border-radius: 11px; display: inline-flex; gap: 8px; justify-content: center; min-height: 48px; padding: 12px 16px; width: 100%; }
+@media (min-width: 1081px) { .nav-menu-movil { display: none; }}
 .nav-menu-acciones .nav-pago { background: var(--marca-amarillo); border: 1px solid #e4bf00; box-shadow: 0 8px 16px #d2aa001f; color: var(--marca-grafito); }
 .nav-menu-acciones .nav-pago:hover { background: #ffdf45; }
 .nav-menu-acciones .nav-instalar { background: #5f6779; box-shadow: 0 8px 16px #5f677926; }
@@ -370,7 +372,7 @@ footer#pagar { background: #17191d; color: #e5b87e; padding: 0; }
   .nav-header .brand img { height: 52px; }
   .nav-acciones { gap: 6px; }
   .nav-acciones .nav-pago { font-size: 11px; min-height: 44px; padding: 10px 11px; }
-  .nav-menu-movil { padding-left: 14px; padding-right: 14px; }}
+  .nav-menu-movil { max-height: calc(100dvh - 72px); padding-left: 14px; padding-right: 14px; }}
 @media (prefers-reduced-motion: reduce) {
   .nav-link, .nav-dropdown-menu, .nav-menu-list a { transition: none; }}
 
@@ -409,7 +411,7 @@ footer#pagar { background: #17191d; color: #e5b87e; padding: 0; }
 .info-legal-enlaces span { display: grid; gap: 2px; }
 .info-legal-enlaces small { color: var(--muted-foreground); font-size: 12px; }
 .banner-crc { display: flex; justify-content: center; padding-top: 34px; }
-.banner-crc a { display: block; text-decoration: none; width: 80%; }
+.banner-crc a { display: block; text-decoration: none; width: 100%; }
 .banner-crc img { border-radius: 6px; display: block; height: auto; width: 100%; }
 .banner-crc-texto { display: none; }
 .banner-crc a.sin-imagen img { display: none; }
@@ -1046,9 +1048,11 @@ section.hero-new .hero-proof { margin-top: 30px; }
 
 @media (max-width: 800px) {
   /* La mano queda como remate compacto debajo del texto, sin un bloque vacío tan alto */
-  section.hero-new .hero-visual-new { min-height: min(440px, 112vw); overflow: hidden; }
-  section.hero-new .hero-mano { left: 50%; margin-left: -276px; top: -20px; width: 460px; }
-  section.hero-new .holo-orbita { left: 50%; margin-left: -380px; top: -147px; }
+  /* El lienzo ocupa todo el ancho de la pantalla para que la mano salga cortada desde el borde izquierdo */
+  section.hero-new { overflow-x: clip; }
+  section.hero-new .hero-visual-new { margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); min-height: min(440px, 112vw); overflow: hidden; width: 100vw; }
+  section.hero-new .hero-mano { left: -90px; margin-left: 0; top: -20px; width: 460px; }
+  section.hero-new .holo-orbita { left: -194px; margin-left: 0; top: -147px; }
   section.hero-new .hero-copy { padding: 44px 0 18px; }
   .hero-cobertura { margin-top: 24px; padding: 14px 12px 12px; }}
 @media (max-width: 460px) {
@@ -1136,3 +1140,34 @@ section.hero-new .hero-proof { margin-top: 30px; }
 .form .form-autoriza { align-items: flex-start; color: var(--muted-foreground); cursor: pointer; display: flex; flex-direction: row; font-size: 13px; font-weight: 500; gap: 10px; line-height: 1.5; margin: 4px 0 14px; }
 .form .form-autoriza input { accent-color: var(--marca-grafito); border: 0; flex: none; height: 17px; margin: 2px 0 0; padding: 0; width: 17px; }
 .form .form-autoriza a { color: var(--marca-grafito); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+
+/* Botón con aspecto de enlace (reenviar código) */
+.boton-enlace { background: none; border: 0; color: inherit; cursor: pointer; font: inherit; font-weight: 700; padding: 0; text-decoration: underline; }
+.boton-enlace:disabled { cursor: default; opacity: .6; }
+
+/* ---------- 49. Guía de primera visita ---------- */
+.tutorial { inset: 0; position: fixed; z-index: 1000; }
+.tutorial-fondo { inset: 0; position: absolute; }
+.tutorial-oscuro { background: #0a1424b8; inset: 0; position: absolute; }
+.tutorial-foco { border-radius: 14px; box-shadow: 0 0 0 3px var(--marca-amarillo), 0 0 0 9999px #0a1424b8; pointer-events: none; position: fixed; }
+.tutorial-tarjeta { background: #ffffff; border-radius: 16px; box-shadow: 0 24px 48px #0a142466; color: var(--marca-grafito); max-width: calc(100vw - 32px); outline: none; padding: 20px 20px 18px; position: fixed; width: 340px; }
+.tutorial-cerrar { align-items: center; background: transparent; border: 0; border-radius: 8px; color: #5f6779; cursor: pointer; display: inline-flex; height: 32px; justify-content: center; position: absolute; right: 10px; top: 10px; width: 32px; }
+.tutorial-cerrar:hover { background: #f2f3f7; }
+.tutorial-contador { color: #d98516; font-size: 12px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.tutorial-tarjeta h3 { font-size: 19px; line-height: 1.25; margin: 6px 32px 8px 0; }
+.tutorial-tarjeta p { color: #4d5462; font-size: 14px; line-height: 1.55; margin: 0; }
+.tutorial-puntos { display: flex; gap: 6px; margin: 16px 0 14px; }
+.tutorial-puntos span { background: #dfe3ea; border-radius: 4px; height: 6px; transition: background .2s, width .2s; width: 6px; }
+.tutorial-puntos span.on { background: #d98516; width: 20px; }
+.tutorial-acciones { align-items: center; display: flex; gap: 10px; justify-content: space-between; }
+.tutorial-acciones button { align-items: center; border-radius: 10px; cursor: pointer; display: inline-flex; font: inherit; font-size: 14px; font-weight: 700; gap: 6px; min-height: 42px; padding: 10px 14px; }
+.tutorial-saltar, .tutorial-atras { background: transparent; border: 1px solid #e1e5ec; color: #5f6779; }
+.tutorial-saltar:hover, .tutorial-atras:hover { background: #f2f3f7; }
+.tutorial-siguiente { background: var(--marca-grafito); border: 0; color: #ffffff; margin-left: auto; }
+.tutorial-siguiente:hover { background: #d98516; }
+.tutorial-ayuda { align-items: center; background: #ffffff; border: 1px solid #e1e5ec; border-radius: 50%; bottom: 22px; box-shadow: 0 10px 24px #191b2026; color: var(--marca-grafito); cursor: pointer; display: inline-flex; height: 46px; justify-content: center; left: 22px; position: fixed; transition: transform .2s; width: 46px; z-index: 50; }
+.tutorial-ayuda:hover { transform: translateY(-2px); }
+@media (max-width: 640px) {
+  .tutorial-ayuda { bottom: 16px; height: 42px; left: 16px; width: 42px; }}
+@media (prefers-reduced-motion: reduce) {
+  .tutorial-puntos span { transition: none; }}

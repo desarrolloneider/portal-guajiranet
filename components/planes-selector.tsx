@@ -115,7 +115,22 @@ export function PlanesSelector() {
   const plan = PLANES[sel]
   const items = incluye(plan, PLANES[sel - 1])
   const variantes = reducir ? vQuieto : vRodar
-  const mensaje = encodeURIComponent(`Hola, quiero el plan de ${plan.megas} Megas en ${nombreZona}`)
+  const mensaje = encodeURIComponent(`Hola, tengo una pregunta sobre el plan de ${plan.megas} Megas en ${nombreZona}`)
+  // Al pedir el plan, el asesor recibe todo el detalle para no tener que preguntarlo.
+  const pedido = encodeURIComponent(
+    [
+      '¡Hola! Quiero contratar este plan:',
+      '',
+      `📶 Internet de ${plan.megas} Megas por fibra óptica`,
+      `💰 $${plan.precio} al mes`,
+      `📍 Zona: ${nombreZona}`,
+      '',
+      'Incluye:',
+      ...items.map((it) => `• ${it.texto}${it.extra ? ` (${it.extra})` : ''}`),
+      '',
+      '¿Me ayudan con la instalación?',
+    ].join('\n'),
+  )
 
   return (
     <section id="planes" className="section plans-section planes">
@@ -229,7 +244,7 @@ export function PlanesSelector() {
             </ul>
 
             <div className="pd-acciones">
-              <a className="pcard-cta pd-cta" href="#contacto">
+              <a className="pcard-cta pd-cta" href={`${WHATSAPP}?text=${pedido}`} target="_blank" rel="noreferrer">
                 Quiero este plan <ArrowRight size={17} />
               </a>
               <a className="pd-whatsapp" href={`${WHATSAPP}?text=${mensaje}`} target="_blank" rel="noreferrer">

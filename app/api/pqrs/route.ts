@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { appendFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import nodemailer from 'nodemailer'
+import { escapar, remitente as remitenteCorreo, transporte } from '@/lib/servidor/correo'
 
 // Corre en el servidor de Node: aquí viven las credenciales del correo.
 export const runtime = 'nodejs'
@@ -64,24 +64,6 @@ function permitido(ip: string) {
   intentos.set(ip, lista)
   return true
 }
-
-/* ---------- Correo ---------- */
-
-function transporte() {
-  const { MAIL_HOST, MAIL_PORT, MAIL_USER, MAIL_PASS } = process.env
-  if (!MAIL_HOST || !MAIL_USER || !MAIL_PASS) throw new Error('Faltan MAIL_HOST, MAIL_USER o MAIL_PASS en el .env del servidor')
-  const puerto = Number(MAIL_PORT || 465)
-  const seguro = process.env.MAIL_SECURE
-  return nodemailer.createTransport({
-    host: MAIL_HOST,
-    port: puerto,
-    // Acepta "true", "si" o "1". Si no se indica, se usa SSL solo en el puerto 465.
-    secure: seguro ? /^(true|si|sí|1)$/i.test(seguro.trim()) : puerto === 465,
-    auth: { user: MAIL_USER, pass: MAIL_PASS },
-  })
-}
-
-const escapar = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
 
 const fallo = (status: number, mensaje: string) => NextResponse.json({ mensaje }, { status })
 
@@ -147,7 +129,7 @@ export async function POST(req: NextRequest) {
         .join('')
 
       const correoServidor = transporte()
-      const remitente = process.env.MAIL_FROM || `GUAJIRANET ISP SAS <${process.env.MAIL_USER}>`
+      const remitente = remitenteCorreo()
 
       // 1. La solicitud llega al buzón de PQRS. Si esto falla, no se le confirma nada al cliente.
       await correoServidor.sendMail({

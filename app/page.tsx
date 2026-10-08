@@ -13,6 +13,7 @@ import { NavegacionPrincipal } from '@/components/navegacion-principal'
 import { NoticiasSlider } from '@/components/noticias-slider'
 import { PlanesSelector } from '@/components/planes-selector'
 import { Revelador } from '@/components/revelador'
+import { Tutorial } from '@/components/tutorial'
 import { AccionesFlotantes, BarraProgreso } from '@/components/utilidades'
 import { LISTA_MUNICIPIOS_CON_COBERTURA } from '@/lib/cobertura'
 
@@ -311,6 +312,7 @@ export default function Page() {
       </Modal>
 
       <AccionesFlotantes />
+      <Tutorial />
     </main>
   )
 }

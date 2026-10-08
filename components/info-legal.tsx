@@ -132,7 +132,10 @@ export function BannerCrc() {
       <a href="https://www.crcom.gov.co/pagina/regimen-proteccion-usuario" target="_blank" rel="noreferrer" className={fallo ? 'sin-imagen' : undefined}>
         <img
           ref={imagen}
-          src="https://www.crcom.gov.co/pp/bannerO.gif"
+          src="/legal/banner-crc-derechos.jpg"
+          width={2000}
+          height={726}
+          loading="lazy"
           alt="Conoce el Régimen de Protección de los Derechos de los Usuarios de Servicios de Comunicaciones de la CRC"
           onError={() => setFallo(true)}
         />

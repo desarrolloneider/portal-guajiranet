@@ -10,7 +10,43 @@ const REDIRECCIONES_WEB_VIEJA = [
   ['/wp-content/uploads/:anio/:mes/:archivo(LEY-1978-DEL-25-DE-JULIO-DE-2019\\.pdf|LEY_679_DE_2001_Colombia\\.pdf|Resolucion-5111-2017\\.pdf|ley_1341_de_2009\\.pdf|resolucion-5050-2016\\.pdf)', '/legal/:archivo'],
 ]
 
+// Orígenes externos que la página realmente usa. Si se agrega uno nuevo (video, iframe, API), va aquí.
+const desarrollo = process.env.NODE_ENV !== 'production'
+const CSP = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline'${desarrollo ? " 'unsafe-eval'" : ''}`,
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob:",
+  "font-src 'self' data:",
+  `connect-src 'self' https://photon.komoot.io${desarrollo ? ' ws:' : ''}`,
+  "media-src 'self' https://files.manuscdn.com",
+  "frame-src https://fast.com",
+  "frame-ancestors 'none'",
+  "form-action 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  ...(desarrollo ? [] : ['upgrade-insecure-requests']),
+].join('; ')
+
+const CABECERAS_SEGURIDAD = [
+  { key: 'Content-Security-Policy', value: CSP },
+  { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains' },
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'X-Frame-Options', value: 'DENY' },
+  // Las direcciones de la web nunca se mandan completas a otros sitios (solo el dominio).
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(self), payment=()' },
+]
+
 const nextConfig = {
+  poweredByHeader: false,
+  async headers() {
+    return [
+      { source: '/:ruta*', headers: CABECERAS_SEGURIDAD },
+      // Las respuestas de la API llevan datos personales: nunca se guardan en caché.
+      { source: '/api/:ruta*', headers: [{ key: 'Cache-Control', value: 'no-store' }] },
+    ]
+  },
   typescript: {
     ignoreBuildErrors: true,
   },

@@ -51,7 +51,17 @@ export function NavegacionPrincipal({ pagoHref }: Props) {
 
   useEffect(() => {
     document.body.classList.toggle('menu-navegacion-abierto', menuOpen)
-    return () => document.body.classList.remove('menu-navegacion-abierto')
+    if (!menuOpen) return () => document.body.classList.remove('menu-navegacion-abierto')
+
+    const cerrarConEscape = (e: KeyboardEvent) => { if (e.key === 'Escape') setMenuOpen(false) }
+    const cerrarEnEscritorio = () => { if (window.innerWidth > 1080) setMenuOpen(false) }
+    window.addEventListener('keydown', cerrarConEscape)
+    window.addEventListener('resize', cerrarEnEscritorio)
+    return () => {
+      document.body.classList.remove('menu-navegacion-abierto')
+      window.removeEventListener('keydown', cerrarConEscape)
+      window.removeEventListener('resize', cerrarEnEscritorio)
+    }
   }, [menuOpen])
 
   const irA = (id: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -98,13 +108,13 @@ export function NavegacionPrincipal({ pagoHref }: Props) {
           <a className="button button-primary nav-instalar" href="#contacto" onClick={irA('contacto')}>Quiero instalar</a>
         </div>
 
-        <button className="nav-toggle" onClick={() => setMenuOpen((abierto) => !abierto)} aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={menuOpen}>
+        <button type="button" className="nav-toggle" aria-controls="menu-movil" onClick={() => setMenuOpen((abierto) => !abierto)} aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={menuOpen}>
           {menuOpen ? <X /> : <Menu />}
         </button>
       </div>
 
       {menuOpen && (
-        <nav className="mobile-menu nav-menu-movil" aria-label="Navegación móvil">
+        <nav id="menu-movil" className="nav-menu-movil" aria-label="Navegación móvil">
           <div className="nav-menu-list">
             {MOVIL.map((seccion) => (
               <a

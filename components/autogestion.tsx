@@ -91,6 +91,7 @@ function FormPqrs() {
   return (
     <form
       className="form"
+      method="post"
       onSubmit={(e) => {
         e.preventDefault()
         radicar()
@@ -179,8 +180,10 @@ const ESTADOS_TAREA: Record<string, string> = {
 }
 
 function FormClave() {
-  const [paso, setPaso] = useState<'datos' | 'clave' | 'listo'>('datos')
-  const [datos, setDatos] = useState({ cedula: '', celular: '', clave: '', repetir: '', red: '' })
+  const [paso, setPaso] = useState<'datos' | 'codigo' | 'clave' | 'listo'>('datos')
+  const [datos, setDatos] = useState({ cedula: '', codigo: '', clave: '', repetir: '', red: '' })
+  const [correo, setCorreo] = useState('')
+  const [sesion, setSesion] = useState('')
   const [equipos, setEquipos] = useState<EquipoWeb[]>([])
   const [equipo, setEquipo] = useState('')
   const [cargando, setCargando] = useState(false)
@@ -217,17 +220,33 @@ function FormClave() {
     }
   }, [resultado])
 
-  const verificar = async () => {
+  const enviarCodigo = async () => {
     setCargando(true)
     setError('')
     try {
-      const r = await pedirCambioClave({ accion: 'verificar', cedula: datos.cedula, celular: datos.celular, autorizacion: autoriza })
+      const r = await pedirCambioClave({ accion: 'enviar-codigo', cedula: datos.cedula, autorizacion: autoriza })
+      setCorreo(String(r.correo ?? ''))
+      set('codigo', '')
+      setPaso('codigo')
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'No pudimos enviar el código.')
+    } finally {
+      setCargando(false)
+    }
+  }
+
+  const verificarCodigo = async () => {
+    setCargando(true)
+    setError('')
+    try {
+      const r = await pedirCambioClave({ accion: 'verificar-codigo', cedula: datos.cedula, codigo: datos.codigo })
       const lista = (r.equipos ?? []) as EquipoWeb[]
+      setSesion(String(r.sesion ?? ''))
       setEquipos(lista)
       setEquipo(lista.length === 1 ? lista[0].id : '')
       setPaso('clave')
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'No pudimos verificar tus datos.')
+      setError(e instanceof Error ? e.message : 'No pudimos verificar el código.')
     } finally {
       setCargando(false)
     }
@@ -239,9 +258,8 @@ function FormClave() {
     try {
       const r = (await pedirCambioClave({
         accion: 'cambiar',
-        autorizacion: autoriza,
         cedula: datos.cedula,
-        celular: datos.celular,
+        sesion,
         equipo,
         clave: datos.clave,
         red: datos.red,
@@ -283,27 +301,43 @@ function FormClave() {
 
   if (paso === 'datos') {
     return (
-      <form className="form" onSubmit={(e) => { e.preventDefault(); verificar() }}>
-        <p className="form-ayuda-clave">Primero confirmamos que eres el titular del servicio.</p>
+      <form className="form" method="post" onSubmit={(e) => { e.preventDefault(); enviarCodigo() }}>
+        <p className="form-ayuda-clave">Primero confirmamos que eres el titular: te enviaremos un código al correo que registraste con nosotros.</p>
         <div className="form-grid">
           <label>Cédula del titular *<input required inputMode="numeric" autoComplete="off" value={datos.cedula} onChange={(e) => set('cedula', e.target.value)} placeholder="Sin puntos ni espacios" /></label>
-          <label>Celular registrado *<input required inputMode="tel" autoComplete="tel" value={datos.celular} onChange={(e) => set('celular', e.target.value)} placeholder="El que nos diste al contratar" /></label>
         </div>
         <label className="form-autoriza">
           <input type="checkbox" required checked={autoriza} onChange={(e) => setAutoriza(e.target.checked)} />
           <span>
-            Autorizo a GUAJIRANET ISP S.A.S. a usar mi cédula y celular para verificar que soy el titular del servicio, según su{' '}
+            Autorizo a GUAJIRANET ISP S.A.S. a usar mi cédula y mi correo registrado para verificar que soy el titular del servicio, según su{' '}
             <a href="/legal/politica-tratamiento-datos.pdf" target="_blank" rel="noreferrer">Política de Tratamiento de Datos Personales</a>.
           </span>
         </label>
         {error && <em className="form-error">{error}</em>}
-        <button type="submit" className="pcard-cta" disabled={cargando || !autoriza}>{cargando ? 'Verificando…' : 'Continuar'} <ArrowRight size={17} /></button>
+        <button type="submit" className="pcard-cta" disabled={cargando || !autoriza}>{cargando ? 'Enviando código…' : 'Enviar código'} <ArrowRight size={17} /></button>
+      </form>
+    )
+  }
+
+  if (paso === 'codigo') {
+    return (
+      <form className="form" method="post" onSubmit={(e) => { e.preventDefault(); verificarCodigo() }}>
+        <p className="form-ayuda-clave">Te enviamos un código de 6 dígitos a <strong>{correo}</strong>. Vence en 10 minutos; si no lo ves, revisa la carpeta de spam.</p>
+        <div className="form-grid">
+          <label>Código *<input required inputMode="numeric" autoComplete="one-time-code" maxLength={6} pattern="\d{6}" value={datos.codigo} onChange={(e) => set('codigo', e.target.value.replace(/\D/g, ''))} placeholder="000000" /></label>
+        </div>
+        {error && <em className="form-error">{error}</em>}
+        <button type="submit" className="pcard-cta" disabled={cargando || datos.codigo.length !== 6}>{cargando ? 'Verificando…' : 'Verificar código'} <ArrowRight size={17} /></button>
+        <p className="form-nota">
+          ¿No te llegó? <button type="button" className="boton-enlace" disabled={cargando} onClick={enviarCodigo}>Enviar otro código</button>
+          {' '}· <a href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent('Hola, quiero cambiar la clave de mi WiFi y no me llega el código al correo.')}`} target="_blank" rel="noreferrer">Escríbenos por WhatsApp</a>
+        </p>
       </form>
     )
   }
 
   return (
-    <form className="form" onSubmit={(e) => { e.preventDefault(); if (valido) cambiar() }}>
+    <form className="form" method="post" onSubmit={(e) => { e.preventDefault(); if (valido) cambiar() }}>
       {equipos.length > 1 && (
         <fieldset className="form-tipos">
           <legend>¿Qué red quieres cambiar?</legend>
