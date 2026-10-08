@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { ExternalLink } from 'lucide-react'
 
-/** Texto tomado de la página «Tu Seguridad» de la web actual de GuajiraNet. */
+/** Texto tomado de la página «Tu Seguridad» de la web actual de Guajiranet. */
 const SEGURIDAD = [
   {
     titulo: 'Control de acceso',
@@ -76,7 +76,7 @@ export function InternetSano() {
     <div className="info-legal">
       <p>
         La Ley 679 de 2001 y su Decreto reglamentario 1524 de 2002 establecen medidas para prevenir y combatir la explotación, la
-        pornografía y el turismo sexual con menores de edad a través de internet. GuajiraNet cumple estas normas y te invita a conocerlas.
+        pornografía y el turismo sexual con menores de edad a través de internet. Guajiranet cumple estas normas y te invita a conocerlas.
       </p>
 
       <h4>Lo que está prohibido</h4>

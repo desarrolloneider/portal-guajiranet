@@ -197,7 +197,7 @@ export function NoticiasSlider({
       ref={raizRef}
       className="ns"
       aria-roledescription="carrusel"
-      aria-label="Noticias de GuajiraNet"
+      aria-label="Noticias de Guajiranet"
       onKeyDown={alTeclado}
     >
       <div
@@ -233,7 +233,7 @@ export function NoticiasSlider({
           <header className="ns-cabecera">
             <div>
               <div className="eyebrow">Actualidad</div>
-              <h2>Noticias de GuajiraNet</h2>
+              <h2>Noticias de Guajiranet</h2>
             </div>
             <div className="ns-nav">
               <span className="ns-contador" aria-hidden="true">

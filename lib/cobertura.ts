@@ -87,4 +87,4 @@ export const SUGERENCIAS_COBERTURA = Array.from(
 ).sort((a, b) => a.localeCompare(b, 'es'))
 
 export const whatsappCobertura = (lugar: string) =>
-  `https://wa.me/573009139909?text=${encodeURIComponent(`Hola, quiero información sobre la cobertura de GuajiraNet en ${lugar}.`)}`
+  `https://wa.me/573009139909?text=${encodeURIComponent(`Hola, quiero información sobre la cobertura de Guajiranet en ${lugar}.`)}`

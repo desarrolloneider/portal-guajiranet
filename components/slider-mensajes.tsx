@@ -135,7 +135,7 @@ export function SliderMensajes() {
     <section
       className="slider"
       aria-roledescription="carrusel"
-      aria-label="Mensajes de GuajiraNet"
+      aria-label="Mensajes de Guajiranet"
     >
       <span className="slider-blob slider-blob-a" />
       <span className="slider-blob slider-blob-b" />

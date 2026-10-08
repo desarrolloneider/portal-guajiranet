@@ -16,7 +16,7 @@ const CARPETA_DATOS = process.env.PQR_CARPETA_DATOS || join(process.cwd(), 'dato
 
 /* ---------- Número de radicado ---------- */
 
-// Si la SIC le asignó a GuajiraNet un Identificador de Operador (4 dígitos), el número sale como CUN:
+// Si la SIC le asignó a Guajiranet un Identificador de Operador (4 dígitos), el número sale como CUN:
 // IO (4) + año (2) + consecutivo (10). Si no, sale como PQRS-AAAAMMDD-consecutivo.
 const IO = (process.env.PQR_CUN_OPERADOR ?? '').replace(/\D/g, '')
 

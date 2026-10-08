@@ -93,7 +93,10 @@
 .faq-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .35s ease; }
 .faq-item.abierto .faq-panel { grid-template-rows: 1fr; }
 .faq-panel > div { overflow: hidden; }
-.faq-item .faq-panel p { color: var(--muted-foreground); font-size: 13px; line-height: 1.65; margin: -6px 30px 22px 0; }
+.faq-item .faq-panel p { color: var(--muted-foreground); font-size: 16px; line-height: 1.65; margin: -6px 30px 22px 0; }
+.faq .faq-item > button { font-size: 18px; }
+.faq .faq-grid > div > p { font-size: 18px; }
+.faq .faq-grid .text-link { font-size: 16px; }
 .faq-item.abierto > button { color: var(--primary); }
 .faq-item.abierto > button svg { transform: rotate(180deg); }
 .faq-feature-img { background: linear-gradient(150deg, #0aa83e, #05702a); overflow: hidden; }

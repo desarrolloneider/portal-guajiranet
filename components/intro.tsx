@@ -60,7 +60,7 @@ export function Intro() {
   if (!montado) return null
 
   return (
-    <div className={`intro intro-video-intro ${saliendo ? 'saliendo' : ''}`} role="dialog" aria-label="Introducción de GuajiraNet">
+    <div className={`intro intro-video-intro ${saliendo ? 'saliendo' : ''}`} role="dialog" aria-label="Introducción de Guajiranet">
       <video
         ref={videoRef}
         className="intro-video"
@@ -70,14 +70,14 @@ export function Intro() {
         preload="auto"
         onLoadedData={() => videoRef.current?.play().catch(() => undefined)}
         onEnded={cerrar}
-        aria-label="Video de introducción de GuajiraNet"
+        aria-label="Video de introducción de Guajiranet"
       >
         <source src={VIDEO_INTRO} type="video/mp4" />
         Tu navegador no puede reproducir el video de introducción.
       </video>
       <div className="intro-video-vignette" aria-hidden="true" />
       <div className="intro-video-marca">
-        <img src="/logo-guajiranet-claro.png" alt="GuajiraNet Telecomunicaciones" width={1280} height={720} />
+        <img src="/logo-guajiranet-claro.png" alt="Guajiranet Telecomunicaciones" width={1280} height={720} />
         <span>Conectando sueños.</span>
       </div>
       <button type="button" className="intro-skip intro-video-skip" onClick={cerrar}>

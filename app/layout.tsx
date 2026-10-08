@@ -9,18 +9,18 @@ const texto = Figtree({ subsets: ['latin'], variable: '--fuente-texto', display:
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.guajiranet.com'),
   title: {
-    default: 'GuajiraNet ISP S.A.S | Internet que sí llega contigo',
-    template: '%s | GuajiraNet ISP S.A.S',
+    default: 'Guajiranet ISP S.A.S | Internet que sí llega contigo',
+    template: '%s | Guajiranet ISP S.A.S',
   },
   description: 'Internet por fibra óptica rápido, estable y cercano para hogares, comercios y empresas en La Guajira.',
-  applicationName: 'GuajiraNet',
-  keywords: ['internet', 'fibra óptica', 'La Guajira', 'Albania', 'ISP', 'GuajiraNet', 'Riohacha', 'Maicao'],
-  authors: [{ name: 'GuajiraNet ISP S.A.S' }],
+  applicationName: 'Guajiranet',
+  keywords: ['internet', 'fibra óptica', 'La Guajira', 'Albania', 'ISP', 'Guajiranet', 'Riohacha', 'Maicao'],
+  authors: [{ name: 'Guajiranet ISP S.A.S' }],
   openGraph: {
     type: 'website',
     locale: 'es_CO',
-    siteName: 'GuajiraNet ISP S.A.S',
-    title: 'GuajiraNet ISP S.A.S | Internet que sí llega contigo',
+    siteName: 'Guajiranet ISP S.A.S',
+    title: 'Guajiranet ISP S.A.S | Internet que sí llega contigo',
     description: 'Internet por fibra óptica rápido, estable y cercano para hogares, comercios y empresas en La Guajira.',
   },
   icons: {
