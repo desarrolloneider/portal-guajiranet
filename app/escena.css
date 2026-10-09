@@ -1260,3 +1260,21 @@ section.hero-new .hero-proof { margin-top: 30px; }
 @media (max-width: 640px) { .bc-marca img { height: 44px; }}
 /* El verde de marca sobre blanco tiene poco contraste para texto: los enlaces usan un tono más oscuro. */
 a.text-link { color: #067a1d; }
+
+/* ---------- 54. Noticias: la altura se adapta al contenido ---------- */
+/* Antes la altura era fija y en pantallas bajas o con títulos largos el contenido se salía por arriba y por abajo.
+   Ahora el contenido va en el flujo normal y la foto lo acompaña por detrás. */
+@media (min-width: 761px) {
+  .ns-escenario { height: auto; min-height: clamp(560px, 80vh, 720px); }
+  .ns-contenido { gap: 28px; min-height: inherit; position: relative; }
+  .ns-titulo { font-size: clamp(32px, 3.4vw, 52px); }
+  .ns-texto p { margin-bottom: 24px; }
+}
+/* Portátiles con pantalla baja (por ejemplo 1366×768 o con zoom del navegador). */
+@media (min-width: 761px) and (max-height: 820px) {
+  .ns-escenario { min-height: 520px; }
+  .ns-contenido { gap: 22px; padding: 30px 0 26px; }
+  .ns-titulo { font-size: clamp(30px, 3vw, 44px); margin: 14px 0 12px; }
+  .ns-texto p { font-size: 16px; line-height: 1.55; margin-bottom: 20px; }
+  .ns-mini img { height: 48px; width: 64px; }
+}
