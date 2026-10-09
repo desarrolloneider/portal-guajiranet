@@ -54,9 +54,11 @@ const PASOS: Paso[] = [
 
 type Caja = { top: number; left: number; width: number; height: number }
 
+// Se mide el tamaño de diseño (offset*), no el de pantalla: las animaciones de aparición encogen
+// las secciones que aún no se han visto y getBoundingClientRect las daría por ocultas.
 function visible(el: Element) {
-  const r = el.getBoundingClientRect()
-  return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden'
+  const h = el as HTMLElement
+  return h.offsetWidth > 0 && h.offsetHeight > 0 && getComputedStyle(el).visibility !== 'hidden'
 }
 
 function buscarObjetivo(paso: Paso) {
@@ -107,7 +109,9 @@ export function Tutorial() {
   const [pasos, setPasos] = useState<Paso[]>(PASOS)
 
   const abrir = useCallback(() => {
-    setPasos(PASOS.filter((p) => !p.objetivo || buscarObjetivo(p)))
+    // Se descarta un paso solo si su elemento no existe en esta página. Si existe pero aún no se ve
+    // (secciones que cargan después), se busca de nuevo al llegar a ese paso.
+    setPasos(PASOS.filter((p) => !p.objetivo || p.objetivo.some((s) => document.querySelector(s))))
     setIndice(0)
     setActivo(true)
   }, [])
@@ -198,7 +202,16 @@ export function Tutorial() {
       }
     }
     seguir()
-    return () => cancelAnimationFrame(cuadro)
+    // Respaldo por si el navegador frena las animaciones (pestaña en segundo plano, ahorro de batería).
+    const respaldo = window.setTimeout(() => {
+      const r = el?.getBoundingClientRect()
+      if (el && r && (r.bottom < 0 || r.top > window.innerHeight)) window.scrollTo({ top: destinoScroll(el), behavior: 'instant' })
+      medir()
+    }, 1300)
+    return () => {
+      cancelAnimationFrame(cuadro)
+      window.clearTimeout(respaldo)
+    }
   }, [activo, paso, medir])
 
   useLayoutEffect(() => {
@@ -227,8 +240,8 @@ export function Tutorial() {
 
   return (
     <>
-      <button type="button" className="tutorial-ayuda" onClick={abrir} aria-label="Ver la guía de la página" title="Ver la guía de la página">
-        <HelpCircle size={22} />
+      <button type="button" className="tutorial-ayuda" onClick={abrir} title="Ver la guía de la página">
+        <HelpCircle size={18} aria-hidden="true" /> Revisar tutorial
       </button>
 
       {activo && paso && (
