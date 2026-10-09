@@ -225,7 +225,7 @@ export function PlanesSelector() {
             </div>
 
             <p className="pd-incluido">
-              <Check size={16} strokeWidth={3} aria-hidden="true" /> Instalación y router incluidos
+              <Check size={16} strokeWidth={3} aria-hidden="true" /> Instalación gratis
             </p>
 
             <p className="pd-gratis-titulo">
