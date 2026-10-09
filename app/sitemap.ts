@@ -1,7 +1,8 @@
 import type { MetadataRoute } from 'next'
+import { BASE_PATH } from '@/lib/base-path'
 
 // La web es de una sola página; los PDF legales también se publican para que Google los encuentre.
-const SITIO = 'https://www.guajiranet.com'
+const SITIO = `https://www.guajiranet.com${BASE_PATH}`
 const PDF_LEGALES = [
   'LEY-1978-DEL-25-DE-JULIO-DE-2019.pdf',
   'LEY_679_DE_2001_Colombia.pdf',

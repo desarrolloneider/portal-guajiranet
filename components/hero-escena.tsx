@@ -4,6 +4,7 @@ import { useEffect, useState, type CSSProperties } from 'react'
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'motion/react'
 import { MonitorPlay, Smartphone, Wifi } from 'lucide-react'
 import { MAX_CANALES, MAX_MEGAS_PORTADA as MAX_MEGAS } from '@/lib/planes'
+import { url } from '@/lib/base-path'
 
 // Los tres servicios de un mismo plan, orbitando el globo que proyecta la mano.
 const SERVICIOS = [
@@ -49,7 +50,7 @@ export function HeroEscena() {
     <div className="hero-escena">
       <motion.img
         className="hero-mano"
-        src="/guajiranet-hand.png"
+        src={url('/guajiranet-hand.png')}
         alt="Mano formada por hilos de fibra óptica"
         width={880}
         height={1016}

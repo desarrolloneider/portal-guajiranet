@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { ExternalLink } from 'lucide-react'
+import { url } from '@/lib/base-path'
 
 /** Texto tomado de la página «Tu Seguridad» de la web actual de Guajiranet. */
 const SEGURIDAD = [
@@ -132,7 +133,7 @@ export function BannerCrc() {
       <a href="https://www.crcom.gov.co/pagina/regimen-proteccion-usuario" target="_blank" rel="noreferrer" className={fallo ? 'sin-imagen' : undefined}>
         <img
           ref={imagen}
-          src="/legal/banner-crc-derechos.jpg"
+          src={url('/legal/banner-crc-derechos.jpg')}
           width={2000}
           height={726}
           loading="lazy"

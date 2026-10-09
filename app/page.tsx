@@ -16,6 +16,7 @@ import { Revelador } from '@/components/revelador'
 import { Tutorial } from '@/components/tutorial'
 import { AccionesFlotantes, BarraProgreso } from '@/components/utilidades'
 import { LISTA_MUNICIPIOS_CON_COBERTURA } from '@/lib/cobertura'
+import { url } from '@/lib/base-path'
 
 const pasos = [
   { icono: MousePointer2, titulo: 'Consulta tu cobertura', texto: 'Busca tu municipio en el mapa y confirma en segundos si ya llegamos a tu zona.' },
@@ -213,8 +214,8 @@ export default function Page() {
         <div className="container">
           <div data-revelar="izq"><h2>Marco legal</h2></div>
           <div className="legal-links" data-revelar="der">
-            <a href="/legal/terminos-y-condiciones.pdf" target="_blank" rel="noreferrer">Términos y condiciones <ArrowRight size={15} /></a>
-            <a href="/legal/politica-tratamiento-datos.pdf" target="_blank" rel="noreferrer">Política de privacidad <ArrowRight size={15} /></a>
+            <a href={url('/legal/terminos-y-condiciones.pdf')} target="_blank" rel="noreferrer">Términos y condiciones <ArrowRight size={15} /></a>
+            <a href={url('/legal/politica-tratamiento-datos.pdf')} target="_blank" rel="noreferrer">Política de privacidad <ArrowRight size={15} /></a>
             <a href="#autogestion" onClick={abrirPqrs}>PQR y reclamos <ArrowRight size={15} /></a>
             <a href="#legal" onClick={abrirInfo('seguridad')}>Seguridad de la red <ArrowRight size={15} /></a>
             <a href="#legal" onClick={abrirInfo('internet-sano')}>Internet sano · Ley 679 de 2001 <ArrowRight size={15} /></a>
@@ -240,7 +241,7 @@ export default function Page() {
         <BannerCrc />
         <div className="container footer-top">
           <div className="footer-col footer-marca">
-            <a href="#inicio" className="brand"><img src="/logo-guajiranet-claro.png" alt="Guajiranet Telecomunicaciones" width={1280} height={720} /></a>
+            <a href="#inicio" className="brand"><img src={url('/logo-guajiranet-claro.png')} alt="Guajiranet Telecomunicaciones" width={1280} height={720} /></a>
             <p>Por más de 8 años Guajiranet ISP S.A.S. ha llevado conexión segura y de calidad a hogares, comercios y empresas de La Guajira, incluidas las zonas rurales.</p>
             <div className="footer-redes">
               <a href="https://www.facebook.com/profile.php?id=100084242560939" target="_blank" rel="noreferrer" aria-label="Facebook"><IconoFacebook /></a>
@@ -273,7 +274,7 @@ export default function Page() {
             <h4>Resoluciones</h4>
             <ul>
               {resoluciones.map(([texto, href]) => (
-                <li key={texto}><a href={href} target="_blank" rel="noreferrer">{texto}</a></li>
+                <li key={texto}><a href={url(href)} target="_blank" rel="noreferrer">{texto}</a></li>
               ))}
             </ul>
           </div>
@@ -282,8 +283,8 @@ export default function Page() {
         <div className="container footer-bottom">
           <small>© 2026 GUAJIRANET ISP S.A.S. Todos los derechos reservados.</small>
           <div className="footer-legal">
-            <a href="/legal/terminos-y-condiciones.pdf" target="_blank" rel="noreferrer">Términos y condiciones</a>
-            <a href="/legal/politica-tratamiento-datos.pdf" target="_blank" rel="noreferrer">Política de privacidad</a>
+            <a href={url('/legal/terminos-y-condiciones.pdf')} target="_blank" rel="noreferrer">Términos y condiciones</a>
+            <a href={url('/legal/politica-tratamiento-datos.pdf')} target="_blank" rel="noreferrer">Política de privacidad</a>
             <a href="#autogestion" onClick={abrirPqrs}>PQRS</a>
             <a href="#legal" onClick={abrirInfo('seguridad')}>Tu seguridad</a>
             <a href="#legal" onClick={abrirInfo('internet-sano')}>Internet sano</a>
@@ -294,7 +295,7 @@ export default function Page() {
       <Modal abierto={Boolean(noticiaActiva)} onCerrar={() => setNoticiaAbierta(null)} titulo={noticiaActiva?.titulo ?? ''} subtitulo={noticiaActiva ? `${noticiaActiva.categoria} · ${noticiaActiva.fecha}` : undefined} ancho={760}>
         {noticiaActiva && (
           <div className="noticia-detalle">
-            <img src={noticiaActiva.imagen} alt="" />
+            <img src={url(noticiaActiva.imagen)} alt="" />
             <p>{noticiaActiva.detalle}</p>
             <h4>Consejos para tenerlo en cuenta</h4>
             <ul>{noticiaActiva.consejos.map((consejo) => <li key={consejo}>{consejo}</li>)}</ul>

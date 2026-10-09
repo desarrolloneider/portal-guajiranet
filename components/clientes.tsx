@@ -1,5 +1,7 @@
 'use client'
 
+import { url } from '@/lib/base-path'
+
 type Cliente = {
   nombre: string
   /** Ruta dentro de /public. Si no existe el archivo, se muestra el nombre como texto. */
@@ -46,7 +48,7 @@ function Marca({ c }: { c: Cliente }) {
   return (
     <li className="cliente">
       {c.logo ? (
-        <img src={c.logo} alt={c.nombre} loading="lazy" />
+        <img src={url(c.logo)} alt={c.nombre} loading="lazy" />
       ) : (
         <span className="cliente-texto">{c.nombre}</span>
       )}
