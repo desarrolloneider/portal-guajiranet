@@ -1179,3 +1179,18 @@ section.hero-new .hero-proof { margin-top: 30px; }
 .hc-girando { animation: hcGira 0.9s linear infinite; }
 @keyframes hcGira { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .hc-girando { animation: none; }}
+
+/* ---------- 50. Beneficios gratis del plan ---------- */
+.pd-gratis-titulo { align-items: center; animation: pdBrillo 3.2s ease-in-out infinite; background: linear-gradient(100deg, #09ac2726 0%, #09ac2714 40%, #fad21b33 50%, #09ac2714 60%, #09ac2726 100%); background-size: 250% 100%; border: 1px solid #2bd45a59; border-radius: 12px; color: #8ff0a8; display: flex; font-size: 13.5px; font-weight: 800; gap: 9px; margin: 20px 0 0; padding: 10px 14px; }
+.pd-gratis-titulo svg { animation: pdRegalo 2.4s ease-in-out infinite; color: var(--marca-amarillo); flex: none; transform-origin: 50% 80%; }
+.pd-gratis-titulo + .pd-lista { border-top: 0; margin-top: 8px; padding-top: 12px; }
+.pd-sellos { align-items: center; display: inline-flex; gap: 6px; }
+.pd-gratis { animation: pdLatido 2.4s ease-in-out infinite; animation-delay: calc(var(--i, 0) * .25s); background: linear-gradient(110deg, #09ac27 0%, #09ac27 40%, #7dffa0 50%, #09ac27 60%, #09ac27 100%); background-size: 250% 100%; border-radius: 20px; color: #ffffff; font-size: 10px; font-weight: 800; letter-spacing: .1em; padding: 5px 10px; text-transform: uppercase; }
+@keyframes pdBrillo { 0%, 100% { background-position: 100% 0; } 50% { background-position: 0 0; } }
+@keyframes pdLatido {
+  0%, 70%, 100% { background-position: 100% 0; box-shadow: 0 0 0 0 #2bd45a00; transform: scale(1); }
+  80% { background-position: 0 0; box-shadow: 0 0 0 4px #2bd45a40; transform: scale(1.1); }
+  90% { box-shadow: 0 0 0 7px #2bd45a00; transform: scale(1); } }
+@keyframes pdRegalo { 0%, 60%, 100% { transform: rotate(0); } 70% { transform: rotate(-14deg) scale(1.15); } 80% { transform: rotate(12deg) scale(1.15); } 90% { transform: rotate(-6deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .pd-gratis-titulo, .pd-gratis-titulo svg, .pd-gratis { animation: none; }}

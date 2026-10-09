@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react'
 import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react'
-import { ArrowRight, Check, Globe, Info, MapPin, MessageCircle, MonitorPlay, MousePointerClick, PhoneCall, Smartphone, type LucideIcon } from 'lucide-react'
+import { ArrowRight, Check, Gift, Globe, Info, MapPin, MessageCircle, MonitorPlay, MousePointerClick, PhoneCall, Smartphone, type LucideIcon } from 'lucide-react'
 import { NOTAS_PLANES, VELOCIDADES, ZONAS_PLANES, type Plan } from '@/lib/planes'
 
 // Tono de cada fibra: de ámbar claro a grafito a medida que sube la velocidad (un tono por velocidad).
@@ -228,9 +228,13 @@ export function PlanesSelector() {
               <Check size={16} strokeWidth={3} aria-hidden="true" /> Instalación y router incluidos
             </p>
 
+            <p className="pd-gratis-titulo">
+              <Gift size={17} aria-hidden="true" /> <span>Todo esto te lo regalamos con tu plan</span>
+            </p>
+
             <ul className="pd-lista">
-              {items.map(({ clave, icono: Icono, texto, extra, mejora }) => (
-                <li key={clave} className={mejora ? 'mejora' : undefined}>
+              {items.map(({ clave, icono: Icono, texto, extra, mejora }, i) => (
+                <li key={clave} className={mejora ? 'mejora' : undefined} style={{ '--i': i } as CSSProperties}>
                   <span className="pd-ico" aria-hidden="true">
                     <Icono size={18} />
                   </span>
@@ -238,7 +242,10 @@ export function PlanesSelector() {
                     {texto}
                     {extra && <small>{extra}</small>}
                   </span>
-                  {mejora && <em>Mejora</em>}
+                  <span className="pd-sellos">
+                    <b className="pd-gratis">Gratis</b>
+                    {mejora && <em>Mejora</em>}
+                  </span>
                 </li>
               ))}
             </ul>
