@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { ArrowRight, ChevronDown, CreditCard, MapPin, Menu, X } from 'lucide-react'
+import { ArrowRight, ChevronDown, CreditCard, Mail, MapPin, Menu, X } from 'lucide-react'
 import { HeroCobertura } from '@/components/hero-cobertura'
 import { HeroEscena } from '@/components/hero-escena'
 import { PRECIO_DESDE } from '@/lib/planes'
@@ -132,6 +132,7 @@ export function NavegacionPrincipal({ pagoHref }: Props) {
           <div className="nav-menu-acciones">
             <a className="button button-pay" href={pagoHref} target="_blank" rel="noreferrer"><CreditCard size={17} /> Pagar factura</a>
             <a className="button button-primary" href="#contacto" onClick={irA('contacto')}>Quiero instalar</a>
+            <a className="nav-menu-webmail" href="https://guajiranet.com:2096/" target="_blank" rel="noreferrer"><Mail size={16} /> Webmail corporativo</a>
           </div>
         </nav>
       )}

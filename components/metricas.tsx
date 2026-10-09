@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { MUNICIPIOS_CON_COBERTURA } from '@/lib/cobertura'
 
 const DATOS = [
-  { valor: 2500, prefijo: '+', sufijo: '', titulo: 'Hogares conectados' },
+  { valor: 12500, prefijo: '+', sufijo: '', titulo: 'Hogares conectados' },
   { valor: MUNICIPIOS_CON_COBERTURA.length, prefijo: '', sufijo: '', titulo: 'Municipios con cobertura' },
   { valor: 48, prefijo: '', sufijo: 'h', titulo: 'Para instalar en tu casa' },
   { valor: 99, prefijo: '', sufijo: '%', titulo: 'Disponibilidad de la red' },

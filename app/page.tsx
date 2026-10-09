@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { ArrowRight, Building2, ChevronDown, ClipboardCheck, Clock, Mail, MapPin, MessageCircle, MousePointer2, Phone, RadioTower, Wrench } from 'lucide-react'
 import { Autogestion, EVENTO_AUTOGESTION } from '@/components/autogestion'
+import { BannerClave } from '@/components/banner-clave'
 import { Clientes } from '@/components/clientes'
 import { Cobertura } from '@/components/cobertura'
 import { FibraBanner } from '@/components/fibra-banner'
@@ -131,11 +132,19 @@ export default function Page() {
       <div className="topbar">
         <div className="container flex items-center justify-between">
           <span>Internet que conecta a La Guajira</span>
-          <span className="hidden sm:inline">Lunes a sábado · 7:00 a. m. a 12:00 m. y 2:00 a 6:00 p. m.</span>
+          <div className="topbar-derecha">
+            <span className="hidden sm:inline">Lunes a sábado · 7:00 a. m. a 12:00 m. y 2:00 a 6:00 p. m.</span>
+            {/* Correo corporativo (cPanel). Sin el "cpsess…" de la URL: ese es un código de sesión que caduca. */}
+            <a className="topbar-webmail" href="https://guajiranet.com:2096/" target="_blank" rel="noreferrer">
+              <Mail size={13} aria-hidden="true" /> Webmail
+            </a>
+          </div>
         </div>
       </div>
 
       <NavegacionPrincipal pagoHref={PAGO} />
+
+      <BannerClave />
 
       <Metricas />
 
@@ -256,6 +265,8 @@ export default function Page() {
             <ul>
               <li className="footer-dato"><MapPin size={15} /> Albania, Cra 4 #4-96, Barrio El Centro, La Guajira</li>
               <li><a className="footer-dato" href="mailto:info@guajiranet.com"><Mail size={15} /> info@guajiranet.com</a></li>
+              {/* Acceso del equipo al correo corporativo (cPanel). Sin el "cpsess…" de la URL: ese es un código de sesión que caduca. */}
+              <li><a className="footer-dato" href="https://guajiranet.com:2096/" target="_blank" rel="noreferrer"><Mail size={15} /> Webmail corporativo</a></li>
               <li><a className="footer-dato" href="tel:+573009139909"><Phone size={15} /> +57 300 913 9909</a></li>
               <li className="footer-dato"><Clock size={15} /> Lunes a sábado<br />7:00 a. m. a 12:00 m.<br />2:00 a 6:00 p. m.</li>
             </ul>
