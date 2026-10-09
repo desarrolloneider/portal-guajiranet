@@ -2,12 +2,13 @@
 import type { Metadata, Viewport } from 'next'
 import { Bricolage_Grotesque, Figtree } from 'next/font/google'
 import './globals.css'
+import { BASE_PATH, url } from '@/lib/base-path'
 
 const titulos = Bricolage_Grotesque({ subsets: ['latin'], variable: '--fuente-titulos', display: 'swap' })
 const texto = Figtree({ subsets: ['latin'], variable: '--fuente-texto', display: 'swap' })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.guajiranet.com'),
+  metadataBase: new URL(`https://www.guajiranet.com${BASE_PATH}/`),
   title: {
     default: 'Guajiranet ISP S.A.S | Internet que sí llega contigo',
     template: '%s | Guajiranet ISP S.A.S',
@@ -25,11 +26,11 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/icon.svg', type: 'image/svg+xml' },
-      { url: '/icon-light-32x32.png', sizes: '32x32', type: 'image/png' },
-      { url: '/favicon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: url('/icon.svg'), type: 'image/svg+xml' },
+      { url: url('/icon-light-32x32.png'), sizes: '32x32', type: 'image/png' },
+      { url: url('/favicon-192.png'), sizes: '192x192', type: 'image/png' },
     ],
-    apple: '/apple-icon.png',
+    apple: url('/apple-icon.png'),
   },
 }
 

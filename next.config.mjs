@@ -38,8 +38,17 @@ const CABECERAS_SEGURIDAD = [
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(self), payment=()' },
 ]
 
+// Permite desplegar la app en una subcarpeta (ej. "guajiranet.com/guajiranet")
+// en vez de la raíz del dominio. Se fija al compilar con la variable de
+// entorno BASE_PATH; en local, sin esa variable, queda en la raíz como antes.
+const BASE_PATH = process.env.BASE_PATH || ''
+
 const nextConfig = {
   poweredByHeader: false,
+  basePath: BASE_PATH,
+  env: {
+    NEXT_PUBLIC_BASE_PATH: BASE_PATH,
+  },
   async headers() {
     return [
       { source: '/:ruta*', headers: CABECERAS_SEGURIDAD },

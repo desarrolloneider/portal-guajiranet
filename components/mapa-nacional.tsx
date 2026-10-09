@@ -6,6 +6,7 @@ import { COL_HEIGHT, COL_WIDTH, DEPARTAMENTOS, PAIS, proyectar } from '@/lib/col
 import { ENLACES_NAC, NODOS, SUBMARINOS, type Nodo } from '@/lib/red-nacional'
 import { ZONAS_COBERTURA } from '@/lib/cobertura-zonas'
 import { CODIGOS_CON_COBERTURA } from '@/lib/cobertura'
+import { url } from '@/lib/base-path'
 
 /* ------------------------------------------------------------------ */
 /* Lienzo y datos fijos                                                */
@@ -169,7 +170,7 @@ const cache = new Map<string, Promise<DeptoGeo>>()
 function cargarDepto(codigo: string) {
   let p = cache.get(codigo)
   if (!p) {
-    p = fetch(`/mapa/departamentos/${codigo}.json`).then((r) => {
+    p = fetch(url(`/mapa/departamentos/${codigo}.json`)).then((r) => {
       if (!r.ok) throw new Error(`No se pudo cargar el departamento ${codigo}`)
       return r.json() as Promise<DeptoGeo>
     })

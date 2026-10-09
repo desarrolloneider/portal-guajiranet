@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react'
 import { ArrowLeft, ArrowRight, CalendarDays, Pause, Play } from 'lucide-react'
+import { url } from '@/lib/base-path'
 
 export type NoticiaSlide = {
   id: string
@@ -154,7 +155,7 @@ export function NoticiasSlider({
   useEffect(() => {
     noticias.forEach((n) => {
       const img = new Image()
-      img.src = n.imagen
+      img.src = url(n.imagen)
     })
   }, [noticias])
 
@@ -216,7 +217,7 @@ export function NoticiasSlider({
               <motion.div className="ns-recorte" custom={dir} variants={vR}>
                 <motion.img
                   className="ns-foto"
-                  src={actual.imagen}
+                  src={url(actual.imagen)}
                   alt=""
                   draggable={false}
                   style={{ objectPosition: actual.enfoque, ...(actual.zoom ? { '--zoom': `${actual.zoom * 100}%` } : {}) } as CSSProperties}
@@ -336,7 +337,7 @@ export function NoticiasSlider({
                 const n = noticias[i]
                 return (
                   <button key={n.id} type="button" className="ns-mini" onClick={() => ir(i, 1)}>
-                    <img src={n.imagen} alt="" style={{ objectPosition: n.enfoqueMini ?? n.enfoque }} />
+                    <img src={url(n.imagen)} alt="" style={{ objectPosition: n.enfoqueMini ?? n.enfoque }} />
                     <span>
                       <small>{n.categoria}</small>
                       <strong>{n.titulo}</strong>

@@ -5,6 +5,7 @@ import { ArrowRight, Check, CreditCard, FileText, Gauge, KeyRound, MessageCircle
 import { Modal } from '@/components/modal'
 import { TestVelocidad } from '@/components/test-velocidad'
 import { MUNICIPIOS_CON_COBERTURA } from '@/lib/cobertura'
+import { url } from '@/lib/base-path'
 
 const PAGO = 'https://ds.dsnube.co/documento/?empresa=UqBGh1ev+4w5YMySqWUUuWnbyM4NML2QEEUqsYUO93o='
 const WHATSAPP = '573009139909'
@@ -54,7 +55,7 @@ function FormPqrs() {
       Object.entries(datos).forEach(([k, v]) => cuerpo.append(k, v))
       if (archivo) cuerpo.append('archivo', archivo)
       cuerpo.append('autorizacion', autoriza ? 'si' : 'no')
-      const r = await fetch('/api/pqrs', { method: 'POST', body: cuerpo })
+      const r = await fetch(url('/api/pqrs'), { method: 'POST', body: cuerpo })
       const respuesta = await r.json().catch(() => null)
       if (!r.ok || !respuesta?.radicado) throw new Error(respuesta?.mensaje ?? 'No pudimos registrar tu solicitud. Intenta de nuevo o escríbenos por WhatsApp.')
       setEnviado(respuesta)
@@ -137,7 +138,7 @@ function FormPqrs() {
         <input type="checkbox" required checked={autoriza} onChange={(e) => setAutoriza(e.target.checked)} />
         <span>
           Autorizo a GUAJIRANET ISP S.A.S. a tratar mis datos personales para atender esta solicitud, según su{' '}
-          <a href="/legal/politica-tratamiento-datos.pdf" target="_blank" rel="noreferrer">Política de Tratamiento de Datos Personales</a>.
+          <a href={url('/legal/politica-tratamiento-datos.pdf')} target="_blank" rel="noreferrer">Política de Tratamiento de Datos Personales</a>.
         </span>
       </label>
 
@@ -163,7 +164,7 @@ type EquipoWeb = { id: string; red: string }
 type ResultadoClave = { estado: 'en_cola' | 'equipo_apagado'; tarea: number; firma: string }
 
 async function pedirCambioClave(cuerpo: Record<string, unknown>) {
-  const r = await fetch('/api/cambio-clave', {
+  const r = await fetch(url('/api/cambio-clave'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(cuerpo),
@@ -310,7 +311,7 @@ function FormClave() {
           <input type="checkbox" required checked={autoriza} onChange={(e) => setAutoriza(e.target.checked)} />
           <span>
             Autorizo a GUAJIRANET ISP S.A.S. a usar mi cédula y mi correo registrado para verificar que soy el titular del servicio, según su{' '}
-            <a href="/legal/politica-tratamiento-datos.pdf" target="_blank" rel="noreferrer">Política de Tratamiento de Datos Personales</a>.
+            <a href={url('/legal/politica-tratamiento-datos.pdf')} target="_blank" rel="noreferrer">Política de Tratamiento de Datos Personales</a>.
           </span>
         </label>
         {error && <em className="form-error">{error}</em>}

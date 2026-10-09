@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { url } from '@/lib/base-path'
 
 const SALIDA_MS = 420
 const VIDEO_INTRO = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663332557638/TxUsIPUnceRrOFdt.mp4'
@@ -77,7 +78,7 @@ export function Intro() {
       </video>
       <div className="intro-video-vignette" aria-hidden="true" />
       <div className="intro-video-marca">
-        <img src="/logo-guajiranet-claro.png" alt="Guajiranet Telecomunicaciones" width={1280} height={720} />
+        <img src={url('/logo-guajiranet-claro.png')} alt="Guajiranet Telecomunicaciones" width={1280} height={720} />
         <span>Conectando sueños.</span>
       </div>
       <button type="button" className="intro-skip intro-video-skip" onClick={cerrar}>
