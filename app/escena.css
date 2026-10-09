@@ -93,7 +93,10 @@
 .faq-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .35s ease; }
 .faq-item.abierto .faq-panel { grid-template-rows: 1fr; }
 .faq-panel > div { overflow: hidden; }
-.faq-item .faq-panel p { color: var(--muted-foreground); font-size: 13px; line-height: 1.65; margin: -6px 30px 22px 0; }
+.faq-item .faq-panel p { color: var(--muted-foreground); font-size: 16px; line-height: 1.65; margin: -6px 30px 22px 0; }
+.faq .faq-item > button { font-size: 18px; }
+.faq .faq-grid > div > p { font-size: 18px; }
+.faq .faq-grid .text-link { font-size: 16px; }
 .faq-item.abierto > button { color: var(--primary); }
 .faq-item.abierto > button svg { transform: rotate(180deg); }
 .faq-feature-img { background: linear-gradient(150deg, #0aa83e, #05702a); overflow: hidden; }
@@ -242,9 +245,9 @@ footer#pagar { background: #17191d; color: #e5b87e; padding: 0; }
 .form input[type='file']::file-selector-button:hover { background: #e9ecf2; }
 .form-archivo { gap: 8px !important; }
 .form-archivo-ayuda { color: var(--muted-foreground); font-size: 11px; font-weight: 500; }
-.form-ayuda-clave { color: var(--muted-foreground); font-size: 12px; margin: -10px 0 0; }
+.form-ayuda-clave { color: var(--marca-grafito); font-size: 15px; line-height: 1.5; margin: -6px 0 0; }
 .form-error { color: var(--marca-rojo); font-size: 12px; font-style: normal; font-weight: 600; }
-.form-nota { color: var(--muted-foreground); font-size: 12px; line-height: 1.55; margin: 0; }
+.form-nota { color: var(--muted-foreground); font-size: 14px; line-height: 1.55; margin: 0; }
 .form-tipos { border: 0; display: grid; gap: 10px; grid-template-columns: 1fr 1fr; margin: 0; padding: 0; }
 .form-tipos legend { color: var(--marca-grafito); font-size: 13px; font-weight: 700; margin-bottom: 10px; padding: 0; }
 .form-tipos label { background: #f5f7f9; border: 1px solid var(--border); border-radius: 12px; cursor: pointer; gap: 3px; padding: 13px 15px; transition: border-color .2s, background .2s; }

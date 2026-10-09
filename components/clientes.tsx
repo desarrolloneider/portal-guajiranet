@@ -59,7 +59,7 @@ export function Clientes() {
   const cinta = [...CLIENTES, ...CLIENTES]
 
   return (
-    <section className="clientes" aria-label="Empresas que confían en GuajiraNet">
+    <section className="clientes" aria-label="Empresas que confían en Guajiranet">
       <div className="container">
         <p className="clientes-titulo" data-revelar>
           Empresas y entidades que ya confían en nosotros

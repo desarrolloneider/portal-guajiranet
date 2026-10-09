@@ -29,8 +29,8 @@ export default function NoEncontrada() {
         textAlign: 'center',
       }}
     >
-      <a href="/" aria-label="Ir al inicio de GuajiraNet">
-        <img src="/logo-guajiranet.png" alt="GuajiraNet Telecomunicaciones" width={260} height={124} style={{ aspectRatio: '2.1', height: 'auto', maxWidth: '60vw', objectFit: 'fill' }} />
+      <a href="/" aria-label="Ir al inicio de Guajiranet">
+        <img src="/logo-guajiranet.png" alt="Guajiranet Telecomunicaciones" width={260} height={124} style={{ aspectRatio: '2.1', height: 'auto', maxWidth: '60vw', objectFit: 'fill' }} />
       </a>
       <p style={{ color: 'var(--marca-azul)', fontSize: 14, fontWeight: 800, letterSpacing: '.14em', margin: '10px 0 0' }}>ERROR 404</p>
       <h1 style={{ fontSize: 'clamp(28px, 5vw, 44px)', lineHeight: 1.1, margin: 0 }}>Esta página no existe o cambió de lugar</h1>

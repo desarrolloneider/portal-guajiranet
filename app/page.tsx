@@ -95,7 +95,7 @@ const noticias = [
   },
   {
     id: 'atencion',
-    categoria: 'GuajiraNet',
+    categoria: 'Guajiranet',
     tono: 'amarillo',
     fecha: '28 julio 2026',
     fechaISO: '2026-07-28',
@@ -145,7 +145,7 @@ export default function Page() {
       <section id="beneficios" className="beneficios">
         <div className="container beneficios-grid">
           <div className="beneficios-copy" data-revelar="izq">
-            <div className="eyebrow">Por qué GuajiraNet</div>
+            <div className="eyebrow">Por qué Guajiranet</div>
             <h2>Llegamos donde otros <span>no cablean</span></h2>
             <p>Somos de La Guajira: técnicos que viven en tu zona, soporte el mismo día y atención por WhatsApp para hogares y negocios.</p>
             <a className="button button-yellow" href="#cobertura">Consultar mi zona <ArrowRight size={17} /></a>
@@ -240,8 +240,8 @@ export default function Page() {
         <BannerCrc />
         <div className="container footer-top">
           <div className="footer-col footer-marca">
-            <a href="#inicio" className="brand"><img src="/logo-guajiranet-claro.png" alt="GuajiraNet Telecomunicaciones" width={1280} height={720} /></a>
-            <p>Por más de 8 años GuajiraNet ISP S.A.S. ha llevado conexión segura y de calidad a hogares, comercios y empresas de La Guajira, incluidas las zonas rurales.</p>
+            <a href="#inicio" className="brand"><img src="/logo-guajiranet-claro.png" alt="Guajiranet Telecomunicaciones" width={1280} height={720} /></a>
+            <p>Por más de 8 años Guajiranet ISP S.A.S. ha llevado conexión segura y de calidad a hogares, comercios y empresas de La Guajira, incluidas las zonas rurales.</p>
             <div className="footer-redes">
               <a href="https://www.facebook.com/profile.php?id=100084242560939" target="_blank" rel="noreferrer" aria-label="Facebook"><IconoFacebook /></a>
               <a href="https://www.instagram.com/guajiranet.telecomunicaciones/" target="_blank" rel="noreferrer" aria-label="Instagram"><IconoInstagram /></a>
@@ -298,7 +298,7 @@ export default function Page() {
             <p>{noticiaActiva.detalle}</p>
             <h4>Consejos para tenerlo en cuenta</h4>
             <ul>{noticiaActiva.consejos.map((consejo) => <li key={consejo}>{consejo}</li>)}</ul>
-            <a className="button button-primary" href={noticiaActiva.id === 'wifi' ? '#faq' : '#contacto'} onClick={() => setNoticiaAbierta(null)}>Continuar en GuajiraNet <ArrowRight size={16} /></a>
+            <a className="button button-primary" href={noticiaActiva.id === 'wifi' ? '#faq' : '#contacto'} onClick={() => setNoticiaAbierta(null)}>Continuar en Guajiranet <ArrowRight size={16} /></a>
           </div>
         )}
       </Modal>

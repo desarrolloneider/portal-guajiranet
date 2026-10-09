@@ -17,7 +17,7 @@ type Paso = {
 
 const PASOS: Paso[] = [
   {
-    titulo: '¡Bienvenido a GuajiraNet!',
+    titulo: '¡Bienvenido a Guajiranet!',
     texto: 'Te mostramos en menos de un minuto cómo usar la página. Puedes saltar la guía cuando quieras.',
   },
   {

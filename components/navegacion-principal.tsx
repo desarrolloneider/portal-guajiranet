@@ -75,8 +75,8 @@ export function NavegacionPrincipal({ pagoHref }: Props) {
     <>
       <header className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur nav-header">
       <div className="container nav-header-inner">
-        <a href="#inicio" className="brand" aria-label="GuajiraNet inicio" onClick={irA('inicio')}>
-          <img src="/logo-guajiranet.png" alt="GuajiraNet Telecomunicaciones" width={1280} height={720} />
+        <a href="#inicio" className="brand" aria-label="Guajiranet inicio" onClick={irA('inicio')}>
+          <img src="/logo-guajiranet.png" alt="Guajiranet Telecomunicaciones" width={1280} height={720} />
         </a>
 
         <nav className="nav-principal" aria-label="Navegación principal">

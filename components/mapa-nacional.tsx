@@ -900,7 +900,7 @@ export function MapaNacional({ destino }: { destino?: DestinoMapa | null }) {
       const detalle = !MPIOS_CON_SERVICIO.has(mpio)
         ? 'Escríbenos para consultar'
         : mpio.startsWith(DEPTO_COBERTURA)
-          ? 'Con cobertura GuajiraNet'
+          ? 'Con cobertura Guajiranet'
           : 'Ciudad de nuestra red'
       if (m) return mostrarTip(m.nombre, detalle, x, y - 14)
     }
@@ -939,7 +939,7 @@ export function MapaNacional({ destino }: { destino?: DestinoMapa | null }) {
         activo.current = false
       }}
       role="region"
-      aria-label="Mapa de la red de GuajiraNet por departamentos"
+      aria-label="Mapa de la red de Guajiranet por departamentos"
     >
       <div className="nac-barra" ref={barraRef}>
         {depto && (
@@ -990,7 +990,7 @@ export function MapaNacional({ destino }: { destino?: DestinoMapa | null }) {
           ref={svgRef}
           viewBox={VIEWBOX}
           role="img"
-          aria-label="Mapa de Colombia con la red de fibra de GuajiraNet"
+          aria-label="Mapa de Colombia con la red de fibra de Guajiranet"
           onClick={alClic}
           onPointerOver={alPasar}
           onPointerMove={alPasar}
