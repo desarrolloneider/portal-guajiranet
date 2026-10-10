@@ -15,7 +15,7 @@ import { NoticiasSlider } from '@/components/noticias-slider'
 import { PlanesSelector } from '@/components/planes-selector'
 import { Revelador } from '@/components/revelador'
 import { Tutorial } from '@/components/tutorial'
-import { AccionesFlotantes, BarraProgreso } from '@/components/utilidades'
+import { AccionesFlotantes, BarraProgreso, PagoFlotante } from '@/components/utilidades'
 import { LISTA_MUNICIPIOS_CON_COBERTURA } from '@/lib/cobertura'
 import { url } from '@/lib/base-path'
 
@@ -324,6 +324,7 @@ export default function Page() {
       </Modal>
 
       <AccionesFlotantes />
+      <PagoFlotante href={PAGO} />
       <Tutorial />
     </main>
   )

@@ -1172,6 +1172,23 @@ section.hero-new .hero-proof { margin-top: 30px; }
 .tutorial-ayuda:hover { transform: translateY(-2px); }
 @media (max-width: 640px) {
   .tutorial-ayuda { bottom: 16px; font-size: 15px; height: 42px; left: 16px; padding: 0 13px; }}
+
+/* Botón flotante "Pagar factura": encima de "Revisar tutorial", abajo a la izquierda.
+   Verde con el mismo brillo y latido de los sellos "GRATIS" de los planes. */
+.pago-flotante { align-items: center; animation: pagoLatido 2.4s ease-in-out infinite; background: linear-gradient(110deg, #09ac27 0%, #09ac27 40%, #7dffa0 50%, #09ac27 60%, #09ac27 100%); background-size: 250% 100%; border: 0; border-radius: 30px; bottom: 78px; box-shadow: 0 10px 24px #09ac2740; color: #ffffff; display: inline-flex; font-size: 16px; font-weight: 800; gap: 8px; height: 46px; left: 22px; padding: 0 18px; position: fixed; text-decoration: none; text-shadow: 0 1px 2px #0000002e; transform-origin: left center; z-index: 50; }
+.pago-flotante svg { animation: pagoIcono 2.4s ease-in-out infinite; flex: none; }
+.pago-flotante:hover { animation: none; background-position: 0 0; box-shadow: 0 14px 30px #09ac2759; transform: translateY(-2px); }
+.pago-flotante:hover svg { animation: none; }
+.pago-flotante:focus-visible { outline: 2px solid var(--marca-grafito); outline-offset: 3px; }
+@keyframes pagoLatido {
+  0%, 70%, 100% { background-position: 100% 0; box-shadow: 0 10px 24px #09ac2740, 0 0 0 0 #2bd45a00; transform: scale(1); }
+  80% { background-position: 0 0; box-shadow: 0 10px 24px #09ac2740, 0 0 0 5px #2bd45a4d; transform: scale(1.06); }
+  90% { box-shadow: 0 10px 24px #09ac2740, 0 0 0 9px #2bd45a00; transform: scale(1); } }
+@keyframes pagoIcono { 0%, 70%, 100% { transform: rotate(0); } 78% { transform: rotate(-12deg); } 86% { transform: rotate(10deg); } 92% { transform: rotate(0); } }
+@media (max-width: 640px) {
+  .pago-flotante { bottom: 68px; font-size: 15px; height: 42px; left: 16px; padding: 0 15px; }}
+@media (prefers-reduced-motion: reduce) {
+  .pago-flotante, .pago-flotante svg { animation: none; }}
 @media (prefers-reduced-motion: reduce) {
   .tutorial-puntos span { transition: none; }}
 

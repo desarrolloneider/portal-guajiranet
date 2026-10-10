@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { ArrowUp } from 'lucide-react'
+import { ArrowUp, CreditCard } from 'lucide-react'
 
 function IconoWhatsApp() {
   return (
@@ -36,6 +36,16 @@ export function BarraProgreso() {
   }, [])
 
   return <div className="barra-progreso" style={{ transform: `scaleX(${p})` }} />
+}
+
+/** Botón flotante de "Pagar factura", abajo a la izquierda, encima de "Revisar tutorial". */
+export function PagoFlotante({ href }: { href: string }) {
+  return (
+    <a className="pago-flotante" href={href} target="_blank" rel="noreferrer" aria-label="Pagar factura (abre el portal de pagos)">
+      <CreditCard size={18} aria-hidden="true" />
+      <span>Pagar factura</span>
+    </a>
+  )
 }
 
 export function AccionesFlotantes() {
