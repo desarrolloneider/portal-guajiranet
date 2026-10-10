@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ArrowLeft, ArrowRight, HelpCircle, X } from 'lucide-react'
 
-const CLAVE_VISTO = 'gn-tutorial-veces'
-/** Veces al día que la guía se abre sola. El botón de ayuda la abre siempre. */
-const MAX_POR_DIA = 2
+/** La guía se abre sola una única vez por navegador. Después, solo con el botón "Revisar tutorial". */
+const CLAVE_VISTO = 'gn-tutorial-visto'
+/** Clave de la versión anterior (2 veces al día): quien ya la vio con esa versión tampoco la vuelve a ver. */
+const CLAVE_ANTERIOR = 'gn-tutorial-veces'
 const MARGEN = 8
 
 type Paso = {
@@ -78,23 +79,18 @@ function destinoScroll(el: Element) {
   return Math.max(0, r.height < libre * 0.6 ? arriba - (libre - r.height) / 2 + 12 : arriba)
 }
 
-/** Cuántas veces se mostró sola hoy. Al cambiar de día el contador vuelve a cero. */
-function vecesHoy() {
-  const hoy = new Date().toLocaleDateString('en-CA')
+/**
+ * Decide si la guía debe abrirse sola y, si es así, la marca como vista en ese mismo momento
+ * (cuenta igual si la persona le da "Saltar guía").
+ * Si el navegador no deja guardar datos, no se abre sola: así nunca se repite. El botón sigue disponible.
+ */
+function tocaMostrarYMarcar() {
   try {
-    const guardado = JSON.parse(localStorage.getItem(CLAVE_VISTO) ?? 'null') as { fecha?: string; veces?: number } | null
-    return { hoy, veces: guardado?.fecha === hoy ? Number(guardado.veces) || 0 : 0 }
+    if (localStorage.getItem(CLAVE_VISTO) || localStorage.getItem(CLAVE_ANTERIOR)) return false
+    localStorage.setItem(CLAVE_VISTO, new Date().toISOString())
+    return localStorage.getItem(CLAVE_VISTO) !== null
   } catch {
-    return { hoy, veces: 0 }
-  }
-}
-
-function sumarVez() {
-  const { hoy, veces } = vecesHoy()
-  try {
-    localStorage.setItem(CLAVE_VISTO, JSON.stringify({ fecha: hoy, veces: veces + 1 }))
-  } catch {
-    /* En modo privado no se puede contar: la guía sale en cada visita. */
+    return false
   }
 }
 
@@ -121,13 +117,13 @@ export function Tutorial() {
     setCaja(null)
   }, [])
 
-  // Se abre sola en las primeras visitas de cada día, hasta MAX_POR_DIA veces.
+  // Se abre sola una única vez por navegador: en la primera visita.
   useEffect(() => {
-    // Quien llega con un enlace directo (?abrir=pqrs, #contacto…) viene a algo puntual: no se le interrumpe.
-    if (vecesHoy().veces >= MAX_POR_DIA || location.search.includes('abrir=') || location.hash) return
+    // Quien llega con un enlace directo (?abrir=pqrs, #contacto…) viene a algo puntual: no se le interrumpe
+    // y la guía queda para su próxima visita normal.
+    if (location.search.includes('abrir=') || location.hash) return
     const t = window.setTimeout(() => {
-      sumarVez()
-      abrir()
+      if (tocaMostrarYMarcar()) abrir()
     }, 1200)
     return () => window.clearTimeout(t)
   }, [abrir])
