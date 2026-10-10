@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { ArrowUp, CreditCard } from 'lucide-react'
+import { ArrowUp, CreditCard, HelpCircle } from 'lucide-react'
+import { EVENTO_TUTORIAL } from '@/components/tutorial'
 
 function IconoWhatsApp() {
   return (
@@ -38,17 +39,12 @@ export function BarraProgreso() {
   return <div className="barra-progreso" style={{ transform: `scaleX(${p})` }} />
 }
 
-/** Botón flotante de "Pagar factura", abajo a la izquierda, encima de "Revisar tutorial". */
-export function PagoFlotante({ href }: { href: string }) {
-  return (
-    <a className="pago-flotante" href={href} target="_blank" rel="noreferrer" aria-label="Pagar factura (abre el portal de pagos)">
-      <CreditCard size={18} aria-hidden="true" />
-      <span>Pagar factura</span>
-    </a>
-  )
-}
-
-export function AccionesFlotantes() {
+/**
+ * Botones flotantes de la página.
+ * - Izquierda: WhatsApp y "Revisar tutorial" (en computador uno al lado del otro; en celular el tutorial va encima).
+ * - Derecha: "Volver arriba" (aparece al bajar) y "Pagar factura".
+ */
+export function AccionesFlotantes({ pagoHref }: { pagoHref: string }) {
   const [arriba, setArriba] = useState(false)
 
   useEffect(() => {
@@ -59,25 +55,43 @@ export function AccionesFlotantes() {
   }, [])
 
   return (
-    <div className="acciones-flotantes">
-      <button
-        type="button"
-        className={`flotante subir ${arriba ? 'on' : ''}`}
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        aria-label="Volver arriba"
-      >
-        <ArrowUp size={20} />
-      </button>
-      <a
-        className="flotante whatsapp"
-        href="https://wa.me/573009139909"
-        target="_blank"
-        rel="noreferrer"
-        aria-label="Escribir por WhatsApp"
-      >
-        <IconoWhatsApp />
-        <span>Escríbenos</span>
-      </a>
-    </div>
+    <>
+      <div className="flotantes-izq">
+        <a
+          className="flotante whatsapp"
+          href="https://wa.me/573009139909"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Escribir por WhatsApp"
+        >
+          <IconoWhatsApp />
+          <span>Escríbenos</span>
+        </a>
+        <button
+          type="button"
+          className="tutorial-ayuda"
+          onClick={() => window.dispatchEvent(new Event(EVENTO_TUTORIAL))}
+          title="Ver la guía de la página"
+          aria-label="Revisar tutorial"
+        >
+          <HelpCircle size={18} aria-hidden="true" /> <span>Revisar tutorial</span>
+        </button>
+      </div>
+
+      <div className="acciones-flotantes">
+        <button
+          type="button"
+          className={`flotante subir ${arriba ? 'on' : ''}`}
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          aria-label="Volver arriba"
+        >
+          <ArrowUp size={20} />
+        </button>
+        <a className="pago-flotante" href={pagoHref} target="_blank" rel="noreferrer" aria-label="Pagar factura (abre el portal de pagos)">
+          <CreditCard size={20} aria-hidden="true" />
+          <span>Pagar factura</span>
+        </a>
+      </div>
+    </>
   )
 }

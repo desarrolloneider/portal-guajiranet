@@ -107,7 +107,9 @@
 
 /* ---------- 10. Barra de progreso y botones flotantes ---------- */
 .barra-progreso { background: linear-gradient(90deg, var(--primary), #5f6779, var(--yellow)); height: 3px; left: 0; position: fixed; top: 0; transform: scaleX(0); transform-origin: left; width: 100%; z-index: 60; }
-.acciones-flotantes { bottom: 22px; display: flex; flex-direction: column; gap: 10px; position: fixed; right: 22px; z-index: 50; }
+.acciones-flotantes { align-items: flex-end; bottom: 22px; display: flex; flex-direction: column; gap: 10px; position: fixed; right: 22px; z-index: 50; }
+/* Izquierda: WhatsApp y "Revisar tutorial". En computador van en fila; en celular WhatsApp va encima (ver más abajo). */
+.flotantes-izq { align-items: center; bottom: 22px; display: flex; gap: 10px; left: 22px; position: fixed; z-index: 50; }
 .flotante { align-items: center; border: 0; border-radius: 30px; box-shadow: 0 12px 28px #191b2033; cursor: pointer; display: flex; font-size: 16px; font-weight: 700; gap: 9px; padding: 13px 17px; text-decoration: none; transition: transform .25s, box-shadow .25s, opacity .25s; }
 .whatsapp { background: #17a34a; color: #ffffff; }
 .subir { background: #ffffff; border: 1px solid var(--border); color: var(--navy); margin-left: auto; opacity: 0; padding: 12px; pointer-events: none; transform: translateY(10px); }
@@ -121,6 +123,7 @@
   .pasos-grid { grid-template-columns: 1fr; }
   .pasos-grid::before { display: none; }
   .acciones-flotantes { bottom: 16px; right: 16px; }
+  .flotantes-izq { bottom: 16px; left: 16px; }
   .whatsapp span { display: none; }
   .whatsapp { padding: 14px; }
 }
@@ -1168,14 +1171,16 @@ section.hero-new .hero-proof { margin-top: 30px; }
 .tutorial-saltar:hover, .tutorial-atras:hover { background: #f2f3f7; }
 .tutorial-siguiente { background: var(--marca-grafito); border: 0; color: #ffffff; margin-left: auto; }
 .tutorial-siguiente:hover { background: #d98516; }
-.tutorial-ayuda { align-items: center; background: #ffffff; border: 1px solid #e1e5ec; border-radius: 30px; bottom: 22px; box-shadow: 0 10px 24px #191b2026; color: var(--marca-grafito); cursor: pointer; display: inline-flex; font: inherit; font-size: 16px; font-weight: 700; gap: 7px; height: 46px; left: 22px; padding: 0 16px; position: fixed; transition: transform .2s; z-index: 50; }
+.tutorial-ayuda { align-items: center; background: #ffffff; border: 1px solid #e1e5ec; border-radius: 30px; box-shadow: 0 10px 24px #191b2026; color: var(--marca-grafito); cursor: pointer; display: inline-flex; font: inherit; font-size: 16px; font-weight: 700; gap: 7px; height: 48px; padding: 0 16px; transition: transform .2s; white-space: nowrap; }
 .tutorial-ayuda:hover { transform: translateY(-2px); }
 @media (max-width: 640px) {
-  .tutorial-ayuda { bottom: 16px; font-size: 15px; height: 42px; left: 16px; padding: 0 13px; }}
+  /* En celular: el círculo de WhatsApp encima de "Revisar tutorial". */
+  .flotantes-izq { align-items: flex-start; flex-direction: column; }
+  .tutorial-ayuda { font-size: 15px; height: 42px; padding: 0 13px; }}
 
-/* Botón flotante "Pagar factura": encima de "Revisar tutorial", abajo a la izquierda.
+/* Botón flotante "Pagar factura": abajo a la derecha, debajo de "Volver arriba".
    Verde con el mismo brillo y latido de los sellos "GRATIS" de los planes. */
-.pago-flotante { align-items: center; animation: pagoLatido 2.4s ease-in-out infinite; background: linear-gradient(110deg, #09ac27 0%, #09ac27 40%, #7dffa0 50%, #09ac27 60%, #09ac27 100%); background-size: 250% 100%; border: 0; border-radius: 30px; bottom: 78px; box-shadow: 0 10px 24px #09ac2740; color: #ffffff; display: inline-flex; font-size: 16px; font-weight: 800; gap: 8px; height: 46px; left: 22px; padding: 0 18px; position: fixed; text-decoration: none; text-shadow: 0 1px 2px #0000002e; transform-origin: left center; z-index: 50; }
+.pago-flotante { align-items: center; animation: pagoLatido 2.4s ease-in-out infinite; background: linear-gradient(110deg, #09ac27 0%, #09ac27 40%, #7dffa0 50%, #09ac27 60%, #09ac27 100%); background-size: 250% 100%; border: 0; border-radius: 32px; box-shadow: 0 10px 24px #09ac2740; color: #ffffff; display: inline-flex; font-size: 18px; font-weight: 800; gap: 10px; height: 56px; padding: 0 26px; text-decoration: none; text-shadow: 0 1px 2px #0000002e; transform-origin: right center; white-space: nowrap; }
 .pago-flotante svg { animation: pagoIcono 2.4s ease-in-out infinite; flex: none; }
 .pago-flotante:hover { animation: none; background-position: 0 0; box-shadow: 0 14px 30px #09ac2759; transform: translateY(-2px); }
 .pago-flotante:hover svg { animation: none; }
@@ -1186,7 +1191,16 @@ section.hero-new .hero-proof { margin-top: 30px; }
   90% { box-shadow: 0 10px 24px #09ac2740, 0 0 0 9px #2bd45a00; transform: scale(1); } }
 @keyframes pagoIcono { 0%, 70%, 100% { transform: rotate(0); } 78% { transform: rotate(-12deg); } 86% { transform: rotate(10deg); } 92% { transform: rotate(0); } }
 @media (max-width: 640px) {
-  .pago-flotante { bottom: 68px; font-size: 15px; height: 42px; left: 16px; padding: 0 15px; }}
+  .pago-flotante { font-size: 16.5px; height: 52px; padding: 0 20px; }}
+/* Celulares angostos: "Revisar tutorial" y "Pagar factura" quedan a la misma altura, así que se compactan. */
+@media (max-width: 400px) {
+  .tutorial-ayuda { font-size: 14px; gap: 5px; padding: 0 11px; }
+  .pago-flotante { font-size: 15px; gap: 7px; padding: 0 15px; }
+  .pago-flotante svg { height: 18px; width: 18px; }}
+/* Muy angostos (320-350 px): "Revisar tutorial" queda como un círculo con el ícono de ayuda. */
+@media (max-width: 350px) {
+  .tutorial-ayuda { justify-content: center; padding: 0; width: 42px; }
+  .tutorial-ayuda span { display: none; }}
 @media (prefers-reduced-motion: reduce) {
   .pago-flotante, .pago-flotante svg { animation: none; }}
 @media (prefers-reduced-motion: reduce) {

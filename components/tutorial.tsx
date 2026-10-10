@@ -1,7 +1,10 @@
 'use client'
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { ArrowLeft, ArrowRight, HelpCircle, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, X } from 'lucide-react'
+
+/** Evento para abrir la guía desde el botón "Revisar tutorial" (está en components/utilidades.tsx). */
+export const EVENTO_TUTORIAL = 'guajiranet:tutorial'
 
 /** La guía se abre sola una única vez por navegador. Después, solo con el botón "Revisar tutorial". */
 const CLAVE_VISTO = 'gn-tutorial-visto'
@@ -49,7 +52,7 @@ const PASOS: Paso[] = [
   {
     objetivo: ['.flotante.whatsapp'],
     titulo: '¿Necesitas ayuda?',
-    texto: 'Escríbenos por WhatsApp y un asesor te atiende. Si quieres volver a ver esta guía, toca el botón de ayuda.',
+    texto: 'Escríbenos por WhatsApp y un asesor te atiende. Si quieres volver a ver esta guía, toca «Revisar tutorial», justo al lado.',
   },
 ]
 
@@ -126,6 +129,12 @@ export function Tutorial() {
       if (tocaMostrarYMarcar()) abrir()
     }, 1200)
     return () => window.clearTimeout(t)
+  }, [abrir])
+
+  // El botón "Revisar tutorial" la abre siempre, aunque ya se haya visto.
+  useEffect(() => {
+    window.addEventListener(EVENTO_TUTORIAL, abrir)
+    return () => window.removeEventListener(EVENTO_TUTORIAL, abrir)
   }, [abrir])
 
   const paso = pasos[indice]
@@ -236,10 +245,6 @@ export function Tutorial() {
 
   return (
     <>
-      <button type="button" className="tutorial-ayuda" onClick={abrir} title="Ver la guía de la página">
-        <HelpCircle size={18} aria-hidden="true" /> Revisar tutorial
-      </button>
-
       {activo && paso && (
         <div className="tutorial" role="dialog" aria-modal="true" aria-labelledby="tutorial-titulo" aria-describedby="tutorial-texto">
           {/* Clic en el fondo oscuro: no cierra, para que nadie la pierda por accidente. */}
