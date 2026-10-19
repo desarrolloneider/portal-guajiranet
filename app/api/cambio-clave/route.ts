@@ -2,7 +2,8 @@ import { randomInt } from 'node:crypto'
 import { NextResponse, type NextRequest } from 'next/server'
 import { firmar, firmarTarea, firmaTareaValida, idEquipo, igualSeguro, llamarIsp } from '@/lib/servidor/isp-api'
 import { consultarCliente } from '@/lib/servidor/dsnube'
-import { escapar, remitente, transporte } from '@/lib/servidor/correo'
+import { remitente, transporte } from '@/lib/servidor/correo'
+import { correoCodigo } from '@/lib/servidor/correo-codigo'
 
 // Corre en el servidor de Node (no en el navegador ni en el borde): aquí viven las credenciales.
 export const runtime = 'nodejs'
@@ -147,12 +148,10 @@ export async function POST(req: NextRequest) {
       await transporte().sendMail({
         from: remitente(),
         to: cliente.email,
-        subject: `${codigo} es tu código para cambiar la clave WiFi`,
-        text: `Tu código de verificación es ${codigo}. Vence en 10 minutos.\n\nSi no pediste cambiar la clave de tu WiFi, ignora este correo.\n\nGUAJIRANET ISP SAS`,
-        html: `<p>Tu código de verificación es:</p><p style="font-size:28px;font-weight:700;letter-spacing:6px">${escapar(codigo)}</p><p>Vence en 10 minutos.</p><p>Si no pediste cambiar la clave de tu WiFi, ignora este correo.</p><p>GUAJIRANET ISP SAS</p>`,
+        ...correoCodigo(codigo),
       })
       codigos.set(cedula, { mac: firmar(`codigo:${cedula}:${codigo}`), vence: Date.now() + VIGENCIA_CODIGO_MS, fallos: 0, enviado: Date.now() })
-      return NextResponse.json({ correo: ocultarCorreo(cliente.email) })
+      return NextResponse.json({ correo: ocultarCorreo(cliente.email), segundos: VIGENCIA_CODIGO_MS / 1000 })
     }
 
     // 2. Validar el código y devolver los equipos con una sesión firmada.

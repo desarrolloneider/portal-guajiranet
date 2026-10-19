@@ -185,6 +185,20 @@ function FormClave() {
   const [datos, setDatos] = useState({ cedula: '', codigo: '', clave: '', repetir: '', red: '' })
   const [correo, setCorreo] = useState('')
   const [sesion, setSesion] = useState('')
+  // Cuenta regresiva del código: momento en que vence y segundos que faltan.
+  const [venceEn, setVenceEn] = useState(0)
+  const [restante, setRestante] = useState(0)
+
+  useEffect(() => {
+    if (!venceEn) return
+    const tic = () => setRestante(Math.max(0, Math.ceil((venceEn - Date.now()) / 1000)))
+    tic()
+    const t = window.setInterval(tic, 1000)
+    return () => window.clearInterval(t)
+  }, [venceEn])
+
+  const vencido = venceEn > 0 && restante === 0
+  const reloj = `${Math.floor(restante / 60)}:${String(restante % 60).padStart(2, '0')}`
   const [equipos, setEquipos] = useState<EquipoWeb[]>([])
   const [equipo, setEquipo] = useState('')
   const [cargando, setCargando] = useState(false)
@@ -227,6 +241,7 @@ function FormClave() {
     try {
       const r = await pedirCambioClave({ accion: 'enviar-codigo', cedula: datos.cedula, autorizacion: autoriza })
       setCorreo(String(r.correo ?? ''))
+      setVenceEn(Date.now() + (Number(r.segundos) || 600) * 1000)
       set('codigo', '')
       setPaso('codigo')
     } catch (e) {
@@ -323,12 +338,22 @@ function FormClave() {
   if (paso === 'codigo') {
     return (
       <form className="form" method="post" onSubmit={(e) => { e.preventDefault(); verificarCodigo() }}>
-        <p className="form-ayuda-clave">Te enviamos un código de 6 dígitos a <strong>{correo}</strong>. Vence en 10 minutos; si no lo ves, revisa la carpeta de spam.</p>
+        <p className="form-ayuda-clave">Te enviamos un código de 6 dígitos a <strong>{correo}</strong>. Si no lo ves, revisa la carpeta de spam.</p>
+        <div className={`codigo-reloj ${vencido ? 'vencido' : restante <= 60 ? 'poco' : ''}`} role="timer" aria-live="off">
+          {vencido ? (
+            <span>El código venció. Pide uno nuevo.</span>
+          ) : (
+            <>
+              <span>El código vence en</span> <strong>{reloj}</strong>
+            </>
+          )}
+          <i className="codigo-reloj-barra" style={{ width: `${Math.min(100, (restante / 600) * 100)}%` }} aria-hidden="true" />
+        </div>
         <div className="form-grid">
           <label>Código *<input required inputMode="numeric" autoComplete="one-time-code" maxLength={6} pattern="\d{6}" value={datos.codigo} onChange={(e) => set('codigo', e.target.value.replace(/\D/g, ''))} placeholder="000000" /></label>
         </div>
         {error && <em className="form-error">{error}</em>}
-        <button type="submit" className="pcard-cta" disabled={cargando || datos.codigo.length !== 6}>{cargando ? 'Verificando…' : 'Verificar código'} <ArrowRight size={17} /></button>
+        <button type="submit" className="pcard-cta" disabled={cargando || vencido || datos.codigo.length !== 6}>{cargando ? 'Verificando…' : 'Verificar código'} <ArrowRight size={17} /></button>
         <p className="form-nota">
           ¿No te llegó? <button type="button" className="boton-enlace" disabled={cargando} onClick={enviarCodigo}>Enviar otro código</button>
           {' '}· <a href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent('Hola, quiero cambiar la clave de mi WiFi y no me llega el código al correo.')}`} target="_blank" rel="noreferrer">Escríbenos por WhatsApp</a>

@@ -1309,3 +1309,13 @@ a.text-link { color: #067a1d; }
   .ns-texto p { font-size: 16px; line-height: 1.55; margin-bottom: 20px; }
   .ns-mini img { height: 48px; width: 64px; }
 }
+
+/* Cuenta regresiva del código de verificación */
+.codigo-reloj { align-items: baseline; background: #fff8d6; border-radius: 12px; color: var(--marca-grafito); display: flex; flex-wrap: wrap; font-size: 14px; gap: 6px; margin: 4px 0 14px; overflow: hidden; padding: 12px 14px 16px; position: relative; }
+.codigo-reloj strong { font-size: 22px; font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+.codigo-reloj-barra { background: #d98516; bottom: 0; height: 4px; left: 0; position: absolute; transition: width 1s linear; }
+.codigo-reloj.poco { background: #ffe9e6; }
+.codigo-reloj.poco strong { color: #c62a12; }
+.codigo-reloj.poco .codigo-reloj-barra { background: #c62a12; }
+.codigo-reloj.vencido { background: #ffe9e6; color: #a3220f; font-weight: 700; }
+@media (prefers-reduced-motion: reduce) { .codigo-reloj-barra { transition: none; }}
