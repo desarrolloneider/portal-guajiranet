@@ -130,7 +130,7 @@ export async function POST(req: NextRequest) {
     // 1. Enviar un código al correo registrado en DS Nube.
     if (accion === 'enviar-codigo') {
       if (cuerpo.autorizacion !== true) return fallo(400, 'INVALIDO', 'Debes autorizar el uso de tus datos para continuar.')
-      if (!permitido(`codigo-ip:${ip}`, 10, 60 * 60_000) || !permitido(`codigo-cedula:${cedula}`, 3, 60 * 60_000)) {
+      if (!permitido(`codigo-ip:${ip}`, 10, 60 * 60_000) || !permitido(`codigo-cedula:${cedula}`, 10, 60 * 60_000)) {
         return fallo(429, 'LIMITE', 'Pediste varios códigos en poco tiempo. Espera una hora o escríbenos por WhatsApp.')
       }
       limpiarCodigos()
