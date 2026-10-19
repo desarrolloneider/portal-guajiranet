@@ -1,7 +1,7 @@
 'use client'
 
 import { type ChangeEvent, useEffect, useState } from 'react'
-import { ArrowRight, Check, CreditCard, FileText, Gauge, KeyRound, MessageCircle } from 'lucide-react'
+import { ArrowRight, Check, Clock, CreditCard, FileText, Gauge, KeyRound, Loader2, MessageCircle, TriangleAlert } from 'lucide-react'
 import { Modal } from '@/components/modal'
 import { TestVelocidad } from '@/components/test-velocidad'
 import { MUNICIPIOS_CON_COBERTURA } from '@/lib/cobertura'
@@ -174,11 +174,15 @@ async function pedirCambioClave(cuerpo: Record<string, unknown>) {
   return datos
 }
 
+// Estados de una tarea según la API del ACS (sección 1.3): en_cola → en_proceso → enviado → confirmado | fallido.
 const ESTADOS_TAREA: Record<string, string> = {
-  en_cola: 'En cola: tu solicitud está esperando turno.',
-  en_proceso: 'Aplicando el cambio en tu router…',
-  fallido: 'No se pudo aplicar el cambio. Escríbenos por WhatsApp y lo revisamos.',
+  en_cola: 'Tu solicitud está en turno para enviarse a tu router…',
+  en_proceso: 'Enviando el cambio a tu router…',
+  enviado: 'Tu router recibió el cambio. Estamos confirmando que quedó aplicado…',
 }
+const ESTADOS_FINALES = ['confirmado', 'fallido']
+// La tarea suele resolverse en menos de 30 s, con hasta 5 reintentos: se consulta cada 3 s durante unos 2 minutos.
+const MAX_CONSULTAS = 40
 
 function FormClave() {
   const [paso, setPaso] = useState<'datos' | 'codigo' | 'clave' | 'listo'>('datos')
@@ -222,13 +226,14 @@ function FormClave() {
         const r = await pedirCambioClave({ accion: 'estado', tarea: resultado.tarea, firma: resultado.firma })
         if (!vivo) return
         setEstadoTarea(String(r.estado ?? ''))
-        if (/complet|exit|ok|done|aplic|fallido/i.test(String(r.estado))) return
+        if (ESTADOS_FINALES.includes(String(r.estado))) return
       } catch {
         if (!vivo) return
       }
-      if (++vueltas < 15) temporizador = window.setTimeout(revisar, 4000)
+      if (++vueltas < MAX_CONSULTAS) temporizador = window.setTimeout(revisar, 3000)
+      else setEstadoTarea('demorado')
     }
-    let temporizador = window.setTimeout(revisar, 2500)
+    let temporizador = window.setTimeout(revisar, 2000)
     return () => {
       vivo = false
       window.clearTimeout(temporizador)
@@ -290,25 +295,63 @@ function FormClave() {
   }
 
   if (paso === 'listo' && resultado) {
-    const aplicado = /complet|exit|ok|done|aplic/i.test(estadoTarea)
+    const aplicado = estadoTarea === 'confirmado'
+    const fallido = estadoTarea === 'fallido'
+    const apagado = resultado.estado === 'equipo_apagado' && !aplicado && !fallido
+    const red = datos.red || equipos.find((e) => e.id === equipo)?.red || equipos[0]?.red
+    const enRed = red ? ` a la red «${red}»` : ''
+    const estado = aplicado ? 'exito' : fallido ? 'error' : apagado || estadoTarea === 'demorado' ? 'espera' : 'proceso'
+
     return (
-      <div className="ok-panel">
-        <span className="ok-icono"><Check size={26} /></span>
-        <h4>{aplicado ? 'Clave cambiada' : 'Recibimos tu cambio de clave'}</h4>
+      <div className={`ok-panel clave-${estado}`} role="status" aria-live="polite">
+        <span className="ok-icono">
+          {estado === 'exito' && <Check size={26} />}
+          {estado === 'error' && <TriangleAlert size={26} />}
+          {estado === 'espera' && <Clock size={26} />}
+          {estado === 'proceso' && <Loader2 size={26} className="clave-girando" />}
+        </span>
+
+        {estado === 'exito' && (
+          <>
+            <h4>¡Listo! Tu clave fue cambiada</h4>
+            <p className="ok-plazo">
+              Tu router ya tiene la clave nueva. Verifícalo conectándote{enRed} con tu <strong>contraseña nueva</strong>.
+              Todos tus dispositivos se desconectaron: vuelve a conectarlos con esa misma clave.
+            </p>
+          </>
+        )}
+        {estado === 'error' && (
+          <>
+            <h4>No pudimos cambiar tu clave</h4>
+            <p className="ok-plazo">
+              Tu router no confirmó el cambio, así que tu clave anterior sigue funcionando. Escríbenos por WhatsApp con el número de
+              seguimiento y lo revisamos.
+            </p>
+          </>
+        )}
+        {estado === 'espera' && (
+          <>
+            <h4>{apagado ? 'Tu router está apagado o sin conexión' : 'Tu cambio sigue en proceso'}</h4>
+            <p className="ok-plazo">
+              {apagado
+                ? 'Guardamos tu cambio: se aplicará solo cuando el router vuelva a conectarse.'
+                : 'Está tardando más de lo normal, pero el sistema lo sigue intentando.'}{' '}
+              Cuando se aplique, tus dispositivos se desconectarán y deberás conectarlos con la contraseña nueva.
+            </p>
+          </>
+        )}
+        {estado === 'proceso' && (
+          <>
+            <h4>Aplicando tu clave nueva…</h4>
+            <p className="ok-plazo">{ESTADOS_TAREA[estadoTarea] ?? 'Enviando el cambio a tu router…'} No cierres esta ventana, suele tardar menos de un minuto.</p>
+          </>
+        )}
+
         <p>Número de seguimiento:</p>
         <strong className="ok-radicado">{resultado.tarea}</strong>
-        <p className="ok-plazo">
-          {resultado.estado === 'equipo_apagado'
-            ? 'Tu router está apagado o sin conexión. El cambio se aplicará automáticamente cuando vuelva a conectarse.'
-            : aplicado
-              ? 'Ya puedes conectar tus dispositivos con la nueva clave.'
-              : (ESTADOS_TAREA[estadoTarea] ?? 'El cambio se aplica en tu router en unos minutos.')}{' '}
-          Al aplicarse, todos tus dispositivos se desconectan y debes volver a conectarlos con la clave nueva
-          {datos.red ? ` en la red «${datos.red}»` : ''}.
-        </p>
         <div className="ok-acciones">
           <a className="boton-suave" href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, hice un cambio de clave WiFi desde la página. Seguimiento ${resultado.tarea}.`)}`} target="_blank" rel="noreferrer">
-            ¿Problemas? Escríbenos <MessageCircle size={17} />
+            {estado === 'exito' ? '¿Problemas para conectarte?' : 'Escríbenos'} <MessageCircle size={17} />
           </a>
         </div>
       </div>

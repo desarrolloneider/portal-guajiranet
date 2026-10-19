@@ -1319,3 +1319,11 @@ a.text-link { color: #067a1d; }
 .codigo-reloj.poco .codigo-reloj-barra { background: #c62a12; }
 .codigo-reloj.vencido { background: #ffe9e6; color: #a3220f; font-weight: 700; }
 @media (prefers-reduced-motion: reduce) { .codigo-reloj-barra { transition: none; }}
+
+/* Resultado del cambio de clave según el estado de la tarea */
+.boton-suave { gap: 8px; }
+.clave-proceso .ok-icono, .clave-espera .ok-icono { background: #d98516; box-shadow: 0 0 0 8px #d9851621; }
+.clave-error .ok-icono { background: #c62a12; box-shadow: 0 0 0 8px #c62a1221; }
+.clave-exito h4 { color: #08752f; }
+.clave-girando { animation: hcGira 1s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .clave-girando { animation: none; }}
