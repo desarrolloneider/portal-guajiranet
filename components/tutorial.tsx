@@ -35,9 +35,9 @@ const PASOS: Paso[] = [
     texto: 'Compara velocidades y precios. Con el botón de cada plan nos escribes para instalarlo.',
   },
   {
-    objetivo: ['.nav-acciones .nav-pago'],
+    objetivo: ['.hero-pagos'],
     titulo: 'Paga tu factura',
-    texto: 'Desde aquí entras al portal de pagos con tu cédula, sin hacer filas.',
+    texto: 'Paga en línea sin hacer filas: con GuajiraNet Pay (PSE, tarjeta y más) o al instante con Bre-B.',
   },
   {
     objetivo: ['#autogestion'],

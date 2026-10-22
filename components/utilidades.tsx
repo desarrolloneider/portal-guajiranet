@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { ArrowUp, CreditCard, HelpCircle } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { ArrowUp, ArrowUpRight, CreditCard, HelpCircle, X } from 'lucide-react'
+import { PORTALES_PAGO } from '@/lib/pagos'
 import { EVENTO_TUTORIAL } from '@/components/tutorial'
 
 function IconoWhatsApp() {
@@ -42,10 +43,29 @@ export function BarraProgreso() {
 /**
  * Botones flotantes de la página.
  * - Izquierda: WhatsApp y "Revisar tutorial" (en computador uno al lado del otro; en celular el tutorial va encima).
- * - Derecha: "Volver arriba" (aparece al bajar) y "Pagar factura".
+ * - Derecha: "Volver arriba" (aparece al bajar) y "Pagar factura", que abre un selector con los tres portales de pago.
  */
-export function AccionesFlotantes({ pagoHref }: { pagoHref: string }) {
+export function AccionesFlotantes(_props: { pagoHref?: string }) {
   const [arriba, setArriba] = useState(false)
+  // Selector de portales de pago (Wompi, OnePay, Bre-B) que abre el botón flotante.
+  const [pagosAbierto, setPagosAbierto] = useState(false)
+  const selectorRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!pagosAbierto) return
+    const fuera = (e: PointerEvent) => {
+      if (!selectorRef.current?.contains(e.target as Node)) setPagosAbierto(false)
+    }
+    const escape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setPagosAbierto(false)
+    }
+    document.addEventListener('pointerdown', fuera)
+    document.addEventListener('keydown', escape)
+    return () => {
+      document.removeEventListener('pointerdown', fuera)
+      document.removeEventListener('keydown', escape)
+    }
+  }, [pagosAbierto])
 
   useEffect(() => {
     const onScroll = () => setArriba(window.scrollY > 700)
@@ -87,10 +107,42 @@ export function AccionesFlotantes({ pagoHref }: { pagoHref: string }) {
         >
           <ArrowUp size={20} />
         </button>
-        <a className="pago-flotante" href={pagoHref} target="_blank" rel="noreferrer" aria-label="Pagar factura (abre el portal de pagos)">
-          <CreditCard size={20} aria-hidden="true" />
-          <span>Pagar factura</span>
-        </a>
+        <div className="pago-selector" ref={selectorRef}>
+          {pagosAbierto && (
+            <div className="pago-selector-menu" id="pago-selector-menu" role="menu" aria-label="Elige cómo pagar">
+              <p className="pago-selector-titulo">¿Cómo quieres pagar?</p>
+              {PORTALES_PAGO.map(({ clave, href, logo, marca, titulo, detalle }) => (
+                <a
+                  key={clave}
+                  className={`pago-opcion pago-opcion-${clave}`}
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  role="menuitem"
+                  onClick={() => setPagosAbierto(false)}
+                >
+                  <span className={`pago-logo pago-logo-${clave}`} role="img" aria-label={`Logo de ${marca}`} style={{ backgroundImage: `url(${logo})` }} />
+                  <span className="pago-opcion-texto">
+                    <strong>{titulo}</strong>
+                    <small>{detalle}</small>
+                  </span>
+                  <ArrowUpRight size={16} aria-hidden="true" />
+                </a>
+              ))}
+            </div>
+          )}
+          <button
+            type="button"
+            className={`pago-flotante ${pagosAbierto ? 'abierto' : ''}`}
+            onClick={() => setPagosAbierto((a) => !a)}
+            aria-expanded={pagosAbierto}
+            aria-controls="pago-selector-menu"
+            aria-haspopup="menu"
+          >
+            {pagosAbierto ? <X size={20} aria-hidden="true" /> : <CreditCard size={20} aria-hidden="true" />}
+            <span>{pagosAbierto ? 'Cerrar' : 'Pagar factura'}</span>
+          </button>
+        </div>
       </div>
     </>
   )

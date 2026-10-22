@@ -1327,3 +1327,153 @@ a.text-link { color: #067a1d; }
 .clave-exito h4 { color: #08752f; }
 .clave-girando { animation: hcGira 1s linear infinite; }
 @media (prefers-reduced-motion: reduce) { .clave-girando { animation: none; }}
+
+/* ---------- 50. Accesos de pago en el inicio (OnePay) ---------- */
+.hero-pagos { margin-top: 24px; max-width: 540px; }
+.hero-pagos-titulo { align-items: center; color: #ffffff; display: flex; font-size: 13px; font-weight: 800; gap: 8px; letter-spacing: .06em; margin: 0 0 10px; text-transform: uppercase; }
+.hero-pagos-punto { background: var(--marca-verde); border-radius: 50%; box-shadow: 0 0 0 0 #09ac2799; height: 9px; width: 9px; animation: pagoLatido 1.8s ease-out infinite; }
+.hero-pagos-lista { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.hero-pago { align-items: center; animation: pagoEntra .6s cubic-bezier(.22, 1, .36, 1) both, pagoBrillo 2.6s ease-in-out 1.2s infinite; border-radius: 16px; display: flex; gap: 12px; isolation: isolate; min-height: 76px; overflow: hidden; padding: 13px 14px; position: relative; text-decoration: none; transition: transform .25s, box-shadow .25s; }
+/* Destello que cruza la tarjeta cada pocos segundos */
+.hero-pago::after { animation: pagoDestello 3.4s ease-in-out 1.4s infinite; background: linear-gradient(105deg, transparent 30%, #ffffff8c 50%, transparent 70%); content: ''; inset: 0; position: absolute; transform: translateX(-120%); z-index: -1; }
+.hero-pago:hover, .hero-pago:focus-visible { outline: none; transform: translateY(-3px) scale(1.02); }
+.hero-pago:focus-visible { box-shadow: 0 0 0 3px #ffffff; }
+.hero-pago-pay { background: linear-gradient(135deg, #0fc53a, var(--marca-verde) 55%, #078a20); color: #ffffff; --brillo: #09ac2780; }
+.hero-pago-breb { background: linear-gradient(135deg, #ffe45c, var(--marca-amarillo) 55%, #e8b900); color: var(--marca-grafito); --brillo: #fad21b80; }
+.hero-pago-icono { align-items: center; animation: pagoFlota 2.8s ease-in-out infinite; background: #ffffff33; border-radius: 12px; display: flex; flex: none; height: 42px; justify-content: center; width: 42px; }
+.hero-pago-breb .hero-pago-icono { animation-delay: .4s; background: #2b2e341a; }
+.hero-pago-texto { display: grid; line-height: 1.2; min-width: 0; }
+.hero-pago-texto strong { font-size: 16px; font-weight: 800; }
+.hero-pago-texto span { font-size: 13px; font-weight: 700; opacity: .92; }
+.hero-pago-texto small { font-size: 11px; opacity: .78; }
+.hero-pago-flecha { flex: none; margin-left: auto; transition: transform .25s; }
+.hero-pago:hover .hero-pago-flecha { transform: translate(3px, -3px); }
+.hero-pagos-nota { align-items: center; color: #b9c8e6; display: flex; font-size: 12px; gap: 6px; margin: 9px 0 0; }
+@keyframes pagoEntra { from { opacity: 0; transform: translateY(18px) scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes pagoBrillo { 0%, 100% { box-shadow: 0 10px 24px #00000033, 0 0 0 0 var(--brillo); } 50% { box-shadow: 0 10px 24px #00000033, 0 0 0 7px transparent; } }
+@keyframes pagoDestello { 0%, 55% { transform: translateX(-120%); } 85%, 100% { transform: translateX(120%); } }
+@keyframes pagoFlota { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes pagoLatido { 0% { box-shadow: 0 0 0 0 #09ac2799; } 80%, 100% { box-shadow: 0 0 0 9px transparent; } }
+@media (max-width: 420px) {
+  .hero-pagos-lista { gap: 9px; }
+  .hero-pago { gap: 9px; min-height: 70px; padding: 11px 10px; }
+  .hero-pago-icono { height: 36px; width: 36px; }
+  .hero-pago-texto strong { font-size: 14px; }
+  .hero-pago-texto span { font-size: 12px; }
+  .hero-pago-flecha { display: none; }}
+@media (prefers-reduced-motion: reduce) {
+  .hero-pago, .hero-pago::after, .hero-pago-icono, .hero-pagos-punto { animation: none; }}
+.hero-pago-texto strong { white-space: nowrap; }
+
+/* Pagos arriba a la derecha del inicio, alineados con los botones del menú (en celular van antes del titular) */
+.hero-pagos-zona { display: flex; justify-content: flex-end; left: 0; pointer-events: none; position: absolute; right: 0; top: 26px; z-index: 4; }
+.hero-pagos-zona .hero-pagos { margin-top: 0; max-width: none; pointer-events: auto; width: min(760px, 58%); }
+.hero-pagos-zona .hero-pagos-lista { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 1280px) {
+  .hero-pagos-zona .hero-pagos { width: min(560px, 50%); }
+  .hero-pagos-zona .hero-pagos-lista { grid-template-columns: repeat(2, minmax(0, 1fr)); }}
+@media (max-width: 800px) {
+  .hero-pagos-zona { justify-content: stretch; padding-top: 18px; position: relative; top: 0; }
+  .hero-pagos-zona .hero-pagos { width: 100%; }}
+
+/* Título de pagos más visible */
+.hero-pagos-titulo { background: #fad21b1f; border: 1px solid #fad21b66; border-radius: 30px; color: var(--marca-amarillo); display: inline-flex; font-size: 16px; letter-spacing: .05em; margin-bottom: 12px; padding: 7px 14px; }
+.hero-pagos-titulo .hero-pagos-punto { height: 10px; width: 10px; }
+@media (max-width: 800px) { .hero-pagos-titulo { font-size: 14px; }}
+
+/* Tarjeta de Wompi: blanca con el verde menta de la marca */
+.hero-pago-wompi { background: linear-gradient(135deg, #ffffff, #eefbf0 60%, #d5f5d9); color: var(--marca-grafito); --brillo: #b4f0bc80; }
+
+/* Logos de los portales: las imágenes traen fondo, aquí se recortan al contenido */
+.pago-logo { background-position: center; background-repeat: no-repeat; box-shadow: 0 4px 12px #00000033; flex: none; }
+.hero-pago .pago-logo { animation: pagoFlota 2.8s ease-in-out infinite; }
+/* OnePay: el círculo ocupa ~58 % de la imagen; se agranda y se recorta en círculo */
+.pago-logo-pay { background-color: #0a1a14; background-size: 172%; border: 2px solid #ffffffcc; border-radius: 50%; height: 44px; width: 44px; }
+/* Bre-B: insignia morada con el texto centrado */
+.pago-logo-breb { animation-delay: .4s !important; background-color: #36005a; background-size: 150%; border-radius: 10px; height: 40px; width: 64px; }
+/* Wompi: cuadro menta con la W */
+.pago-logo-wompi { animation-delay: .8s !important; background-color: #b4f0bc; background-size: cover; border-radius: 10px; height: 42px; width: 42px; }
+@media (max-width: 420px) {
+  .hero-pago .pago-logo-pay, .hero-pago .pago-logo-wompi { height: 36px; width: 36px; }
+  .hero-pago .pago-logo-breb { height: 32px; width: 50px; }}
+@media (prefers-reduced-motion: reduce) { .hero-pago .pago-logo { animation: none; }}
+
+/* Selector de pagos del botón flotante */
+.pago-selector { position: relative; }
+button.pago-flotante { border: 0; cursor: pointer; font-family: inherit; }
+.pago-flotante.abierto { animation: none; background: var(--marca-grafito); }
+.pago-selector-menu { animation: pagoMenu .22s cubic-bezier(.22, 1, .36, 1); background: #ffffff; border-radius: 18px; bottom: calc(100% + 12px); box-shadow: 0 22px 48px #0a142447; display: grid; gap: 8px; padding: 14px; position: absolute; right: 0; width: min(330px, calc(100vw - 32px)); }
+.pago-selector-titulo { color: var(--marca-grafito); font-size: 15px; font-weight: 800; margin: 2px 4px 4px; }
+.pago-opcion { align-items: center; border: 1px solid #e6e9f0; border-radius: 14px; color: var(--marca-grafito); display: flex; gap: 12px; padding: 10px 12px; text-decoration: none; transition: background .18s, border-color .18s, transform .18s; }
+.pago-opcion:hover, .pago-opcion:focus-visible { background: #f4f6f9; border-color: #cfd5e0; outline: none; transform: translateX(-2px); }
+.pago-opcion .pago-logo-pay, .pago-opcion .pago-logo-wompi { height: 38px; width: 38px; }
+.pago-opcion .pago-logo-breb { height: 34px; width: 54px; }
+.pago-opcion .pago-logo-pay { border-color: #e6e9f0; }
+.pago-opcion-texto { display: grid; flex: 1; line-height: 1.25; min-width: 0; }
+.pago-opcion-texto strong { font-size: 15px; white-space: nowrap; }
+.pago-opcion-texto small { color: #6a7182; font-size: 12px; }
+.pago-opcion > svg { color: #8a90a0; flex: none; }
+@keyframes pagoMenu { from { opacity: 0; transform: translateY(10px) scale(.97); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .pago-selector-menu { animation: none; }}
+/* Logo de Wompi en el botón Pagar factura del menú de celular */
+.logo-wompi { border-radius: 6px; box-shadow: 0 0 0 1.5px #ffffffb3; flex: none; height: 20px; object-fit: cover; width: 20px; }
+
+/* Pagos y botones del menú: salen del ancho del contenido hacia el borde derecho de la pantalla, alineados entre sí.
+   --salida-der es cuánto se corren más allá del contenedor (1320 px) hasta quedar a ~32 px del borde. */
+:root { --salida-der: max(0px, calc((100vw - 1320px) / 2 - clamp(20px, 2vw, 32px))); }
+@media (min-width: 801px) {
+  .hero-pagos-zona .hero-pagos { margin-right: calc(-1 * var(--salida-der)); }
+  .nav-header-inner .nav-acciones { margin-right: calc(-1 * var(--salida-der)); }}
+@media (min-width: 801px) { .topbar .topbar-derecha { margin-right: calc(-1 * var(--salida-der)); }}
+/* Celular: las tres tarjetas completas, una debajo de otra, igual que en computador */
+@media (max-width: 800px) {
+  .hero-pagos-zona .hero-pagos-lista { gap: 9px; grid-template-columns: 1fr; }
+  .hero-pagos-zona .hero-pago { min-height: 68px; }
+  .hero-pagos-zona .hero-pago-flecha { display: block; }}
+
+/* Ancho del encabezado y del inicio: mismo margen a izquierda y derecha (~32 px del borde en pantallas anchas).
+   Reemplaza el corrimiento solo a la derecha (--salida-der). */
+:root { --salida-der: 0px; --borde-lateral: clamp(20px, 2vw, 32px); }
+.topbar > .container, .nav-header > .nav-header-inner, .hero-new > .container {
+  width: max(min(1320px, calc(100% - 40px)), calc(100% - 2 * var(--borde-lateral)));
+}
+
+/* Menú de celular: las tres opciones de pago */
+.nav-menu-pagos-titulo { color: var(--marca-grafito); font-size: 13px; font-weight: 800; letter-spacing: .05em; margin: 2px 2px 0; text-transform: uppercase; }
+.nav-menu-pagos { display: grid; gap: 8px; }
+/* Con el menú de celular abierto, los botones flotantes no tapan sus opciones */
+body.menu-navegacion-abierto .acciones-flotantes, body.menu-navegacion-abierto .flotantes-izq { display: none; }
+
+/* Brillo de las tarjetas de pago más intenso: destello blanco fuerte, más seguido, halo que late y un pequeño "pulso" */
+.hero-pago { animation: pagoEntra .6s cubic-bezier(.22, 1, .36, 1) both, pagoBrilloFuerte 1.6s ease-in-out 1s infinite; }
+.hero-pago::after {
+  animation: pagoDestelloFuerte 2.2s ease-in-out 1s infinite;
+  background: linear-gradient(105deg, transparent 25%, #ffffff00 35%, #ffffffee 50%, #ffffff00 65%, transparent 75%);
+  mix-blend-mode: soft-light;
+  z-index: 1;
+}
+.hero-pago-breb::after, .hero-pago-wompi::after { mix-blend-mode: normal; opacity: .85; }
+.hero-pago:nth-child(2), .hero-pago:nth-child(2)::after { animation-delay: .6s, 1.35s; }
+.hero-pago:nth-child(3), .hero-pago:nth-child(3)::after { animation-delay: .75s, 1.7s; }
+.hero-pago > * { position: relative; z-index: 2; }
+@keyframes pagoBrilloFuerte {
+  0%, 100% { box-shadow: 0 10px 24px #00000040, 0 0 0 0 var(--brillo), 0 0 0 0 var(--brillo); transform: scale(1); }
+  45% { box-shadow: 0 10px 24px #00000040, 0 0 0 6px var(--brillo), 0 0 34px 8px var(--brillo); transform: scale(1.025); }
+  70% { box-shadow: 0 10px 24px #00000040, 0 0 0 12px transparent, 0 0 18px 2px var(--brillo); transform: scale(1); }
+}
+@keyframes pagoDestelloFuerte { 0%, 35% { transform: translateX(-130%); } 75%, 100% { transform: translateX(130%); } }
+.hero-pago-pay { --brillo: #2bff6acc; }
+.hero-pago-breb { --brillo: #ffe14dcc; }
+.hero-pago-wompi { --brillo: #c8ffd0d9; }
+@media (prefers-reduced-motion: reduce) { .hero-pago, .hero-pago::after { animation: none; }}
+
+/* El brillo se queda dentro de cada tarjeta: sin agrandarla ni invadir el espacio entre tarjetas.
+   La intensidad viene de un resplandor interno y un "flash" de brillo, no de un halo hacia afuera. */
+@keyframes pagoBrilloFuerte {
+  0%, 100% { box-shadow: 0 8px 20px #00000040, inset 0 0 0 2px #ffffff00, inset 0 0 0 0 var(--brillo); filter: brightness(1); }
+  45% { box-shadow: 0 8px 20px #00000040, inset 0 0 0 2px #ffffffd9, inset 0 0 26px 4px var(--brillo); filter: brightness(1.16) saturate(1.15); }
+  70% { box-shadow: 0 8px 20px #00000040, inset 0 0 0 2px #ffffff40, inset 0 0 12px 0 var(--brillo); filter: brightness(1.04); }
+}
+.hero-pago-pay { --brillo: #b6ffcbcc; }
+.hero-pago-breb { --brillo: #fff6b8e6; }
+.hero-pago-wompi { --brillo: #9bf0a8cc; }
