@@ -1,9 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { ArrowRight, ChevronDown, CreditCard, Mail, MapPin, Menu, X } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, ChevronDown, Mail, MapPin, Menu, X } from 'lucide-react'
+import { PORTALES_PAGO } from '@/lib/pagos'
 import { HeroCobertura } from '@/components/hero-cobertura'
 import { HeroEscena } from '@/components/hero-escena'
+import { HeroPagos } from '@/components/hero-pagos'
 import { PRECIO_DESDE } from '@/lib/planes'
 import { url } from '@/lib/base-path'
 
@@ -26,7 +28,8 @@ type Props = {
   pagoHref: string
 }
 
-export function NavegacionPrincipal({ pagoHref }: Props) {
+// pagoHref ya no se usa aquí: los enlaces de pago salen de lib/pagos.ts.
+export function NavegacionPrincipal(_props: Props) {
   const [activa, setActiva] = useState('inicio')
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -105,7 +108,6 @@ export function NavegacionPrincipal({ pagoHref }: Props) {
         </nav>
 
         <div className="nav-acciones">
-          <a className="button button-pay nav-pago" href={pagoHref} target="_blank" rel="noreferrer"><CreditCard size={17} /> Pagar factura</a>
           <a className="button button-primary nav-instalar" href="#contacto" onClick={irA('contacto')}>Quiero instalar</a>
         </div>
 
@@ -130,7 +132,19 @@ export function NavegacionPrincipal({ pagoHref }: Props) {
             ))}
           </div>
           <div className="nav-menu-acciones">
-            <a className="button button-pay" href={pagoHref} target="_blank" rel="noreferrer"><CreditCard size={17} /> Pagar factura</a>
+            <p className="nav-menu-pagos-titulo">Paga tu factura</p>
+            <div className="nav-menu-pagos">
+              {PORTALES_PAGO.map(({ clave, href, logo, marca, titulo, detalle }) => (
+                <a key={clave} className="pago-opcion" href={href} target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>
+                  <span className={`pago-logo pago-logo-${clave}`} role="img" aria-label={`Logo de ${marca}`} style={{ backgroundImage: `url(${logo})` }} />
+                  <span className="pago-opcion-texto">
+                    <strong>{titulo}</strong>
+                    <small>{detalle}</small>
+                  </span>
+                  <ArrowUpRight size={16} aria-hidden="true" />
+                </a>
+              ))}
+            </div>
             <a className="button button-primary" href="#contacto" onClick={irA('contacto')}>Quiero instalar</a>
             <a className="nav-menu-webmail" href="https://guajiranet.com:2096/" target="_blank" rel="noreferrer"><Mail size={16} /> Webmail corporativo</a>
           </div>
@@ -138,6 +152,10 @@ export function NavegacionPrincipal({ pagoHref }: Props) {
       )}
       </header>
       <section id="inicio" className="hero-new">
+        {/* Pagos arriba a la derecha: es lo primero que se ve al entrar. */}
+        <div className="container hero-pagos-zona">
+          <HeroPagos />
+        </div>
         <div className="container hero-grid-new">
           <div className="hero-copy">
             <p className="hero-slogan">Conectando sueños</p>
