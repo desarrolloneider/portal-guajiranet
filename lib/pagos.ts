@@ -2,7 +2,7 @@
 // Los logos traen su propio fondo; el CSS los recorta (ver .pago-logo en escena.css).
 
 export type PortalPago = {
-  clave: 'wompi' | 'pay' | 'breb'
+  clave: 'pay' | 'breb' | 'wompi'
   href: string
   logo: string
   marca: string
@@ -17,7 +17,7 @@ export const PORTALES_PAGO: PortalPago[] = [
     href: 'https://pagos.onepay.la/guajiranet',
     logo: '/pagos/onepay.png',
     marca: 'OnePay',
-    titulo: 'GuajiraNet Pay',
+    titulo: 'Guajiranet Pay',
     texto: 'Portal de pago',
     detalle: 'PSE, tarjeta y más',
   },
@@ -31,13 +31,15 @@ export const PORTALES_PAGO: PortalPago[] = [
     texto: 'Portal modo POS',
     detalle: 'Pago inmediato',
   },
-  {
-    clave: 'wompi',
-    href: 'https://ds.dsnube.co/documento/?empresa=UqBGh1ev+4w5YMySqWUUuWnbyM4NML2QEEUqsYUO93o=',
-    logo: '/pagos/wompi.png',
-    marca: 'Wompi',
-    titulo: 'Paga con Wompi',
-    texto: 'Portal de facturas',
-    detalle: 'Consulta y paga con tu cédula',
-  },
+  // Wompi desactivado por ahora. Para activarlo de nuevo, descomenta este bloque
+  // (el logo sigue en public/pagos/wompi.png y sus estilos en escena.css).
+  // {
+  //   clave: 'wompi',
+  //   href: 'https://ds.dsnube.co/documento/?empresa=UqBGh1ev+4w5YMySqWUUuWnbyM4NML2QEEUqsYUO93o=',
+  //   logo: '/pagos/wompi.png',
+  //   marca: 'Wompi',
+  //   titulo: 'Paga con Wompi',
+  //   texto: 'Portal de facturas',
+  //   detalle: 'Consulta y paga con tu cédula',
+  // },
 ]

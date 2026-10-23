@@ -37,7 +37,7 @@ const PASOS: Paso[] = [
   {
     objetivo: ['.hero-pagos'],
     titulo: 'Paga tu factura',
-    texto: 'Paga en línea sin hacer filas: con GuajiraNet Pay (PSE, tarjeta y más) o al instante con Bre-B.',
+    texto: 'Paga en línea sin hacer filas: con Guajiranet Pay (PSE, tarjeta y más) o al instante con Bre-B.',
   },
   {
     objetivo: ['#autogestion'],
