@@ -1555,3 +1555,36 @@ body.menu-navegacion-abierto .acciones-flotantes, body.menu-navegacion-abierto .
 
 .hero-pago .hero-pago-texto strong { font-size: clamp(17px, 1.2vw, 23px); white-space: nowrap; }
 @media (min-width: 801px) { .hero-pagos-zona .hero-pagos { width: min(780px, 50%); }}
+/* Botón flotante: logo de Guajiranet en círculo blanco, algo más grande para que se lea */
+.pago-flotante .pago-flotante-logo { background-color: #ffffff; background-size: 86% auto; border: 0; height: 30px; width: 30px; }
+/* Pantallas medianas: la mitad derecha es angosta, así que las tarjetas van una debajo de otra */
+@media (min-width: 801px) and (max-width: 1280px) { .hero-pagos-zona .hero-pagos-lista { grid-template-columns: 1fr; } .hero-pagos-zona .hero-pagos { width: min(420px, 50%); }}
+/* Bolita del logo en el botón flotante más grande */
+.pago-flotante .pago-flotante-logo { background-size: 88% auto; box-shadow: 0 0 0 2px #ffffff99; height: 42px; margin-left: -8px; width: 42px; }
+@media (max-width: 640px) { .pago-flotante .pago-flotante-logo { height: 36px; margin-left: -6px; width: 36px; }}
+
+/* ---------- Botón flotante "Pagar factura" rediseñado ---------- */
+button.pago-flotante {
+  align-items: center; animation: pagoFlotanteLatido 2.8s ease-in-out 1.5s infinite;
+  background: linear-gradient(135deg, #17d64c, var(--marca-verde) 55%, #078a20);
+  border: 2px solid #ffffff59; border-radius: 40px; box-shadow: 0 12px 28px #09ac2766, inset 0 1px 0 #ffffff59;
+  color: #ffffff; display: inline-flex; gap: 12px; height: auto; min-height: 62px; padding: 6px 10px 6px 6px; text-align: left;
+  transition: transform .2s, box-shadow .2s, background .2s;
+}
+button.pago-flotante:hover { box-shadow: 0 16px 34px #09ac2780, inset 0 1px 0 #ffffff59; transform: translateY(-2px); }
+button.pago-flotante.abierto { animation: none; background: linear-gradient(135deg, #3a3e46, var(--marca-grafito)); box-shadow: 0 12px 28px #0a142455; }
+.pago-flotante .pago-flotante-logo { background-color: #ffffff; background-size: 88% auto; border: 0; box-shadow: 0 2px 8px #0000002e; height: 48px; margin: 0; width: 48px; }
+.pago-flotante-texto { display: grid; line-height: 1.15; }
+.pago-flotante-texto strong { font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
+.pago-flotante-texto small { font-size: 12px; font-weight: 600; opacity: .85; }
+.pago-flotante-flecha { align-items: center; background: #ffffff2e; border-radius: 50%; display: flex; flex: none; height: 32px; justify-content: center; margin-left: 4px; width: 32px; }
+.pago-flotante .pago-flotante-flecha svg { animation: none; }
+@keyframes pagoFlotanteLatido { 0%, 100% { box-shadow: 0 12px 28px #09ac2766, 0 0 0 0 #09ac2766, inset 0 1px 0 #ffffff59; } 50% { box-shadow: 0 12px 28px #09ac2766, 0 0 0 10px #09ac2700, inset 0 1px 0 #ffffff59; } }
+@media (max-width: 640px) {
+  button.pago-flotante { gap: 9px; min-height: 54px; padding: 5px 8px 5px 5px; }
+  .pago-flotante .pago-flotante-logo { height: 42px; width: 42px; }
+  .pago-flotante-texto strong { font-size: 15px; }
+  .pago-flotante-texto small { font-size: 11px; }
+  .pago-flotante-flecha { height: 28px; width: 28px; }}
+@media (prefers-reduced-motion: reduce) { button.pago-flotante { animation: none; }}
+@media (max-width: 640px) { .pago-flotante-texto small, .pago-flotante-flecha { display: none; } button.pago-flotante { padding-right: 16px; }}
