@@ -22,7 +22,6 @@ export function HeroPagos() {
             <span className={`pago-logo pago-logo-${clave}`} role="img" aria-label={`Logo de ${marca}`} style={{ backgroundImage: `url(${logo})` }} />
             <span className="hero-pago-texto">
               <strong>{titulo}</strong>
-              <span>{texto}</span>
               <small>{detalle}</small>
             </span>
             <ArrowUpRight className="hero-pago-flecha" size={18} aria-hidden="true" />

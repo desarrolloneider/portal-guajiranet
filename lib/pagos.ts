@@ -15,11 +15,12 @@ export const PORTALES_PAGO: PortalPago[] = [
   {
     clave: 'pay',
     href: 'https://pagos.onepay.la/guajiranet',
-    logo: '/pagos/onepay.png',
-    marca: 'OnePay',
-    titulo: 'Guajiranet Pay',
+    // Portal de OnePay con la marca de Guajiranet: se muestra el logo de la empresa en un círculo blanco.
+    logo: '/logo-guajiranet.png',
+    marca: 'Guajiranet',
+    titulo: 'Guajiranet Pagos',
     texto: 'Portal de pago',
-    detalle: 'PSE, tarjeta y más',
+    detalle: 'Pago inmediato',
   },
   {
     clave: 'breb',
@@ -27,7 +28,7 @@ export const PORTALES_PAGO: PortalPago[] = [
     logo: '/pagos/bre-b.png',
     marca: 'Bre-B',
     // Guion que no se parte (U+2011), para que «Bre-B» nunca quede en dos líneas.
-    titulo: 'Paga con Bre‑B',
+    titulo: 'Pagar con Bre‑B',
     texto: 'Portal modo POS',
     detalle: 'Pago inmediato',
   },
