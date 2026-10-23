@@ -5,9 +5,12 @@ import { ArrowRight, Check, Clock, CreditCard, FileText, Gauge, KeyRound, Loader
 import { Modal } from '@/components/modal'
 import { TestVelocidad } from '@/components/test-velocidad'
 import { MUNICIPIOS_CON_COBERTURA } from '@/lib/cobertura'
+import { PORTALES_PAGO } from '@/lib/pagos'
 import { url } from '@/lib/base-path'
 
 const PAGO = 'https://ds.dsnube.co/documento/?empresa=UqBGh1ev+4w5YMySqWUUuWnbyM4NML2QEEUqsYUO93o='
+// Portal de OnePay (Guajiranet Pay), el mismo de las tarjetas del inicio.
+const PAGO_ONEPAY = PORTALES_PAGO.find((p) => p.clave === 'pay')!.href
 const WHATSAPP = '573009139909'
 const CORREO = 'info@guajiranet.com'
 
@@ -474,7 +477,9 @@ export function Autogestion() {
   }, [])
 
   const tarjetas = [
-    { icono: CreditCard, titulo: 'Pagar factura', texto: 'Paga en línea de forma rápida y segura, sin salir de casa.', accion: 'Ir a pagar', href: PAGO, whatsapp: false },
+    { icono: CreditCard, titulo: 'Pagar factura', texto: 'Paga en línea con Guajiranet Pay: PSE, tarjeta y más, sin salir de casa.', accion: 'Ir a pagar', href: PAGO_ONEPAY, whatsapp: false },
+    // Pago con Wompi desactivado por ahora. Para activarlo de nuevo, descomenta esta línea (y comenta la de OnePay de arriba).
+    // { icono: CreditCard, titulo: 'Pagar factura', texto: 'Paga en línea de forma rápida y segura, sin salir de casa.', accion: 'Ir a pagar', href: PAGO, whatsapp: false },
     { icono: Gauge, titulo: 'Test de velocidad', texto: 'Mide en segundos la velocidad real de tu conexión.', accion: 'Medir ahora', vista: 'velocidad' as const, whatsapp: false },
     { icono: FileText, titulo: 'Presentar un PQRS', texto: 'Radica tu petición, queja, reclamo o sugerencia.', accion: 'Radicar', vista: 'pqrs' as const, whatsapp: false },
     { icono: KeyRound, titulo: 'Cambio de clave', texto: 'Actualiza la contraseña de tu red WiFi cuando quieras.', accion: 'Cambiar clave', vista: 'clave' as const, whatsapp: false },

@@ -1,4 +1,4 @@
-// SOLO SERVIDOR. Correo con el código de verificación para cambiar la clave WiFi, con la imagen de GuajiraNet.
+// SOLO SERVIDOR. Correo con el código de verificación para cambiar la clave WiFi, con la imagen de Guajiranet.
 import { escapar } from '@/lib/servidor/correo'
 
 // El logo se carga desde la web publicada: en Vercel los archivos de /public no están disponibles para leerse en el servidor.
@@ -16,7 +16,7 @@ const C = {
 }
 
 export function correoCodigo(codigo: string) {
-  const asunto = `🔐 ${codigo} es tu código de GuajiraNet para cambiar la clave WiFi`
+  const asunto = `🔐 ${codigo} es tu código de Guajiranet para cambiar la clave WiFi`
   const digitos = codigo
     .split('')
     .map(
@@ -34,7 +34,7 @@ export function correoCodigo(codigo: string) {
     <tr><td align="center">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:18px;max-width:520px;overflow:hidden">
         <tr><td style="background:#ffffff;border-bottom:4px solid ${C.amarillo};padding:22px 28px;text-align:center">
-          <img src="${SITIO}/logo-guajiranet.png" alt="GuajiraNet Telecomunicaciones" width="180" style="display:inline-block;height:auto;max-width:180px">
+          <img src="${SITIO}/logo-guajiranet.png" alt="Guajiranet Telecomunicaciones" width="180" style="display:inline-block;height:auto;max-width:180px">
         </td></tr>
         <tr><td style="background:${C.grafito};padding:26px 28px;text-align:center">
           <div style="font-size:34px;line-height:1">🔐</div>
@@ -68,7 +68,7 @@ export function correoCodigo(codigo: string) {
 </body>
 </html>`
 
-  const texto = `GuajiraNet - Cambio de clave WiFi
+  const texto = `Guajiranet - Cambio de clave WiFi
 
 Tu código de verificación es: ${codigo}
 Vence en 10 minutos.

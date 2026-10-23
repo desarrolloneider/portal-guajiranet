@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { ArrowUp, ArrowUpRight, CreditCard, HelpCircle, X } from 'lucide-react'
+import { ArrowUp, ArrowUpRight, HelpCircle, X } from 'lucide-react'
 import { PORTALES_PAGO } from '@/lib/pagos'
 import { EVENTO_TUTORIAL } from '@/components/tutorial'
 
@@ -43,11 +43,11 @@ export function BarraProgreso() {
 /**
  * Botones flotantes de la página.
  * - Izquierda: WhatsApp y "Revisar tutorial" (en computador uno al lado del otro; en celular el tutorial va encima).
- * - Derecha: "Volver arriba" (aparece al bajar) y "Pagar factura", que abre un selector con los tres portales de pago.
+ * - Derecha: "Volver arriba" (aparece al bajar) y "Pagar factura", que abre un selector con los portales de pago.
  */
 export function AccionesFlotantes(_props: { pagoHref?: string }) {
   const [arriba, setArriba] = useState(false)
-  // Selector de portales de pago (Wompi, OnePay, Bre-B) que abre el botón flotante.
+  // Selector de portales de pago (OnePay y Bre-B) que abre el botón flotante.
   const [pagosAbierto, setPagosAbierto] = useState(false)
   const selectorRef = useRef<HTMLDivElement>(null)
 
@@ -139,7 +139,11 @@ export function AccionesFlotantes(_props: { pagoHref?: string }) {
             aria-controls="pago-selector-menu"
             aria-haspopup="menu"
           >
-            {pagosAbierto ? <X size={20} aria-hidden="true" /> : <CreditCard size={20} aria-hidden="true" />}
+            {pagosAbierto ? (
+              <X size={20} aria-hidden="true" />
+            ) : (
+              <span className="pago-logo pago-logo-pay pago-flotante-logo" aria-hidden="true" style={{ backgroundImage: 'url(/pagos/onepay.png)' }} />
+            )}
             <span>{pagosAbierto ? 'Cerrar' : 'Pagar factura'}</span>
           </button>
         </div>
