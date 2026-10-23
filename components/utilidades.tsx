@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { ArrowUp, ArrowUpRight, HelpCircle, X } from 'lucide-react'
+import { ArrowUp, ArrowUpRight, ChevronUp, HelpCircle, X } from 'lucide-react'
 import { PORTALES_PAGO } from '@/lib/pagos'
 import { EVENTO_TUTORIAL } from '@/components/tutorial'
 
@@ -139,12 +139,14 @@ export function AccionesFlotantes(_props: { pagoHref?: string }) {
             aria-controls="pago-selector-menu"
             aria-haspopup="menu"
           >
-            {pagosAbierto ? (
-              <X size={20} aria-hidden="true" />
-            ) : (
-              <span className="pago-logo pago-logo-pay pago-flotante-logo" aria-hidden="true" style={{ backgroundImage: 'url(/pagos/onepay.png)' }} />
-            )}
-            <span>{pagosAbierto ? 'Cerrar' : 'Pagar factura'}</span>
+            <span className="pago-logo pago-logo-pay pago-flotante-logo" aria-hidden="true" style={{ backgroundImage: 'url(/logo-guajiranet.png)' }} />
+            <span className="pago-flotante-texto">
+              <strong>{pagosAbierto ? 'Cerrar' : 'Pagar factura'}</strong>
+              <small>{pagosAbierto ? 'Ocultar opciones' : 'Elige cómo pagar'}</small>
+            </span>
+            <span className="pago-flotante-flecha" aria-hidden="true">
+              {pagosAbierto ? <X size={16} /> : <ChevronUp size={18} />}
+            </span>
           </button>
         </div>
       </div>
