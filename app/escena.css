@@ -1370,7 +1370,7 @@ a.text-link { color: #067a1d; }
 .hero-pagos-zona .hero-pagos { margin-top: 0; max-width: none; pointer-events: auto; width: min(760px, 58%); }
 .hero-pagos-zona .hero-pagos-lista { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 @media (max-width: 1280px) {
-  .hero-pagos-zona .hero-pagos { width: min(560px, 50%); }
+  .hero-pagos-zona .hero-pagos { width: min(780px, 50%); }
   .hero-pagos-zona .hero-pagos-lista { grid-template-columns: repeat(2, minmax(0, 1fr)); }}
 @media (max-width: 800px) {
   .hero-pagos-zona { justify-content: stretch; padding-top: 18px; position: relative; top: 0; }
@@ -1486,26 +1486,26 @@ body.menu-navegacion-abierto .acciones-flotantes, body.menu-navegacion-abierto .
   .hero-pagos-zona .hero-pagos { display: flex; flex-direction: column; }
   .hero-pagos-zona .hero-pagos-nota { justify-content: center; }}
 @media (min-width: 801px) and (max-width: 1280px) {
-  .hero-pagos-zona .hero-pagos { width: min(560px, 100%); }}
+  .hero-pagos-zona .hero-pagos { width: min(780px, 100%); }}
 
 /* Sin Wompi: dos tarjetas de pago, una al lado de la otra, centradas en la mitad derecha */
 @media (min-width: 801px) {
-  .hero-pagos-zona .hero-pagos { width: min(560px, 100%); }
+  .hero-pagos-zona .hero-pagos { width: min(780px, 100%); }
   .hero-pagos-zona .hero-pagos-lista { grid-template-columns: repeat(2, minmax(0, 1fr)); }}
 
 /* Logo de OnePay en el botón flotante Pagar factura */
 .pago-flotante .pago-flotante-logo { border-width: 1.5px; box-shadow: none; height: 26px; width: 26px; }
 
 /* Header alineado con las tarjetas de pago: su borde derecho termina donde terminan las tarjetas.
-   Las tarjetas miden min(560px, mitad derecha) y van centradas en la mitad derecha del mismo ancho de contenedor,
+   Las tarjetas miden min(780px, mitad derecha) y van centradas en la mitad derecha del mismo ancho de contenedor,
    así que sobra (mitad - ancho tarjetas) / 2 a la derecha. El % del margen se mide sobre el contenedor del header. */
 @media (min-width: 801px) {
-  .nav-header-inner .nav-acciones, .nav-header-inner > .nav-toggle { margin-right: calc((50% - min(560px, 50%)) / 2); }
-  .topbar .topbar-derecha { margin-right: calc((50% - min(560px, 50%)) / 2); }}
+  .nav-header-inner .nav-acciones, .nav-header-inner > .nav-toggle { margin-right: calc((50% - min(780px, 50%)) / 2); }
+  .topbar .topbar-derecha { margin-right: calc((50% - min(780px, 50%)) / 2); }}
 /* Misma fórmula que el header: centradas en la mitad derecha del contenedor (no de la pantalla) */
 @media (min-width: 801px) {
   .hero-pagos-zona { justify-content: flex-end; padding-left: 0; }
-  .hero-pagos-zona .hero-pagos { margin-right: calc((50% - min(560px, 50%)) / 2); }}
+  .hero-pagos-zona .hero-pagos { margin-right: calc((50% - min(780px, 50%)) / 2); }}
 
 /* Lado izquierdo con el mismo espacio que el derecho: logo, franja de arriba y contenido de la zona azul
    se corren hacia adentro lo mismo que sobra a la derecha de las tarjetas de pago.
@@ -1513,11 +1513,45 @@ body.menu-navegacion-abierto .acciones-flotantes, body.menu-navegacion-abierto .
 @media (min-width: 801px) {
   .topbar > .container, .nav-header > .nav-header-inner, .hero-new > .hero-grid-new {
     --ancho-cont: max(min(1320px, calc(100% - 40px)), calc(100% - 2 * var(--borde-lateral)));
-    padding-left: calc((var(--ancho-cont) / 2 - min(560px, var(--ancho-cont) / 2)) / 2);
+    padding-left: calc((var(--ancho-cont) / 2 - min(780px, var(--ancho-cont) / 2)) / 2);
   }}
 /* Derecha simétrica: el mismo espacio como padding del contenedor (en vez del margen de los botones) */
 @media (min-width: 801px) {
   .topbar > .container, .nav-header > .nav-header-inner {
-    padding-right: calc((var(--ancho-cont) / 2 - min(560px, var(--ancho-cont) / 2)) / 2);
+    padding-right: calc((var(--ancho-cont) / 2 - min(780px, var(--ancho-cont) / 2)) / 2);
   }
   .nav-header-inner .nav-acciones, .nav-header-inner > .nav-toggle, .topbar .topbar-derecha { margin-right: 0; }}
+/* Tarjetas de pago solo con el nombre: el texto centrado verticalmente junto al logo */
+.hero-pago-texto strong { font-size: 17px; }
+
+/* Diseño aprobado de las tarjetas de pago: más grandes, título azul oscuro grande y una línea de detalle */
+.hero-pagos-zona .hero-pago { gap: 16px; min-height: 96px; padding: 16px 20px; }
+.hero-pago .hero-pago-texto { gap: 2px; }
+.hero-pago .hero-pago-texto strong { color: #10225e; font-size: 24px; letter-spacing: -.01em; line-height: 1.1; }
+.hero-pago .hero-pago-texto small { display: block; font-size: 15px; font-weight: 500; opacity: 1; }
+.hero-pago-pay .hero-pago-texto small { color: #10225e; }
+.hero-pago-breb .hero-pago-texto small { color: #9c8a2c; }
+.hero-pago-pay .hero-pago-flecha { color: #ffffff; }
+.hero-pago-breb .hero-pago-flecha { color: #10225e; }
+.hero-pago-flecha { height: 24px; width: 24px; }
+/* Logo de Guajiranet en círculo blanco */
+.pago-logo-pay { background-color: #ffffff; background-size: 86% auto; border: 0; }
+.hero-pago .pago-logo-pay { height: 64px; width: 64px; }
+.hero-pago .pago-logo-breb { border-radius: 14px; height: 62px; width: 90px; }
+@media (max-width: 1280px) {
+  .hero-pago .hero-pago-texto strong { font-size: 19px; }
+  .hero-pago .pago-logo-pay { height: 52px; width: 52px; }
+  .hero-pago .pago-logo-breb { height: 50px; width: 72px; }}
+@media (max-width: 420px) {
+  .hero-pagos-zona .hero-pago { min-height: 80px; padding: 12px 14px; }
+  .hero-pago .hero-pago-texto strong { font-size: 18px; }
+  .hero-pago .hero-pago-texto small { font-size: 13px; }}/* El título y los logos escalan con el ancho para no chocar con la flecha */
+.hero-pago .hero-pago-texto strong { font-size: clamp(17px, 1.3vw, 24px); }
+.hero-pago .hero-pago-texto small { font-size: clamp(13px, .85vw, 15px); }
+.hero-pago .pago-logo-pay { height: clamp(46px, 3.4vw, 64px); width: clamp(46px, 3.4vw, 64px); }
+.hero-pago .pago-logo-breb { height: clamp(44px, 3.3vw, 62px); width: clamp(64px, 4.8vw, 90px); }
+.hero-pagos-zona .hero-pago { gap: clamp(10px, .9vw, 16px); padding: 14px clamp(12px, 1.1vw, 20px); }
+.hero-pago-texto { flex: 1; }
+
+.hero-pago .hero-pago-texto strong { font-size: clamp(17px, 1.2vw, 23px); white-space: nowrap; }
+@media (min-width: 801px) { .hero-pagos-zona .hero-pagos { width: min(780px, 50%); }}
