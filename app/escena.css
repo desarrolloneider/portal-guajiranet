@@ -1588,3 +1588,7 @@ button.pago-flotante.abierto { animation: none; background: linear-gradient(135d
   .pago-flotante-flecha { height: 28px; width: 28px; }}
 @media (prefers-reduced-motion: reduce) { button.pago-flotante { animation: none; }}
 @media (max-width: 640px) { .pago-flotante-texto small, .pago-flotante-flecha { display: none; } button.pago-flotante { padding-right: 16px; }}
+
+/* Tipo de servicio bajo los Megas: Banda ancha (300 Megas o más) o Internet */
+.peldano-tipo { color: #5f6779; font-size: 11px; font-style: normal; font-weight: 700; letter-spacing: .06em; margin-top: 4px; text-transform: uppercase; white-space: nowrap; }
+.peldano.on .peldano-tipo { color: #d98516; }
