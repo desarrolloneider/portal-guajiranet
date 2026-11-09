@@ -7,6 +7,9 @@ import { NOTAS_PLANES, VELOCIDADES, ZONAS_PLANES, type Plan } from '@/lib/planes
 
 // Tono de cada fibra: de ámbar claro a grafito a medida que sube la velocidad (un tono por velocidad).
 const TONOS = ['#f0d6b5', '#e3b374', '#5f6779', '#515767', '#434855', '#30333d', '#1f2127']
+// Desde 300 Megas el plan se presenta como banda ancha; por debajo, como internet.
+const tipoServicio = (megas: number) => (megas >= 300 ? 'Banda ancha' : 'Internet')
+
 const tono = (megas: number) => TONOS[Math.min(VELOCIDADES.indexOf(megas), TONOS.length - 1)]
 
 const inicioDe = (planes: Plan[]) => Math.max(0, planes.findIndex((p) => p.destacado))
@@ -121,7 +124,7 @@ export function PlanesSelector() {
     [
       '¡Hola! Quiero contratar este plan:',
       '',
-      `📶 Internet de ${plan.megas} Megas por fibra óptica`,
+      `📶 ${tipoServicio(plan.megas)} de ${plan.megas} Megas por fibra óptica`,
       `💰 $${plan.precio} al mes`,
       `📍 Zona: ${nombreZona}`,
       '',
@@ -181,7 +184,7 @@ export function PlanesSelector() {
                   type="button"
                   role="radio"
                   aria-checked={i === sel}
-                  aria-label={`${p.megas} Megas, $${p.precio} al mes${p.destacado ? ', el más elegido' : ''}`}
+                  aria-label={`${p.megas} Megas de ${tipoServicio(p.megas).toLowerCase()}, $${p.precio} al mes${p.destacado ? ', el más elegido' : ''}`}
                   tabIndex={i === sel ? 0 : -1}
                   className={`peldano${i === sel ? ' on' : ''}${p.destacado ? ' destacado' : ''}`}
                   style={{ '--alto': p.megas / MAX, '--i': i, '--c': tono(p.megas) } as CSSProperties}
@@ -191,6 +194,7 @@ export function PlanesSelector() {
                   <span className="peldano-megas">
                     <strong>{p.megas}</strong>
                     <small>Megas</small>
+                    <em className="peldano-tipo">{tipoServicio(p.megas)}</em>
                   </span>
                   <span className="peldano-fibra" aria-hidden="true">
                     <span className="peldano-hilo">
@@ -215,7 +219,7 @@ export function PlanesSelector() {
 
             <div className="pd-velocidad">
               <Rodante valor={String(plan.megas)} dir={dir} variantes={variantes} />
-              <span>Megas de internet</span>
+              <span>Megas de {tipoServicio(plan.megas).toLowerCase()}</span>
             </div>
 
             <div className="pd-precio">
