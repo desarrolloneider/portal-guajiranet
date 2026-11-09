@@ -1592,3 +1592,5 @@ button.pago-flotante.abierto { animation: none; background: linear-gradient(135d
 /* Tipo de servicio bajo los Megas: Banda ancha (300 Megas o más) o Internet */
 .peldano-tipo { color: #5f6779; font-size: 11px; font-style: normal; font-weight: 700; letter-spacing: .06em; margin-top: 4px; text-transform: uppercase; white-space: nowrap; }
 .peldano.on .peldano-tipo { color: #d98516; }
+/* Celular: la cinta Más elegido va arriba a la derecha para no tapar los Megas */
+@media (max-width: 640px) { .peldano-cinta { box-shadow: 0 4px 10px #2b2e3626; font-size: 11px; left: auto; padding: 3px 8px; right: 12px; top: -9px; }}
